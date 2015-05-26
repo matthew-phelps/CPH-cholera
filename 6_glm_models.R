@@ -24,26 +24,48 @@ quarter.glm$R <- quarter.glm$cum.sick <- NULL
 
 
 # Models ------------------------------------------------------------------
+quarter.glm$logS <- log(quarter.glm$S)
+fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester+ St.Annae.Vester ) + offset(logS),
+           data=quarter.glm, family=poisson())
+output <- publish(fit)
+output <- output[,-3]
+output
 
- # overview - GLM for entire dataset: Infections at t+1 are predicted by I in 
- # all quarters at current t
-quarter.1<- glm(I_t_1 ~ I_grp1 + I_grp2 + I_grp3 + I_grp4 + I_grp5 + I_grp6 + I_grp7 + I_grp8 + I_grp9 + I_grp10 + I_grp11 + I_grp12 + I_grp13 , family = poisson, data = quarter.glm, offset = log(quarter.glm$S))
+quarter.list <- split(quarter.glm, quarter.glm$quarter)
+results <- lapply(quarter.list,function(d){
+  fitquarter <- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester + St.Annae.Vester + offset(logS),
+                    data=d,family=poisson())
+  summary(fitquarter)
+})
+names(results)
+results
+# 
+# 
+# uniresults <- do.call("rbind",lapply(names(quarter.list),function(n){
+#     d <- quarter.list[[n]]
+#     form <- as.formula(paste("sick.total.week~ + offset(logS)+ ",n))
+#     fitquarter <- glm(form, data=d,family=poisson())
+#     publish(fitquarter)
+# }))
+# uniresults
 
-summary(quarter.1)
 
+#  overview - GLM for entire dataset: Infections at t+1 are predicted by I in 
+#  all quarters at current t
+quarter.fit.1<- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Rosenborg  + Oester + offset(logS), family = poisson, data = quarter.glm)
+summary(quarter.fit.1)
 
- # 13 models - one for each quarter
- # For each model the outcome (I_t+1), is predicted by I in all other quarters
+# 
+#  13 models - one for each quarter
+#  For each model the outcome (I_t+1), is predicted by I in all other quarters
 glm.quarter.list <- list()
 x <- list()
 for (i in 1:13){
-     x <- glm(I_t_1 ~ I_grp1 + I_grp2 + I_grp3 + I_grp4 + I_grp5 + I_grp6 + 
-                   I_grp7 + I_grp8 + I_grp9 + I_grp10 + I_grp11 + I_grp12 + 
-                   I_grp13 + offset(log(quarter.glm$S)), 
-              family = poisson, data = quarter.glm,
-              subset = quarterID==i,
-              model = F)
-     glm.quarter.list[i] <- list(x)
+  x <- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Rosenborg  + St.Annae.Vester + Oester + offset(log(quarter.glm$S)), 
+           family = poisson, data = quarter.glm,
+           subset = quarterID==i,
+           model = F)
+  glm.quarter.list[i] <- list(x)
 }
 
 
@@ -56,11 +78,11 @@ for (i in 1:13){
 # Overview model
 summary(quarter.1)
 
- # creat list of summaries for easy viewing
+# creat list of summaries for easy viewing
 summary.list <- list()
 for (i in 1:13){
- x <- summary(glm.quarter.list[[i]])
- summary.list[i] <- list(x)
+  x <- summary(glm.quarter.list[[i]])
+  summary.list[i] <- list(x)
 }
 
 summary.list
@@ -72,12 +94,12 @@ summary.list
 j <-list()
 k <- list()
 for (i in 1:13){
-      j[i] <- deviance(glm.list[[i]]) / glm.list[[i]]$df.residual
-     k[i] <- dispersiontest(glm.list[[i]])
+  j[i] <- deviance(glm.list[[i]]) / glm.list[[i]]$df.residual
+  k[i] <- dispersiontest(glm.list[[i]])
 }
 
 for (i in 1:13){
-influencePlot(glm.list[[i]])
+  influencePlot(glm.list[[i]])
 }
 
 

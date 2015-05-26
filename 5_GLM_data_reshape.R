@@ -1,4 +1,4 @@
-.++++# Author: Matthew Phelps
+# Author: Matthew Phelps
 #Desc: Rshape data for GLM model
 # output datasets: glm cholera data.csv
 
@@ -19,34 +19,73 @@ library(plyr)
 quarter.sheet <- read.xlsx2(file = "quarter.xlsx",
                             sheetIndex = 1, 
                             colClasses = c("character", rep("numeric", 8)))
-quarter.sheet <- rename(quarter.sheet, replace = c("sick.total.week" = "I_t_1"))
+quarter.sheet <- rename(quarter.sheet, replace = c("sick.total.week" = "I.t"))
 
-
-
-# Reshape data ------------------------------------------------------------
-
-quarter.glm <- quarter.sheet[ order(quarter.sheet$week.id, quarter.sheet$quarterID),]
+# Reshape data ALL QUARTERS ------------------------------------------------------------
+quarter.glm <- quarter.sheet[ order(quarter.sheet$week.id, quarter.sheet$quarterID),] # order by chronology
 quarter.glm$pop1855 <- quarter.glm$dead.total.week <- NULL
 
-
+quarter.glm$Quarter <- factor(quarter.glm$quarter,levels=c("Christianshavn","Frimands","Kjoebmager","Klaedebo","Noerre","Nyboder","Oester","Rosenborg","Snarens","St Annae Vester","St Annae Oester", "Strand","Vester"),labels=c("Christianshavn","Frimands","Kjoebmager","Klaedebo","Noerre","Nyboder","Oester","Rosenborg","Snarens","St.Annae.Vester","St.Annae.Oester", "Strand","Vester"))
+quarter.glm$quarter <- quarter.glm$Quarter
+levels(quarter.glm$quarter) <- list("Christianshavn"="Christianshavn",
+                                    "Nyboder"="Nyboder",
+                                    "Oester"="Oester",
+                                    "Rosenborg"="Rosenborg",
+                                    "St.Annae.Oester"="St.Annae.Oester",
+                                    "St.Annae.Vester"="St.Annae.Vester",
+                                    "Kjoebmager"="Kjoebmager",
+                                    "Snarens" = "Snarens"
+                                    "Strand" = "Strand"
+                                    "Frimands" = "Frimands"
+                                    "Klaedebo" = "Klaedebo"
+                                    "Noerre" = "Noerre"
+                                    "Vester" = "Vester"))
 # add columns to df to be filled in later
-x<-0
-y<-0
-for (i in 1:13){
-     x[i] <- as.character(i)
-     y[i] <-paste("I_grp", x[i], sep="")
-     quarter.glm[, y[i]] <- 0
-}
-
-
+quarter.week <- split(quarter.glm,quarter.glm$week.id)
+quarter.week <- lapply(1:length(quarter.week),function(w){
+  week.data <- quarter.week[[w]]
+  # browser()
+  if (w==1)
+    sick.total.previous.week <- matrix(0,ncol=13,nrow=13)
+  else
+    sick.total.previous.week <- matrix(quarter.week[[w-1]][,"I.t"],ncol=13,nrow=13,byrow=TRUE)
+  colnames(sick.total.previous.week) <- week.data$quarter
+  cbind(week.data,sick.total.previous.week)
+})
+quarter.glm <- do.call("rbind",quarter.week)
+quarter.glm$quarter
 # fill in columns in df
-for (k in seq(from = 13, to = 195, by = 13)){ # iterate over time-steps -1 (to give I_t+1)
-     for (j in 1:13){                        # iterate over number of quarters
-          for (i in 1:13){                   # iterate over quarters
-               quarter.glm[j+k, 7 + i] <- quarter.glm[i+k-13, 3]
-               
-          }
-     }
-}
+save(quarter.glm, file = "quarter_glm.Rdata")
 
-save(quarter.glm, file = "quarter_glm")
+
+
+# Reshape data - MERGED QUARTERS\ -----------------------------------------
+quarter.merged.glm <- quarter.sheet[ order(quarter.sheet$week.id, quarter.sheet$quarterID),] # order by chronology
+quarter.merged.glm$pop1855 <- quarter.merged.glm$dead.total.week <- NULL
+
+quarter.merged.glm$Quarter <- factor(quarter.merged.glm$quarter,levels=c("Christianshavn","Frimands","Kjoebmager","Klaedebo","Noerre","Nyboder","Oester","Rosenborg","Snarens","St Annae Vester","St Annae Oester", "Strand","Vester"),labels=c("Christianshavn","Frimands","Kjoebmager","Klaedebo","Noerre","Nyboder","Oester","Rosenborg","Snarens","St.Annae.Vester","St.Annae.Oester", "Strand","Vester"))
+quarter.merged.glm$quarter <- quarter.merged.glm$Quarter
+levels(quarter.merged.glm$quarter) <- list("Christianshavn"="Christianshavn",
+                                           "Nyboder"="Nyboder",
+                                           "Oester"="Oester",
+                                           "Rosenborg"="Rosenborg",
+                                           "St.Annae.Oester"="St.Annae.Oester",
+                                           "St.Annae.Vester"="St.Annae.Vester",
+                                           "Kjoebmager"="Kjoebmager",
+                                           "combinedquarter"=c("Snarens","Strand","Frimands","Klaedebo","Noerre","Vester"))
+# add columns to df to be filled in later
+quarter.week <- split(quarter.merged.glm,quarter.merged.glm$week.id)
+quarter.week <- lapply(1:length(quarter.week),function(w){
+  week.data <- quarter.week[[w]]
+  # browser()
+  if (w==1)
+    sick.total.previous.week <- matrix(0,ncol=13,nrow=13)
+  else
+    sick.total.previous.week <- matrix(quarter.week[[w-1]][,"I.t"],ncol=13,nrow=13,byrow=TRUE)
+  colnames(sick.total.previous.week) <- week.data$quarter
+  cbind(week.data,sick.total.previous.week)
+})
+quarter.merged.glm <- do.call("rbind",quarter.week)
+quarter.merged.glm$quarter
+
+save(quarter.merged.glm, file = "quarter_merged_glm")
