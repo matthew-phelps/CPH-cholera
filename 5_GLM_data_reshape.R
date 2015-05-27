@@ -8,7 +8,7 @@
 rm(list = ls())
 graphics.off()
 mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data"
-pc <- "C:\\Users\\wrz741\\Google Drev\\Copenhagen\\DK Cholera\\CPH\\Data"
+pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
 setwd(pc)
 library (xlsx) # reading excel files
 library(foreign)
