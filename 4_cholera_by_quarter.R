@@ -68,12 +68,12 @@ normal.incident.cases
 
 # Add Cumulative No. infected at each week --------------------------------
 
-quarter.temp <- read.csv("Incident cases per week by quarter.csv")
+quarter.temp <- quarter.by.week
 quarter.temp$week.id <- quarter.temp$startday.index/7 # create time-step index
-quarter <- quarter.temp[, c(2, 14, 8, 9, 10)] # remove un-needed variables
+quarter <- quarter.temp[, c(1, 13, 7, 8, 9)] # remove un-needed variables
 rm(quarter.temp)
 
-quarter$quarterID <- as.numeric(quarter$quarter)
+quarter$quarterID <- as.numeric(as.factor(quarter$quarter))
 quarter$cum.sick <- 0
 
 

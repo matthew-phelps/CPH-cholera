@@ -18,7 +18,7 @@ library (reshape) # for renaming variables
 
 
 #street.data <- read.xlsx("data/Cholera by street CPH.xlsx", sheetIndex = 1)
-street.data <- read.csv ("Cholera by street CPH.csv", sep=";")
+street.data <- read.csv ("Cholera by street CPH_eng.csv", sep=",")
 head(street.data)
 
 # convert to date format
@@ -42,7 +42,7 @@ for (i in 1:nrow(street.data)){
 
 }
 
-save(street.data, file = "cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
+save(street.data, file = "Rdata\\cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
 
 
 
