@@ -10,13 +10,11 @@ graphics.off()
 mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data"
 pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
 setwd(pc)
-library (xlsx) # reading excel files
-library(foreign)
 library(reshape)
 library(ggplot2)
 library(plyr)
 # library(AER)
-library(glmnet)
+#library(glmnet)
 library(stargazer) # for nice output for html etc
 
 load("Rdata\\quarter_combined_glm.Rdata")
@@ -31,7 +29,7 @@ fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nybode
            data=quarter.glm, family=poisson())
 summary(fit)
 fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
-                      out = "fit_combined.htm")
+                      out.header = F, out = "fit_combined.htm")
 # Thomas' code using function I don't have {
 # output <- publish(fit)
 # output <- output[,-3]
