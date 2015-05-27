@@ -96,4 +96,4 @@ quarter.merged.glm$quarter
 
 
 
-save(quarter.merged.glm, file = "quarter_merged_glm")
+save(quarter.merged.glm, file = "Rdata\\quarter_combined_glm.Rdata")
