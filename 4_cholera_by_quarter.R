@@ -40,7 +40,7 @@ start.day<- ddply (quarter, .(quarter), summarize, startday = startday.index[min
 
 
 # Normalize incidence by population ---------------------------------------
-census <- read.csv ("Census - quarter.csv", sep=";", header=T, stringsAsFactors=F)
+census <- read.csv ("Census - quarter.csv", sep=",", header=T, stringsAsFactors=F)
 
 #merge census and cholera data 
 quarter.by.week <- merge(quarter, census, by.x="quarter", by.y="Quarter")
@@ -53,15 +53,6 @@ for (i in 1:nrow(quarter.by.week)){
 write.csv (quarter.by.week, "Incident cases per week by quarter.csv")
 save(quarter.by.week, file = "Rdata\\Quarter - normailzed incidence per week.Rdata")
 
-normal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = normal.incidence, group = quarter, color = quarter))+
-  geom_line() +
-  geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black") +
-  xlab("Day index") +
-  ylab("Incident cases per 1000 ppl") +
-  xlim(0, 75) +
-  ggtitle ("Normalized incident cases per week by quarter")
-
-normal.incident.cases
 
 
 
@@ -98,5 +89,7 @@ for (i in 2:208){
 quarter$S <- quarter$pop1855 - quarter$cum.sick # no. of susceptibles at each timestep
 quarter$R <- quarter$pop1855 - (quarter$S + quarter$sick.total.week)
 
-write.xlsx2(quarter, file = "C:\\Users\\wrz741\\Google Drev\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter.xlsx", sheetname = "Sheet1", row.names = F)
+write.csv(quarter,
+          file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
+          row.names = F)
 

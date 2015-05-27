@@ -15,10 +15,6 @@ library (reshape) # for renaming variables
 library(plyr)
 
 
-
-
-
-
 # Quarter - Incident cases per week ---------------------------------------
 
 load("Rdata\\incident_cases_per_week.Rd")
