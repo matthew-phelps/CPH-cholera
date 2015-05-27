@@ -1,6 +1,6 @@
 # Author: Matthew Phelps
-#Desc: Rshape data for GLM model
-# output datasets: glm cholera data.csv
+#Desc: Prepare data - get cholera by quarter and combine quarters
+# output datasets: quarter.csv
 
 ## intro
 rm(list = ls())
@@ -15,7 +15,7 @@ library (stats)
 library (reshape) # for renaming variables
 library(plyr)
 
-load("cholera_by_street.Rdata")
+load("Rdata\\cholera_by_street.Rdata")
 
 
 # Summarize each quarter -------------------------------------------------------
@@ -28,34 +28,7 @@ for (i in 1:nrow(quarter)){
   quarter$dead.total.week[i] <- quarter$mendead.week[i] + quarter$womendead.week[i]
 }
 
-
-# Plot each quarter -------------------------------------------------------
-
-# fem.sick <- ggplot (quarter, aes( x = startday.index, y = womensick.week, group = quarter, color = quarter))+
-#     geom_line()+
-#     geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black")
-# 
-# men.sick <- ggplot (quarter, aes( x = startday.index, y = mensick.week, group = quarter, color = quarter))+
-#     geom_line()+
-#     geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black")
-
-
-
-
-incident.cases <- ggplot (quarter, aes( x = startday.index, y = sick.total.week, group = quarter, color = quarter))+
-  geom_line() +
-  geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black") +
-  xlab("Day index") +
-  ylab("Incident cases") +
-  xlim(0, 75) +
-  ggtitle ("Incident cases per week by quarter")
-
-incident.cases
-
-
-
-
-
+save(quarter, file = "Rdata\\incident_cases_per_week.Rd")
 
 # Find week of peak in each quarter:
 peak.day <- ddply(quarter, .(quarter), summarize, peakday = startday.index[which.max(sick.total.week)] )
@@ -66,12 +39,8 @@ start.day<- ddply (quarter, .(quarter), summarize, startday = startday.index[min
 
 
 
-
-
-
-
 # Normalize incidence by population ---------------------------------------
-census <- read.csv ("data/Census - quarter.csv", sep=";", header=T, stringsAsFactors=F)
+census <- read.csv ("Census - quarter.csv", sep=";", header=T, stringsAsFactors=F)
 
 #merge census and cholera data 
 quarter.by.week <- merge(quarter, census, by.x="quarter", by.y="Quarter")
@@ -82,6 +51,7 @@ for (i in 1:nrow(quarter.by.week)){
 }
 
 write.csv (quarter.by.week, "Incident cases per week by quarter.csv")
+save(quarter.by.week, file = "Rdata\\Quarter - normailzed incidence per week.Rdata")
 
 normal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = normal.incidence, group = quarter, color = quarter))+
   geom_line() +
@@ -92,4 +62,41 @@ normal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = n
   ggtitle ("Normalized incident cases per week by quarter")
 
 normal.incident.cases
+
+
+
+
+# Add Cumulative No. infected at each week --------------------------------
+
+quarter.temp <- read.csv("Incident cases per week by quarter.csv")
+quarter.temp$week.id <- quarter.temp$startday.index/7 # create time-step index
+quarter <- quarter.temp[, c(2, 14, 8, 9, 10)] # remove un-needed variables
+rm(quarter.temp)
+
+quarter$quarterID <- as.numeric(quarter$quarter)
+quarter$cum.sick <- 0
+
+
+####
+#### Calculate the number of ppl in each compartment (S,I,R) at each time step:
+####
+
+# calculate cumilative number of infected in each quarter 
+for (i in 2:208){
+  
+  # check to see if the current row is the same quarter as previous row
+  if(quarter$quarterID[i] != quarter$quarterID[i-1]){
+    quarter$cum.sick[i] <- quarter$sick.total.week[i] # if it's a differernt quarter, reset cummulative count to 0
+    
+    # if it's the same quarter, add the new sick to the total count of sick ppl
+  } else {
+    quarter$cum.sick[i] <- quarter$cum.sick[i-1] + quarter$sick.total.week[i]  
+  }
+}
+
+# now find S and R based on the N and "cumulative sick" numbers
+quarter$S <- quarter$pop1855 - quarter$cum.sick # no. of susceptibles at each timestep
+quarter$R <- quarter$pop1855 - (quarter$S + quarter$sick.total.week)
+
+write.xlsx2(quarter, file = "C:\\Users\\wrz741\\Google Drev\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter.xlsx", sheetname = "Sheet1", row.names = F)
 
