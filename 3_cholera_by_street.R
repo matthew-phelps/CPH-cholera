@@ -49,6 +49,8 @@ save(street.data, file = "Rdata\\cholera_by_street.Rdata") # save as an R object
 
 
 
+## note to future self - move this to seperate file
+
 
 # R0 for each quarter -----------------------------------------------------
 

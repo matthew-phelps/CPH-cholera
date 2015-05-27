@@ -68,10 +68,7 @@ quarter$quarterID <- as.numeric(as.factor(quarter$quarter))
 quarter$cum.sick <- 0
 
 
-####
-#### Calculate the number of ppl in each compartment (S,I,R) at each time step:
-####
-
+## Calculate the number of ppl in each compartment (S,I,R) at each time step:
 # calculate cumilative number of infected in each quarter 
 for (i in 2:208){
   
@@ -89,7 +86,17 @@ for (i in 2:208){
 quarter$S <- quarter$pop1855 - quarter$cum.sick # no. of susceptibles at each timestep
 quarter$R <- quarter$pop1855 - (quarter$S + quarter$sick.total.week)
 
-write.csv(quarter,
-          file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
-          row.names = F)
+save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
+#write.csv(quarter,
+#          file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
+#          row.names = F)
+rm(census, quarter.by.week, start.day, street.data)
+
+
+# Prepare "merged quarter" dataset ----------------------------------------
+
+combined.quarters <- ddply(quarter, .(quarter, week.id), summarize,  )
+
+# quarter <- ddply( street.data, .(quarter, startday.index), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
+?numcolwise 
 
