@@ -93,9 +93,42 @@ save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to di
 rm(census, quarter.by.week, start.day, street.data)
 
 
+
+
+
+
+
+
+
 # Prepare "merged quarter" dataset ----------------------------------------
 
-combined.quarters <- ddply(quarter, .(quarter, week.id), summarize,  )
+combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 |
+                                           quarter$quarterID == 4 |
+                                           quarter$quarterID == 5 |
+                                           quarter$quarterID == 9 |
+                                           quarter$quarterID == 12 |
+                                           quarter$quarterID == 13),],
+                           .(week.id), summarize,
+                           sick.total.week = sum(sick.total.week),
+                           dead.total.week = sum(dead.total.week),
+                           pop1855 = sum(pop1855),
+                           cum.sick = sum(cum.sick),
+                           S = sum(S),
+                           R = sum(R))
+combined.quarters$quarter <- "Combined"
+combined.quarters$quarterID <- 7
+combined.quarters <- combined.quarters[, c(8,1,2,3,4,9,5,6,7)]
+
+combined <- rbind(quarter[which(quarter$quarterID==1 |
+                                  quarter$quarterID==3 |
+                                  quarter$quarterID==6 |
+                                  quarter$quarterID==7 |
+                                  quarter$quarterID==8 |
+                                  quarter$quarterID==10 |
+                                  quarter$quarterID==11), ],
+                  combined.quarters)
+
+save(combined, file = "Rdata\\quarter_combined.Rdata")
 
 # quarter <- ddply( street.data, .(quarter, startday.index), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
 ?numcolwise 
