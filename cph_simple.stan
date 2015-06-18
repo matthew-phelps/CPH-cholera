@@ -1,3 +1,5 @@
+// # model that only incorporates the beta term - no alpha yet
+
 data {
 	int<lower=0> Nquarter; 	//# number of quarters (=13)
 	int<lower=0> n;			//# no. of observations (=208)

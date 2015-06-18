@@ -4,12 +4,11 @@
 
 # Intro -------------------------------------------------------------------
 
-rm(list = ls())
 graphics.off()
 mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
 pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH"
 setwd(pc)
-
+rm(list = ls())
 library(MASS)
 library(deSolve)
 library(xlsx)
@@ -22,9 +21,8 @@ library(rstan)
 
 
 
-# Practice 2 --------------------------------------------------------------
-rm(list = ls())
-graphics.off()
+
+# ALL Quaters--------------------------------------------------------------
 
 load(file = "data\\Rdata\\quarter_eng.Rdata")
 
@@ -41,10 +39,10 @@ R_t <- matrix(0, 16, 13)
 N_t <- matrix(0, 16, 13)
 for (i in 1:13){
   for( j in 1:16){
-  S_t[j,i] <- as.matrix(quarter$S[which(quarter$quarterID==i)])[j]
-  I_t[j,i] <- as.matrix(quarter$sick.total.week[which(quarter$quarterID==i)])[j]
-  R_t[j,i] <- as.matrix(quarter$R[which(quarter$quarterID==i)])[j]
-  N_t[j,i] <- as.matrix(quarter$pop1855[which(quarter$quarterID==i)])[j]
+    S_t[j,i] <- as.matrix(quarter$S[which(quarter$quarterID==i)])[j]
+    I_t[j,i] <- as.matrix(quarter$sick.total.week[which(quarter$quarterID==i)])[j]
+    R_t[j,i] <- as.matrix(quarter$R[which(quarter$quarterID==i)])[j]
+    N_t[j,i] <- as.matrix(quarter$pop1855[which(quarter$quarterID==i)])[j]
   }
 }
 
@@ -80,8 +78,57 @@ traceplot(SIR.fit1, pars="beta", inc_warmup = F) # check traceplots
 
 
 
+# COMBINED quarters -------------------------------------------------------
+rm(list = ls())
+load(file = "data\\Rdata\\quarter_combined.Rdata")
 
 
+### Prepare data to send to Stan
+Nsteps <- 16
+quarterID <- as.numeric(combined$quarterID)
+n <- as.numeric(length(quarterID))
+Nquarter <- length(table(quarterID))
+
+S_t <- matrix(0, 16, Nquarter)
+I_t <- matrix(0, 16, Nquarter)
+R_t <- matrix(0, 16, Nquarter)
+N_t <- matrix(0, 16, Nquarter)
+for (k in 1:Nquarter){
+  for (i in unique(combined$quarterID)){
+    for( j in 1:16){
+      S_t[j,k] <- as.matrix(combined$S[which(combined$quarterID==i)])[j]
+      I_t[j,k] <- as.matrix(combined$sick.total.week[which(combined$quarterID==i)])[j]
+      R_t[j,k] <- as.matrix(combined$R[which(combined$quarterID==i)])[j]
+      N_t[j,k] <- as.matrix(combined$pop1855[which(combined$quarterID==i)])[j]
+    }
+  }
+}
+
+dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
+                 n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
+# rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
+#    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
+
+source("http://mc-stan.org/rstan/stan.R")
+stanDso = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
+stanDso = stan_model(file = "Rcodes\\cph_beta.stan" ) # compile model code
+
+SIR.fit1<- sampling( object = stanDso,
+                     data = dataList,
+                     iter = 25000, chains = 3)
+
+print(SIR.fit1)
+
+
+fit.extract <- extract(SIR.fit1, permuted = T)
+beta <- fit.extract$beta
+for (i in 1:13){
+  mean.beta[i] <- median(beta[,i])
+}
+plot(mean.beta)
+summary(beta[,2])
+histogram(beta[,11])
+traceplot(SIR.fit1, pars="beta", inc_warmup = F) # check traceplots
 
 
 
