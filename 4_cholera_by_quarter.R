@@ -116,7 +116,7 @@ combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 |
                            S = sum(S),
                            R = sum(R))
 combined.quarters$quarter <- "Combined"
-combined.quarters$quarterID <- 7
+combined.quarters$quarterID <- 99
 combined.quarters <- combined.quarters[, c(8,1,2,3,4,9,5,6,7)]
 
 combined <- rbind(quarter[which(quarter$quarterID==1 |
@@ -129,6 +129,10 @@ combined <- rbind(quarter[which(quarter$quarterID==1 |
                   combined.quarters)
 
 save(combined, file = "Rdata\\quarter_combined.Rdata")
+
+## give a unique id from 1:8 
+x1 <- with(combined, paste(quarterID))
+combined <- within(combined, quarterID <- match(x1, unique(x1)))
 
 # quarter <- ddply( street.data, .(quarter, startday.index), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
 ?numcolwise 
