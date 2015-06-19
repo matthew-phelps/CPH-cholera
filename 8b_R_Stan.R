@@ -22,61 +22,6 @@ library(rstan)
 
 
 
-# ALL Quaters--------------------------------------------------------------
-
-load(file = "data\\Rdata\\quarter_eng.Rdata")
-
-
-### Prepare data to send to Stan
-Nsteps <- 16
-quarterID <- as.numeric(quarter$quarterID)
-n <- as.numeric(length(quarterID))
-Nquarter <- max(quarterID)
-
-S_t <- matrix(0, 16, 13)
-I_t <- matrix(0, 16, 13)
-R_t <- matrix(0, 16, 13)
-N_t <- matrix(0, 16, 13)
-for (i in 1:13){
-  for( j in 1:16){
-    S_t[j,i] <- as.matrix(quarter$S[which(quarter$quarterID==i)])[j]
-    I_t[j,i] <- as.matrix(quarter$sick.total.week[which(quarter$quarterID==i)])[j]
-    R_t[j,i] <- as.matrix(quarter$R[which(quarter$quarterID==i)])[j]
-    N_t[j,i] <- as.matrix(quarter$pop1855[which(quarter$quarterID==i)])[j]
-  }
-}
-
-
-dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
-                 n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
-rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
-   n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
-
-source("http://mc-stan.org/rstan/stan.R")
-stanDso = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
-
-SIR.fit1<- sampling( object = stanDso,
-                     data = dataList,
-                     iter = 5000, chains = 1)
-
-print(SIR.fit1)
-
-
-fit.extract <- extract(SIR.fit1, permuted = T)
-beta <- fit.extract$beta
-for (i in 1:13){
-  mean.beta[i] <- median(beta[,i])
-}
-plot(mean.beta)
-summary(beta[,2])
-histogram(beta[,11])
-traceplot(SIR.fit1, pars="beta", inc_warmup = F) # check traceplots
-
-
-
-
-
-
 
 # COMBINED quarters -------------------------------------------------------
 rm(list = ls())
@@ -93,16 +38,18 @@ S_t <- matrix(0, 16, Nquarter)
 I_t <- matrix(0, 16, Nquarter)
 R_t <- matrix(0, 16, Nquarter)
 N_t <- matrix(0, 16, Nquarter)
-for (k in 1:Nquarter){
-  for (i in unique(combined$quarterID)){
-    for( j in 1:16){
-      S_t[j,k] <- as.matrix(combined$S[which(combined$quarterID==i)])[j]
-      I_t[j,k] <- as.matrix(combined$sick.total.week[which(combined$quarterID==i)])[j]
-      R_t[j,k] <- as.matrix(combined$R[which(combined$quarterID==i)])[j]
-      N_t[j,k] <- as.matrix(combined$pop1855[which(combined$quarterID==i)])[j]
-    }
+for (i in 1:Nquarter){
+  for( j in 1:16){
+    S_t[j,i] <- (combined$S[which(combined$quarterID==i)])[j]
+    I_t[j,i] <- (combined$sick.total.week[which(combined$quarterID==i)])[j]
+    R_t[j,i] <- (combined$R[which(combined$quarterID==i)])[j]
+    N_t[j,i] <- (combined$pop1855[which(combined$quarterID==i)])[j]
   }
 }
+
+
+
+(combined$sick.total.week[which(combined$quarterID==7)])[j]
 
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
                  n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
@@ -110,16 +57,25 @@ dataList <- list(Nquarter=Nquarter, quarterID=quarterID,
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
 source("http://mc-stan.org/rstan/stan.R")
-stanDso = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
+stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
 stanDso = stan_model(file = "Rcodes\\cph_beta.stan" ) # compile model code
 
 SIR.fit1<- sampling( object = stanDso,
                      data = dataList,
                      iter = 25000, chains = 3)
 
-print(SIR.fit1)
+
+SIR.fit2<- sampling( object = stanDso.2,
+                     data = dataList,
+                     iter = 25000, chains = 3)
 
 
+
+
+print(SIR.fit1@model_pars[2])
+print(SIR.fit2)
+
+str(SIR.fit2)
 fit.extract <- extract(SIR.fit1, permuted = T)
 beta <- fit.extract$beta
 for (i in 1:13){
@@ -131,35 +87,92 @@ histogram(beta[,11])
 traceplot(SIR.fit1, pars="beta", inc_warmup = F) # check traceplots
 
 
-
-
-
-S_t/N * (I_t +0.1)
-
-sigmaB <- runif(3000000, 1, 2.5)
-tauB <- 1/sigmaB^2
-beta0 <- rnorm(3000000, 0, 2)
-log.beta <- rnorm(3000000, beta0, tauB)
-beta <- exp(log.beta)
-
-
-min(tauB)
-max(tauB)
-min(log.beta)
-max(log.beta)
-
-max(beta)
-mean(beta)
-x<-which.max(beta)
-sigmaB[x]
-
-beta0[x]
-exp(log(10))
-
-
-
-
-
+# 
+# 
+# # ALL Quaters--------------------------------------------------------------
+# 
+# load(file = "data\\Rdata\\quarter_eng.Rdata")
+# 
+# 
+# ### Prepare data to send to Stan
+# Nsteps <- 16
+# quarterID <- as.numeric(quarter$quarterID)
+# n <- as.numeric(length(quarterID))
+# Nquarter <- max(quarterID)
+# 
+# S_t <- matrix(0, 16, 13)
+# I_t <- matrix(0, 16, 13)
+# R_t <- matrix(0, 16, 13)
+# N_t <- matrix(0, 16, 13)
+# for (i in 1:13){
+#   for( j in 1:16){
+#     S_t[j,i] <- as.matrix(quarter$S[which(quarter$quarterID==i)])[j]
+#     I_t[j,i] <- as.matrix(quarter$sick.total.week[which(quarter$quarterID==i)])[j]
+#     R_t[j,i] <- as.matrix(quarter$R[which(quarter$quarterID==i)])[j]
+#     N_t[j,i] <- as.matrix(quarter$pop1855[which(quarter$quarterID==i)])[j]
+#   }
+# }
+# 
+# 
+# dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
+#                  n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
+# rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
+#    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
+# 
+# source("http://mc-stan.org/rstan/stan.R")
+# stanDso = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
+# 
+# SIR.fit1<- sampling( object = stanDso,
+#                      data = dataList,
+#                      iter = 5000, chains = 1)
+# 
+# print(SIR.fit1)
+# 
+# 
+# fit.extract <- extract(SIR.fit1, permuted = T)
+# beta <- fit.extract$beta
+# for (i in 1:13){
+#   mean.beta[i] <- median(beta[,i])
+# }
+# plot(mean.beta)
+# summary(beta[,2])
+# histogram(beta[,11])
+# traceplot(SIR.fit1, pars="beta", inc_warmup = F) # check traceplots
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# S_t/N * (I_t +0.1)
+# 
+# sigmaB <- runif(3000000, 1, 2.5)
+# tauB <- 1/sigmaB^2
+# beta0 <- rnorm(3000000, 0, 2)
+# log.beta <- rnorm(3000000, beta0, tauB)
+# beta <- exp(log.beta)
+# 
+# 
+# min(tauB)
+# max(tauB)
+# min(log.beta)
+# max(log.beta)
+# 
+# max(beta)
+# mean(beta)
+# x<-which.max(beta)
+# sigmaB[x]
+# 
+# beta0[x]
+# exp(log(10))
+# 
+# 
+# 
+# 
+# 
 
 
 
