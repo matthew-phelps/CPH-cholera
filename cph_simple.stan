@@ -1,5 +1,8 @@
 // # model that only incorporates the beta term - no alpha yet
 
+
+
+
 data {
 	int<lower=0> Nquarter; 	//# number of quarters (=13)
 	int<lower=0> n;			//# no. of observations (=208)
@@ -11,16 +14,13 @@ data {
 }
 
 parameters {
-	real <lower=0, upper=1.5> sigmaB;
-	real beta0;
 	real <lower=0> log_beta;
 }
 
+
 transformed parameters {
-	real <lower=0> tauB;		//# all transformed params need to be defined 1st in this
 	real <lower=0> beta;
 	real <lower=0> lambda[Nsteps, Nquarter];
-	tauB <- 1/square(sigmaB);
 	beta <- exp(log_beta);
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps){
@@ -30,9 +30,7 @@ transformed parameters {
 }
 
 model {
-	sigmaB ~ uniform(0, 1.5);
-	beta0 ~ normal(0, 100);
-	log_beta ~ normal(beta0, tauB);
+	log_beta ~ normal(0, 1000);
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps-1){
 			I_ti[t+1, i] ~ poisson(lambda[t, i]);

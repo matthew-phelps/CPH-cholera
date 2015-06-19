@@ -67,12 +67,12 @@ stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
 
 SIR.fit1<- sampling( object = stanDso,
                      data = dataList,
-                     iter = 500, chains = 3)
+                     iter = 50000, chains = 3)
 
 
 SIR.fit2<- sampling( object = stanDso.2,
                      data = dataList,
-                     iter = 5000, chains = 3)
+                     iter = 50000, chains = 3)
 
 
 
