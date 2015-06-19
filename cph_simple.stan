@@ -29,6 +29,8 @@ transformed parameters {
 	}
 }
 
+
+
 model {
 	log_beta ~ normal(0, 1000);
 	for (i in 1:Nquarter){
