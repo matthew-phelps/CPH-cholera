@@ -1,6 +1,7 @@
-//# In this model we only allowed for two unique transmission parameters; one for internal transmission (β) and
-//# one for external transmission (i.e.   between areas, α).   We assigned non-informative normal priors centered
-//# at zero (N(0,   1 0·001 )) for natural logarithm of both of these parameters.
+//# To relax Model 1.1, we allowed for each location to have an independent internal transmission coefficient (βi)
+//# and only allowed for one external transmission coecient shared by all locations (α). The natural logarithm
+//# of all transmission coecients here were assigned independent N(0,   1/0.001 ) priors.
+
 
 
 data {
@@ -27,7 +28,7 @@ transformed parameters {
 	alpha <- exp(log_alpha);
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps){
-			lambda[t, i] <- (S_ti[t,i] / N_i[t,i]) * (beta*I_ti[t,i] + alpha*I_tj[t,i]  ) ;	
+			lambda[t, i] <- (S_ti[t,i] / N_i[t,i]) * (beta[i]*I_ti[t,i] + sum(alpha[i]*I_tj[t,i])  ) ;	
 		}
 	}
 }

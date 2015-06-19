@@ -57,13 +57,15 @@ for (j in 1:Nquarter){
 
 
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
-                 n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps)
+                 n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_tj=I_tj)
 # rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
 source("http://mc-stan.org/rstan/stan.R")
 stanDso = stan_model(file = "Rcodes\\cph_beta.stan" ) # compile model code
 stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
+stanDso.3 = stan_model(file = "Rcodes\\cph_simple_beta_alpha.stan" )
+stanDso.4 = stan_model(file = "Rcodes\\cph_beta_alpha_2.stan" )
 
 SIR.fit1<- sampling( object = stanDso,
                      data = dataList,
@@ -74,12 +76,15 @@ SIR.fit2<- sampling( object = stanDso.2,
                      data = dataList,
                      iter = 50000, chains = 3)
 
-
+SIR.fit3<- sampling( object = stanDso.3,
+                     data = dataList,
+                     iter = 50000, chains = 3)
 
 
 
 print(SIR.fit1)
 print(SIR.fit2)
+print(SIR.fit3)
 
 str(SIR.fit2)
 fit.extract <- extract(SIR.fit1, permuted = T)
