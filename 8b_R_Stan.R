@@ -34,45 +34,51 @@ quarterID <- as.numeric(combined$quarterID)
 n <- as.numeric(length(quarterID))
 Nquarter <- length(table(quarterID))
 
-S_t <- matrix(0, 16, Nquarter)
-I_t <- matrix(0, 16, Nquarter)
-R_t <- matrix(0, 16, Nquarter)
-N_t <- matrix(0, 16, Nquarter)
+S_ti <- matrix(0, Nsteps, Nquarter)
+I_ti <- matrix(0, Nsteps, Nquarter)
+R_t <- matrix(0, Nsteps, Nquarter)
+N_i <- matrix(0, Nsteps, Nquarter)
 for (i in 1:Nquarter){
-  for( j in 1:16){
-    S_t[j,i] <- (combined$S[which(combined$quarterID==i)])[j]
-    I_t[j,i] <- (combined$sick.total.week[which(combined$quarterID==i)])[j]
-    R_t[j,i] <- (combined$R[which(combined$quarterID==i)])[j]
-    N_t[j,i] <- (combined$pop1855[which(combined$quarterID==i)])[j]
+  for( t in 1:Nsteps){
+    S_ti[t,i] <- (combined$S[which(combined$quarterID==i)])[t]
+    I_ti[t,i] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
+    R_t[t,i] <- (combined$R[which(combined$quarterID==i)])[t]
+    N_i[t,i] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+  }
+}
+
+# calcualte the number of infected people in all OTHER quarters EXCEPT quarter "i"
+I_tj <- matrix(0, nrow = Nsteps, ncol = Nquarter)
+for (j in 1:Nquarter){
+  for (t in 1:Nsteps){
+    I_tj[t,j] <- sum(I_t[t,]) - I_t[t,j]
   }
 }
 
 
-
-(combined$sick.total.week[which(combined$quarterID==7)])[j]
-
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
-                 n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
+                 n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps)
 # rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
 source("http://mc-stan.org/rstan/stan.R")
-stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
 stanDso = stan_model(file = "Rcodes\\cph_beta.stan" ) # compile model code
+stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
 
 SIR.fit1<- sampling( object = stanDso,
                      data = dataList,
-                     iter = 25000, chains = 3)
+                     iter = 500, chains = 3)
 
 
 SIR.fit2<- sampling( object = stanDso.2,
                      data = dataList,
-                     iter = 25000, chains = 3)
+                     iter = 5000, chains = 3)
 
 
 
 
-print(SIR.fit1@model_pars[2])
+
+print(SIR.fit1)
 print(SIR.fit2)
 
 str(SIR.fit2)
