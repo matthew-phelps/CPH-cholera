@@ -51,21 +51,29 @@ for (i in 1:Nquarter){
 I_tj <- matrix(0, nrow = Nsteps, ncol = Nquarter)
 for (j in 1:Nquarter){
   for (t in 1:Nsteps){
-    I_tj[t,j] <- sum(I_t[t,]) - I_t[t,j]
+    I_tj[t,j] <- sum(I_ti[t,]) - I_ti[t,j]
+  }
+}
+
+frac_suseptible_it <- matrix(0, nrow = Nsteps, ncol = Nquarter)
+for (i in 1:Nquarter){
+  for (t in 1:Nsteps){
+    frac_suseptible_it[t,i] <- S_ti[t,i] / N_i[t,i]
   }
 }
 
 
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
-                 n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_tj=I_tj)
+                 frac_suseptible_it = frac_suseptible_it, n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_tj=I_tj)
 # rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
 source("http://mc-stan.org/rstan/stan.R")
 stanDso = stan_model(file = "Rcodes\\cph_beta.stan" ) # compile model code
 stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
-stanDso.3 = stan_model(file = "Rcodes\\cph_simple_beta_alpha.stan" )
-stanDso.4 = stan_model(file = "Rcodes\\cph_beta_alpha_2.stan" )
+stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
+stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
+stanDso.1.3 = stan_model(file = "Rcodes\\cph_model1_3.stan" )
 
 SIR.fit1<- sampling( object = stanDso,
                      data = dataList,
@@ -76,15 +84,19 @@ SIR.fit2<- sampling( object = stanDso.2,
                      data = dataList,
                      iter = 50000, chains = 3)
 
-SIR.fit3<- sampling( object = stanDso.3,
+SIR.fit1.1<- sampling( object = stanDso.1.1,
+                     data = dataList,
+                     iter = 50000, chains = 3)
+
+SIR.fit1.2<- sampling( object = stanDso.1.2,
                      data = dataList,
                      iter = 50000, chains = 3)
 
 
-
-print(SIR.fit1)
-print(SIR.fit2)
+print(SIR.fit1.1)
+print(SIR.fit1.2)
 print(SIR.fit3)
+print(SIR.fit4)
 
 str(SIR.fit2)
 fit.extract <- extract(SIR.fit1, permuted = T)

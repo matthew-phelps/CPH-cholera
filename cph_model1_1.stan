@@ -7,11 +7,9 @@ data {
 	int<lower=0> Nquarter; 	//# number of quarters (=13)
 	int<lower=0> n;			//# no. of observations (=208)
 	int<lower=0> Nsteps;	//# no. of time steps (=16)
-	real<lower=0> S_ti[Nsteps, Nquarter];		//# no. susceptible at each observation
 	int<lower=0> I_ti[Nsteps, Nquarter];		//# no. infected at each observation
 	int<lower=0> I_tj[Nsteps, Nquarter];
-	real<lower=0> R_t[Nsteps, Nquarter];		//# no. recovered at each observation
-	real<lower=0> N_i[Nsteps, Nquarter];		//# total popsize
+	real<lower=0> frac_suseptible_it[Nsteps, Nquarter];
 }
 
 parameters {
@@ -27,7 +25,7 @@ transformed parameters {
 	alpha <- exp(log_alpha);
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps){
-			lambda[t, i] <- (S_ti[t,i] / N_i[t,i]) * (beta*I_ti[t,i] + alpha*I_tj[t,i]  ) ;	
+			lambda[t, i] <- frac_suseptible_it[t,i] * (beta*I_ti[t,i] + alpha*I_tj[t,i]) ;	
 		}
 	}
 }
