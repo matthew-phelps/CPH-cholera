@@ -89,19 +89,6 @@ results
 
 
 
-
-
-#  overview - GLM for entire dataset: Infections at t+1 are predicted by I in 
-#  all quarters at current t
-quarter.fit.1<- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Rosenborg  + Oester + offset(logS), family = poisson, data = quarter.glm)
-summary(quarter.fit.1)
-
-
-
-
-
-
-
 # Diagnostics -------------------------------------------------------------
 j <-list()
 k <- list()
