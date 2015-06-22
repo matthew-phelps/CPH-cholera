@@ -100,9 +100,9 @@ rm(census, quarter.by.week, start.day, street.data)
 
 
 
-# Prepare "merged quarter" dataset ----------------------------------------
+# Prepare 1 grouping of of combined quarter NOT based on topography ----------------------------------------
 
-combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 |
+combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 | # this are quarters to be combined
                                            quarter$quarterID == 4 |
                                            quarter$quarterID == 5 |
                                            quarter$quarterID == 9 |
@@ -127,14 +127,54 @@ combined <- rbind(quarter[which(quarter$quarterID==1 |
                                   quarter$quarterID==10 |
                                   quarter$quarterID==11), ],
                   combined.quarters)
+
+# renumber Quarter ID so it's sequential from 1:8
 x1 <- with(combined, paste(quarterID))
 combined <- within(combined, quarterID <- match(x1, unique(x1)))
 rm(x1)
 save(combined, file = "Rdata\\quarter_combined.Rdata")
 
-## give a unique id from 1:8 
 
 
-# quarter <- ddply( street.data, .(quarter, startday.index), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
-?numcolwise 
+# Combine quarters based on Topography ------------------------------------
+# Provides greater discrimination between high and lower areas
+topo.combined.quarters.1 <- ddply(quarter[which(quarter$quarterID == 2 |
+                                                  quarter$quarterID == 9 |
+                                                  quarter$quarterID == 12 |
+                                                  quarter$quarterID == 13),],
+                                  .(week.id), summarize,
+                                  sick.total.week = sum(sick.total.week),
+                                  dead.total.week = sum(dead.total.week),
+                                  pop1855 = sum(pop1855),
+                                  cum.sick = sum(cum.sick),
+                                  S = sum(S),
+                                  R = sum(R))
+topo.combined.quarters.2 <- ddply(quarter[which(quarter$quarterID == 5 |
+                                                  quarter$quarterID == 4),],
+                                                  .(week.id), summarize,
+                                                sick.total.week = sum(sick.total.week),
+                                                dead.total.week = sum(dead.total.week),
+                                                pop1855 = sum(pop1855),
+                                                cum.sick = sum(cum.sick),
+                                                S = sum(S),
+                                                R = sum(R))
+topo.combined.quarters.1$quarter <- "combined.lower"
+topo.combined.quarters.2$quarter <- "combined.upper"
+topo.combined.quarters.1$quarterID <- 99
+topo.combined.quarters.2$quarterID <- 88
+topo.combined.quarters.1 <- topo.combined.quarters.1[, c(8,1,2,3,4,9,5,6,7)]
 
+topo.combined <- rbind(quarter[which(quarter$quarterID==1 |
+                                       quarter$quarterID==3 |
+                                       
+                                       
+                                       quarter$quarterID==6 |
+                                       quarter$quarterID==7 |
+                                       quarter$quarterID==8 |
+                                       quarter$quarterID==10 |
+                                       quarter$quarterID==11), ],
+                       topo.combined.quarters.1,topo.combined.quarters.2 )
+x1 <- with(topo.combined, paste(quarterID))
+topo.combined <- within(topo.combined, quarterID <- match(x1, unique(x1)))
+rm(x1)
+save(combined, file = "Rdata\\quarter_combined_topography.Rdata")
