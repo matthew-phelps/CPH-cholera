@@ -21,7 +21,7 @@ load("Rdata\\quarter_combined_glm.Rdata")
 quarter.glm <- quarter.merged.glm
 rm(quarter.merged.glm)
 quarter.glm$R <- quarter.glm$cum.sick <- NULL
-
+quarter.glm$logS <- log(quarter.glm$S)
 
 # Models 1.1 - no interaction ------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ results
 # Model 1.2 with interaction ----------------------------------------------
 
 
-quarter.glm$logS <- log(quarter.glm$S)
+
 fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester+ St.Annae.Vester ) + offset(logS),
            data=quarter.glm, family=poisson())
 summary(fit)
