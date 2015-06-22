@@ -20,9 +20,7 @@ library(maptools)
 library(RColorBrewer)
 library(ggmap)
 
-########################
-### data management ####--------------------------------------------------------------
-########################
+
 quarter.sheet <- read.xlsx2(file = "quarter.xlsx",
                             sheetIndex = 1, colClasses = c("character", rep("numeric", 8)))
 quarter.sheet <- rename(quarter.sheet, replace = c("sick.total.week" = "I"))
