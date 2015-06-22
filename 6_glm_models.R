@@ -23,18 +23,8 @@ rm(quarter.merged.glm)
 quarter.glm$R <- quarter.glm$cum.sick <- NULL
 
 
-# Models ------------------------------------------------------------------
-quarter.glm$logS <- log(quarter.glm$S)
-fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester+ St.Annae.Vester ) + offset(logS),
-           data=quarter.glm, family=poisson())
-summary(fit)
-fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
-                      out.header = F, out = "fit_combined.htm")
-# Thomas' code using function I don't have {
-# output <- publish(fit)
-# output <- output[,-3]
-# output
-# # }
+# Models 1.1 - no interaction ------------------------------------------------------------------
+
 quarter.list <- split(quarter.glm, quarter.glm$quarter)
 results <- lapply(quarter.list,function(d){
   fitquarter <- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester + St.Annae.Vester + offset(logS),
@@ -43,6 +33,28 @@ results <- lapply(quarter.list,function(d){
 })
 names(results)
 results
+
+
+
+
+# Model 1.2 with interaction ----------------------------------------------
+
+
+quarter.glm$logS <- log(quarter.glm$S)
+fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester+ St.Annae.Vester ) + offset(logS),
+           data=quarter.glm, family=poisson())
+summary(fit)
+fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
+                      out.header = F, out = "fit_combined.htm")
+
+
+
+
+# Thomas' code using function I don't have {
+# output <- publish(fit)
+# output <- output[,-3]
+# output
+# # }
 
 # 
 # 
@@ -65,39 +77,6 @@ summary(quarter.fit.1)
 
 
 
-#  13 models - one for each quarter
-#  For each model the outcome (I_t+1), is predicted by I in all other quarters
-glm.quarter.list <- list()
-x <- list()
-for (i in 1:8){
-  x[[i]] <- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Rosenborg  + St.Annae.Vester + St.Annae.Oester + Oester + offset(log(quarter.glm$S)), 
-           family = poisson, data = quarter.glm,
-           subset = quarterID==i,
-           model = F)
-  glm.quarter.list[i] <- list(x)
-}
-
-
-
-
-
-
-# Model outputs -----------------------------------------------------------
-
-# Overview model
-summary(quarter.1)
-
-# creat list of summaries for easy viewing
-summary.list <- list()
-for (i in 1:13){
-  x <- summary(glm.quarter.list[[i]])
-  summary.list[i] <- list(x)
-}
-
-summary.list
-
-
-
 
 # Diagnostics -------------------------------------------------------------
 j <-list()
@@ -110,10 +89,3 @@ for (i in 1:13){
 for (i in 1:13){
   influencePlot(glm.list[[i]])
 }
-
-
-
-# glmnet models -----------------------------------------------------------
-x <- quarter.glm [,8:20]
-y <- quarter.glm[,3]
-glmnet(x, y, family = "poisson", offset = log(quarter.glm$S))
