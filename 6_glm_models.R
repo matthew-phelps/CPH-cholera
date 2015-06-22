@@ -18,16 +18,19 @@ library(plyr)
 library(stargazer) # for nice output for html etc
 
 load("Rdata\\quarter_combined_glm.Rdata")
+
 quarter.glm <- quarter.merged.glm
 rm(quarter.merged.glm)
 quarter.glm$R <- quarter.glm$cum.sick <- NULL
 quarter.glm$logS <- log(quarter.glm$S)
 
-# Models 1.1 - no interaction ------------------------------------------------------------------
-
+# Models 1.1a - no interaction - no topographical disction between ------------------------------------------------------------------
+# combined quarters 
 quarter.list <- split(quarter.glm, quarter.glm$quarter)
 results <- lapply(quarter.list,function(d){
-  fitquarter <- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester + St.Annae.Vester + offset(logS),
+  fitquarter <- glm(I.t ~ Christianshavn + combinedquarter + Kjoebmager + 
+                      Nyboder + Oester + Rosenborg + St.Annae.Oester + St.Annae.Vester +
+                      offset(logS),
                     data=d,family=poisson())
   summary(fitquarter)
 })
@@ -38,18 +41,11 @@ results
 
 
 # Model 1.2 with interaction ----------------------------------------------
-
-
-
 fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester+ St.Annae.Vester ) + offset(logS),
            data=quarter.glm, family=poisson())
 summary(fit)
 fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
                       out.header = F, out = "fit_combined.htm")
-
-
-
-
 # Thomas' code using function I don't have {
 # output <- publish(fit)
 # output <- output[,-3]
@@ -65,6 +61,34 @@ fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
 #     publish(fitquarter)
 # }))
 # uniresults
+
+
+
+
+
+# Model 1.1 b Using quarters split by topography --------------------------
+load("Rdata\\quarter_topo_combined_glm.Rdata")
+quarter.glm <- topo.combined
+rm(topo.combined)
+quarter.glm$R <- quarter.glm$cum.sick <- NULL
+quarter.glm$logS <- log(quarter.glm$S)
+
+quarter.list <- split(quarter.glm, quarter.glm$quarter)
+results <- lapply(quarter.list,function(d){
+  fitquarter <- glm(I.t ~ Christianshavn + combined.lower + combined.upper + 
+                      Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester +
+                      St.Annae.Vester + offset(logS),
+                    data=d, family=poisson())
+  summary(fitquarter)
+})
+names(results)
+results
+
+
+
+
+
+
 
 
 #  overview - GLM for entire dataset: Infections at t+1 are predicted by I in 

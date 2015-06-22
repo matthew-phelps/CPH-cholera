@@ -177,4 +177,4 @@ topo.combined <- rbind(quarter[which(quarter$quarterID==1 |
 x1 <- with(topo.combined, paste(quarterID))
 topo.combined <- within(topo.combined, quarterID <- match(x1, unique(x1)))
 rm(x1)
-save(combined, file = "Rdata\\quarter_combined_topography.Rdata")
+save(topo.combined, file = "Rdata\\quarter_combined_topography.Rdata")
