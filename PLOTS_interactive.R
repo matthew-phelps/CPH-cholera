@@ -12,8 +12,21 @@ pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
 setwd(pc)
 rm(pc)
 library(rCharts)
+library(reshape)
 
 
+
+# Total outbreak ----------------------------------------------------------
+
+outbreak <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
+reshape(outbreak)
+
+m0 <- nPlot(x = 'day.index', y = c('cholera.cases', 'cholera.deaths'), type='lineChart',  data = outbreak)
+m0$yAxis(axisLabel = "Number infected", width = 40)
+m0$xAxis(axisLabel = "Day Index", width = 90)
+m0$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
+m0$set(title = "Un-normalized weekly incidence")
+m0
 
 
 # Un-normalized incident cases per week -----------------------------------
