@@ -26,9 +26,17 @@ m1$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/
 m1$set(title = "Un-normalized weekly incidence")
 m1
 
-
-p1 <- rPlot(sick.total.week~startday.index | quarter, color = 'quarter', data = quarter, type = 'point')
+quarter$quarter <- as.factor(quarter$quarter)
+quarter$sick_total_week <- as.numeric(quarter$sick.total.week) # polycharts cannot take names with "." in them
+quarter$startday_index <- quarter$startday.index
+p1 <- rPlot(sick_total_week~startday_index | quarter, color = 'quarter', 
+            data = quarter, type = 'line')
 p1
+
+
+m1 <- mPlot(x = "startday_index", y = "sick_total_week", color = "quarter", type = 'line', data = quarter)
+m1
+
 
 # NORMALIZED weekly incidence ---------------------------------------------
 
@@ -39,11 +47,9 @@ m2$yAxis(axisLabel = "Number infected", width = 40)
 m2$xAxis(axisLabel = "Day Index", width = 90)
 m2$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
 m2$set(title = "Normalized weekly incidence")
-m2$setLib(lib="C:\\Users\\wrz741\\Google Drive\\Scripts\\rCharts\\inst\\libraries\\widgets\\nvd3")
-m2$params$facet="quarter"
-m2$templates$script = system.file(
-  "C:\\Users\\wrz741\\Google Drive\\Scripts\\rCharts\\inst\\libraries\\nvd3\\layouts\\nvd3FacetPlot.html",
-  package = "rCharts")
+# m2$params$facet="quarter"
+# m2$templates$script = system.file("/libraries/nvd3/layouts/nvd3FacetPlot.html",
+#   package = "rCharts")
 m2
 
 lattice

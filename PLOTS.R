@@ -13,6 +13,8 @@ setwd(pc)
 library (ggplot2)
 library (reshape) # for renaming variables
 library(plyr)
+library(rCharts)
+
 
 
 # Quarter - Incident cases per week ---------------------------------------
@@ -27,8 +29,6 @@ incident.cases <- ggplot (quarter, aes( x = startday.index, y = sick.total.week,
   ggtitle ("Incident cases per week by quarter")
 
 incident.cases
-
-
 
 # Quarter - Normalized incidence per week ---------------------------------
 load("Rdata\\Quarter - normailzed incidence per week.Rdata")
