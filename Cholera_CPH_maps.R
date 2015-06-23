@@ -11,8 +11,6 @@ pc <- 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\'
 
 setwd(pc)
 Sys.setenv(JAVA_HOME='C:/Program Files/Java/jre1.8.0_45') 
-
-library (xlsx) # reading excel files
 library(foreign)
 library(sp)
 library(reshape)
@@ -49,7 +47,7 @@ mapdf <- mapdf[ order(mapdf$order),]
 
 
 
-#################
+################
 ### Plotting ###----------------------------------------------------------------
 ################
 
