@@ -13,7 +13,6 @@ data {
 	real<lower=0> frac_suseptible_it[Nsteps, Nquarter];
 }
 
-
 parameters {
 	real <lower=0> log_beta[Nquarter];
 	real <lower=0> log_alpha;

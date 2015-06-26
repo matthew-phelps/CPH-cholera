@@ -21,12 +21,13 @@ library(reshape)
 outbreak <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
 reshape(outbreak)
 
-m0 <- nPlot(x = 'day.index', y = c('cholera.cases', 'cholera.deaths'), type='lineChart',  data = outbreak)
-m0$yAxis(axisLabel = "Number infected", width = 40)
-m0$xAxis(axisLabel = "Day Index", width = 90)
-m0$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
-m0$set(title = "Un-normalized weekly incidence")
-m0
+n0 <- nPlot(cholera.cases~day.index,type='lineChart',  data = outbreak)
+n0$yAxis(axisLabel = "Number infected", width = 40)
+n0$xAxis(axisLabel = "Day Index", width = 90)
+n0$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
+n0$set(title = "Citywide daily incidence")
+n0$params$height = 500
+n0
 
 
 # Un-normalized incident cases per week -----------------------------------
@@ -56,13 +57,11 @@ m1
 load("Rdata\\Quarter - normailzed incidence per week.Rdata")
 quarter.by.week$normal.incidence <- round(quarter.by.week$normal.incidence, digits = 1)
 m2 <- nPlot(normal.incidence~startday.index, group ='quarter', type='lineChart',  data = quarter.by.week)
-m2$yAxis(axisLabel = "Number infected", width = 40)
+m2$yAxis(axisLabel = "Number infected per 100 people", width = 40)
 m2$xAxis(axisLabel = "Day Index", width = 90)
 m2$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
 m2$set(title = "Normalized weekly incidence")
-# m2$params$facet="quarter"
-# m2$templates$script = system.file("/libraries/nvd3/layouts/nvd3FacetPlot.html",
-#   package = "rCharts")
+m2$params$height = 500
 m2
 
 lattice

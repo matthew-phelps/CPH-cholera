@@ -3,6 +3,7 @@
 //# at zero (N(0,   1 0·001 )) for natural logarithm of both of these parameters.
 
 
+
 data {
 	int<lower=0> Nquarter; 	//# number of quarters (=13)
 	int<lower=0> n;			//# no. of observations (=208)
