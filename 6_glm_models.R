@@ -40,17 +40,24 @@ results
 
 
 
-# Model 1.2 with interaction ----------------------------------------------
-fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester+ St.Annae.Vester ) + offset(logS),
+# Model 1.2 with interaction NO TOPOGRAPHIC discintion ----------------------------------------------
+fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + 
+                            Nyboder + Oester + Rosenborg + St.Annae.Oester+ 
+                            St.Annae.Vester ) + offset(logS),
            data=quarter.glm, family=poisson())
 summary(fit)
 fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
                       out.header = F, out = "fit_combined.htm")
+
+
+#  ------------------------------------------------------------------------
+
 # Thomas' code using function I don't have {
 # output <- publish(fit)
 # output <- output[,-3]
 # output
 # # }
+
 
 # 
 # 
@@ -86,7 +93,20 @@ results
 
 
 
+# Model 1.2 b Using quarters split by topography --------------------------
+load("Rdata\\quarter_topo_combined_glm.Rdata")
+quarter.glm <- topo.combined
+rm(topo.combined)
+quarter.glm$R <- quarter.glm$cum.sick <- NULL
+quarter.glm$logS <- log(quarter.glm$S)
 
+fitquarter <- glm(I.t ~ quarter* (Christianshavn + combined.lower + combined.upper + 
+                      Kjoebmager + Nyboder + Oester + Rosenborg + St.Annae.Oester +
+                      St.Annae.Vester) + offset(logS),
+                    data=quarter.glm, family=poisson())
+summary(fitquarter)
+names(results)
+results
 
 
 # Diagnostics -------------------------------------------------------------
