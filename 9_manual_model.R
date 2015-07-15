@@ -47,6 +47,12 @@ for (i in 1:Nquarter){
   }
 }
 
+for (i in 1:Nquarter){
+  for( t in 1:Nsteps-1){
+    S_ti[t+1,i] <- (combined$S[which(combined$quarterID==i)])[t] - I_ti[t]
+  }
+}
+    
 # calcualte the number of infected people in all OTHER quarters EXCEPT quarter "i"
 I_tj <- matrix(0, nrow = Nsteps, ncol = Nquarter)
 for (j in 1:Nquarter){
@@ -65,11 +71,36 @@ for (i in 1:Nquarter){
 
 
 
-# Model -------------------------------------------------------------------
+# Model 1.1 -------------------------------------------------------------------
 lambda <- data.frame()
 for (i in 1:Nquarter){
   for (t in 1:Nsteps){
-    lambda[t, i] <- frac_suseptible_it[t,i] * (1*I_ti[t,i] + 1*I_tj[t,i]) ;	
+    lambda[t, i] <- round(frac_suseptible_it[t,i] * (1*I_ti[t,i] + 1*I_tj[t,i]))
+  }
+}
+
+I_est <- data.frame()
+for (i in 1:nrow(lambda)){
+  for (j in 1:ncol(lambda)){
+    I_est[i,j] <-round(mean(rpois(10000, lambda[i,j])), digits = 0)
+  }
+}
+
+rpois(100, 15)
+
+# Model 1.2 -------------------------------------------------------------------
+beta <- data.frame
+lambda <- data.frame()
+for (i in 1:Nquarter){
+  for (t in 1:Nsteps){
+    lambda[t, i] <- round(frac_suseptible_it[t,i] * 0.1 * (1 * I_ti[t,i] + 1*I_tj[t,i]))
+  }
+}
+
+I_est <- data.frame()
+for (i in 1:nrow(lambda)){
+  for (j in 1:ncol(lambda)){
+    I_est[i,j] <-round(mean(rpois(10000, lambda[i,j])), digits = 0)
   }
 }
 

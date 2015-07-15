@@ -29,7 +29,7 @@ transformed parameters {
 	}
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps){
-			lambda[t, i] <- frac_suseptible_it[t,i] * (beta[i]*I_ti[t,i] + alpha[i]*I_tj[t,i]) ;	
+			lambda[t, i] <- frac_suseptible_it[t,i] * 0.1* (beta[i]*I_ti[t,i] + alpha[i]*I_tj[t,i]) ;	
 		}
 	}
 }
