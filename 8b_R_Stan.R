@@ -86,11 +86,11 @@ SIR.fit2<- sampling( object = stanDso.2,
 
 SIR.fit1.1<- sampling( object = stanDso.1.1,
                      data = dataList,
-                     iter = 50000, chains = 3)
+                     iter = 5000, chains = 3)
 
 SIR.fit1.2<- sampling( object = stanDso.1.2,
                      data = dataList,
-                     iter = 50000, chains = 3)
+                     iter = 20000, chains = 3)
 
 SIR.fit1.3<- sampling( object = stanDso.1.3,
                        data = dataList,
