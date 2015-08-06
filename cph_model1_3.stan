@@ -13,7 +13,6 @@ data {
 	real<lower=0> frac_suseptible_it[Nsteps, Nquarter];
 }
 
-
 parameters {
 	real log_beta[Nquarter];
 	real log_alpha[Nquarter];
@@ -25,10 +24,9 @@ transformed parameters {
 	real <lower=0> alpha[Nquarter];
 	real <lower=0> phi;
 	real <lower=0> lambda[Nsteps, Nquarter];
-	for (i in 1:Nquarter){
-		beta[i] <- exp(log_beta[i]);
-		alpha[i] <- exp(log_alpha[i]);
-	}
+	phi <- exp(logit_phi) / (1 + exp(logit_phi));
+	beta <- exp(log_beta);
+	alpha <- exp(log_alpha);
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps){
 			lambda[t, i] <- frac_suseptible_it[t,i] * phi * (beta[i]*I_ti[t,i] + alpha[i]*I_tj[t,i]) ;	

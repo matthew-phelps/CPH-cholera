@@ -17,6 +17,22 @@ library(rCharts)
 
 
 
+
+# City-wide time-series ---------------------------------------------------
+
+outbreak <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
+citywide <- ggplot(outbreak, aes(x = day.index))+
+  geom_line(aes(y = cholera.cases, color = "cases"), size = 1) +
+  geom_line(aes( y = cholera.deaths, color = "deaths"), size = 1) +
+  xlab("Day index") +
+  ylab("Count") +
+  ggtitle ("Cholera cases and deaths, Copenhagen 1853") +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(size = 13),
+        axis.text.y = element_text(size = 13))
+
+  citywide
+
 # Quarter - Incident cases per week ---------------------------------------
 
 load("Rdata\\incident_cases_per_week.Rd")

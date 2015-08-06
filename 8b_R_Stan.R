@@ -94,7 +94,7 @@ SIR.fit1.2<- sampling( object = stanDso.1.2,
 
 SIR.fit1.3<- sampling( object = stanDso.1.3,
                        data = dataList,
-                       iter = 50000, chains = 3)
+                       iter = 250000, chains = 3)
 
 
 print(SIR.fit1.1)

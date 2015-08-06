@@ -19,8 +19,8 @@ library(reshape)
 # Total outbreak ----------------------------------------------------------
 
 outbreak <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
-reshape(outbreak)
 
+colSums((outbreak))
 n0 <- nPlot(cholera.cases~day.index,type='lineChart',  data = outbreak)
 n0$yAxis(axisLabel = "Number infected", width = 40)
 n0$xAxis(axisLabel = "Day Index", width = 90)
