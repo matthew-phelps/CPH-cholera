@@ -57,3 +57,18 @@ normal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = n
   ggtitle ("Normalized incident cases per week by quarter")
 
 normal.incident.cases
+
+
+
+# Quarter - Panal Normalized incidence per week ---------------------------------
+load("Rdata\\Quarter - normailzed incidence per week.Rdata")
+panal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = normal.incidence, group = quarter, color = quarter))+
+  geom_line() +
+  geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black") +
+  facet_wrap(~quarter) +
+  xlab("Day index") +
+  ylab("Incident cases per 1000 ppl") +
+  xlim(0, 75) +
+  ggtitle ("Normalized incident cases per week by quarter")
+
+panal.incident.cases

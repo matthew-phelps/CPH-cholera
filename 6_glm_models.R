@@ -34,13 +34,12 @@ results <- lapply(quarter.list,function(d){
                     data=d,family=poisson())
   summary(fitquarter)
 })
-names(results)
 results
 
 
 
 
-# Model 1.2 with interaction NO TOPOGRAPHIC discintion ----------------------------------------------
+# Model 1.2 WITH interaction NO TOPOGRAPHIC discintion ----------------------------------------------
 fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + 
                             Nyboder + Oester + Rosenborg + St.Annae.Oester+ 
                             St.Annae.Vester ) + offset(logS),
@@ -73,7 +72,7 @@ fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
 
 
 
-# Model 1.1 b Using quarters split by topography --------------------------
+# Model 2.1  Using quarters split by topography --------------------------
 load("Rdata\\quarter_topo_combined_glm.Rdata")
 quarter.glm <- topo.combined
 rm(topo.combined)
@@ -93,7 +92,7 @@ results
 
 
 
-# Model 1.2 b Using quarters split by topography --------------------------
+# Model 2.2 Using quarters split by topography --------------------------
 load("Rdata\\quarter_topo_combined_glm.Rdata")
 quarter.glm <- topo.combined
 rm(topo.combined)
