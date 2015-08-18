@@ -38,6 +38,7 @@ m1$yAxis(axisLabel = "Number infected", width = 40)
 m1$xAxis(axisLabel = "Day Index", width = 90)
 m1$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
 m1$set(title = "Un-normalized weekly incidence")
+m1$set(width = 1000, height = 600)
 m1
 
 quarter$quarter <- as.factor(quarter$quarter)

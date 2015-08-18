@@ -10,12 +10,15 @@ graphics.off()
 mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data"
 pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
 setwd(pc)
+rm(pc, mac)
 library(reshape)
 library(ggplot2)
 library(plyr)
 # library(AER)
 #library(glmnet)
 library(stargazer) # for nice output for html etc
+library(Publish) #Thomas' own package
+
 
 load("Rdata\\quarter_combined_glm.Rdata")
 
@@ -23,6 +26,8 @@ quarter.glm <- quarter.merged.glm
 rm(quarter.merged.glm)
 quarter.glm$R <- quarter.glm$cum.sick <- NULL
 quarter.glm$logS <- log(quarter.glm$S)
+quarter.glm$N <- quarter.glm$I.t + quarter.glm$S + quarter.glm$R
+
 
 # Models 1.1a - no interaction - no topographical disction between ------------------------------------------------------------------
 # combined quarters 
@@ -40,11 +45,27 @@ results
 
 
 # Model 1.2 WITH interaction NO TOPOGRAPHIC discintion ----------------------------------------------
-fit <- glm(I.t ~ quarter*(Christianshavn + combinedquarter + Kjoebmager + 
+
+quarter.glm$week.group <- factor(cut(quarter.glm$week.id, c(-1,5,10,16), labels = c(1,2,3)))
+fit0 <- glm(I.t ~ week.group + offset(logS),
+           data=quarter.glm, family=poisson())
+publish(fit0)
+
+table(quarter.glm$week.id)
+
+fit1 <- glm(I.t ~ week.group + quarter*(Christianshavn + combinedquarter + Kjoebmager + 
                             Nyboder + Oester + Rosenborg + St.Annae.Oester+ 
                             St.Annae.Vester ) + offset(logS),
            data=quarter.glm, family=poisson())
-summary(fit)
+publish(fit1)
+
+
+quarter.glm.subset <- quarter.glm[quarter.glm$quarter %in% c("Christianshavn", "St.Annae.Vester", "Kjoebmager"),]
+fit2 <- glm(I.t ~ week.group + quarter*(St.Annae.Vester ) + offset(logS),
+           data=quarter.glm.subset, family=poisson())
+publish(fit2, digits = 4)
+
+
 fit.html <- stargazer(fit, type = "html", dep.var.labels=c("Infectious"),
                       out.header = F, out = "fit_combined.htm")
 
@@ -87,7 +108,6 @@ results <- lapply(quarter.list,function(d){
                     data=d, family=poisson())
   summary(fitquarter)
 })
-names(results)
 results
 
 
