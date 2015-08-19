@@ -20,7 +20,7 @@ load("Rdata\\cholera_by_street.Rdata")
 
 # Summarize each quarter -------------------------------------------------------
 # summarize each quarter by day index (i.e. by week)
-quarter <- ddply( street.data, .(quarter, startday.index), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
+quarter <- ddply( street.data, .(quarter, startday.index, start.date), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
 
 # combine male and female counts
 for (i in 1:nrow(quarter)){
@@ -61,9 +61,8 @@ save(quarter.by.week, file = "Rdata\\Quarter - normailzed incidence per week.Rda
 
 quarter.temp <- quarter.by.week
 quarter.temp$week.id <- quarter.temp$startday.index/7 # create time-step index
-quarter <- quarter.temp[, c(1, 13, 7, 8, 9)] # remove un-needed variables
+quarter <- quarter.temp[, c(1,2,3, 8,9, 10:14)] # remove un-needed variables
 rm(quarter.temp)
-
 quarter$quarterID <- as.numeric(as.factor(quarter$quarter))
 quarter$cum.sick <- 0
 
@@ -87,9 +86,9 @@ quarter$S <- quarter$pop1855 - quarter$cum.sick # no. of susceptibles at each ti
 quarter$R <- quarter$pop1855 - (quarter$S + quarter$sick.total.week)
 
 save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
-#write.csv(quarter,
-#          file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
-#          row.names = F)
+write.csv(quarter,
+          file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
+          row.names = F)
 rm(census, quarter.by.week, start.day, street.data)
 
 
