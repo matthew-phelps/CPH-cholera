@@ -25,11 +25,13 @@ plot(data1$cumCases)
 
 # EXPONENTIAL FITTING -----------------------------------------------------
 
-lim <- 0:50 # Specify the range of days to fit to.
+lim <- 0:40 # Specify the range of days to fit to.
 r.fit <- glm.fit(data1$day.index[lim], data1$cumCases[lim], family = poisson())
-r.fit$coefficients
+r <- r.fit$coefficients
 
 # Method from Lipsitch et. al
 latent <- 1.4 #Azman - The incubation of cholera: a systematic review
-duration <- 3.1 #
+duration <- 3.1 # doi = 10.1016/S0140-6736(64)92099-9
 serial.interval <- latent + duration
+f <- latent / serial.interval
+R <- 1 + serial.interval * r + f * (1 - f) * (serial.interval * r)^2
