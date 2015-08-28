@@ -82,8 +82,8 @@ for (i in 2:208){
 }
 
 # now find S and R based on the N and "cumulative sick" numbers
-quarter$S <- quarter$pop1855 - quarter$cum.sick # no. of susceptibles at each timestep
-quarter$R <- quarter$pop1855 - (quarter$S + quarter$sick.total.week)
+quarter$S <- quarter$pop1850 - quarter$cum.sick # no. of susceptibles at each timestep
+quarter$R <- quarter$pop1850 - (quarter$S + quarter$sick.total.week)
 
 save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
 write.csv(quarter,
