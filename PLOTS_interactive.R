@@ -41,6 +41,11 @@ m1$set(title = "Un-normalized weekly incidence")
 m1$set(width = 1000, height = 600)
 m1
 
+
+
+
+
+
 quarter$quarter <- as.factor(quarter$quarter)
 quarter$sick_total_week <- as.numeric(quarter$sick.total.week) # polycharts cannot take names with "." in them
 quarter$startday_index <- quarter$startday.index

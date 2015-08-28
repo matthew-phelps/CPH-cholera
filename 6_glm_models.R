@@ -21,6 +21,7 @@ library(Publish) #Thomas' own package
 
 
 load("Rdata\\quarter_combined_glm.Rdata")
+load("Rdata\\quarter_glm.Rdata")
 
 quarter.glm <- quarter.merged.glm
 rm(quarter.merged.glm)
@@ -46,7 +47,10 @@ results
 
 # Model 1.2 WITH interaction NO TOPOGRAPHIC discintion ----------------------------------------------
 
-quarter.glm$week.group <- factor(cut(quarter.glm$week.id, c(-1,5,10,16), labels = c(1,2,3)))
+quarter.glm$week.group <- factor(cut(quarter.glm$week.id, c(-1,4,8,16), labels = c(1,2,3)))
+
+
+
 fit0 <- glm(I.t ~ week.group + offset(logS),
            data=quarter.glm, family=poisson())
 publish(fit0)
@@ -60,8 +64,8 @@ fit1 <- glm(I.t ~ week.group + quarter*(Christianshavn + combinedquarter + Kjoeb
 publish(fit1)
 
 
-quarter.glm.subset <- quarter.glm[quarter.glm$quarter %in% c("Christianshavn", "St.Annae.Vester", "Kjoebmager"),]
-fit2 <- glm(I.t ~ week.group + quarter*(St.Annae.Vester ) + offset(logS),
+quarter.glm.subset <- quarter.glm[quarter.glm$quarter %in% c("Christianshavn", "St.Annae.Vester", "Noerre"),]
+fit2 <- glm(I.t ~ week.group + quarter*(Noerre ) + offset(logS),
            data=quarter.glm.subset, family=poisson())
 publish(fit2, digits = 4)
 
