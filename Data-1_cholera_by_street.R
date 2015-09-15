@@ -1,11 +1,9 @@
-#########################
-# Cholera by street
-#
-########################
+# Author: Matthew Phelps
+# Desc: Prepare data - get & clean data at street level
+# Output datasets: Clean street-level data
 
 ## intro
 rm(list = ls())
-mac<- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
 pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
 
 setwd(pc)

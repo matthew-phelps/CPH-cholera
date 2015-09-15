@@ -1,10 +1,9 @@
 # Author: Matthew Phelps
-#Desc: Prepare data - get cholera by quarter and combine quarters
-# output datasets: quarter.csv
+# Desc: Prepare data - get cholera by quarter and combine quarters
+# Output datasets: quarter.csv
 
 ## intro
 rm(list = ls())
-mac<- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
 pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
 
 setwd(pc)
@@ -54,9 +53,11 @@ quarter$pop1855 <- quarter$pop1850 <- NULL
 quarter$normal.incidence <- quarter$sick.total.week / quarter$est.pop.1853 * 1000
 quarter$normal.mortality <- quarter$dead.total.week / quarter$est.pop.1853 * 1000
 
-write.csv (quarter, "Incident cases per week by quarter.csv")
-save(quarter, file = "Rdata\\Quarter - normailzed incidence per week.Rdata")
+quarter$normal.incidence <- round(quarter$normal.incidence, digits = 2)
+quarter$normal.mortality <- round(quarter$normal.mortality, digits = 2)
 
+
+rm(census, street.data)
 
 
 
@@ -87,9 +88,9 @@ quarter$R <- quarter$est.pop.1853 - (quarter$S + quarter$sick.total.week)
 
 save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
 write.csv(quarter,
-          file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
+          file = "quarter_eng.csv",
           row.names = F)
-rm(census, quarter, start.day, street.data)
+rm(start.day, peak.day)
 
 
 
