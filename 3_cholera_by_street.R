@@ -31,6 +31,9 @@ street.data$quarter <- gsub("Qvarter", "", street.data$quarter)
 # Recode 888 to missing data:
 street.data$female.dead[street.data$female.dead==888] <- NA
 
+# Count missing data
+missing <- street.data[!complete.cases(street.data), ]
+
 # create data index
 day0 <- as.Date("1853-06-12")
 
