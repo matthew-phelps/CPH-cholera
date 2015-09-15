@@ -20,7 +20,11 @@ load("Rdata\\cholera_by_street.Rdata")
 
 # Summarize each quarter -------------------------------------------------------
 # summarize each quarter by day index (i.e. by week)
-quarter <- ddply( street.data, .(quarter, startday.index, start.date), summarize, mensick.week = sum(male.sick), mendead.week = sum(male.dead), womensick.week = sum(female.sick), womendead.week = sum(female.dead, na.rm=T))
+quarter <- ddply( street.data, .(quarter, startday.index, start.date), summarize, 
+                  mensick.week = sum(male.sick),
+                  mendead.week = sum(male.dead),
+                  womensick.week = sum(female.sick),
+                  womendead.week = sum(female.dead, na.rm=T))
 
 # combine male and female counts
 for (i in 1:nrow(quarter)){
@@ -28,7 +32,6 @@ for (i in 1:nrow(quarter)){
   quarter$dead.total.week[i] <- quarter$mendead.week[i] + quarter$womendead.week[i]
 }
 
-save(quarter, file = "Rdata\\incident_cases_per_week.Rd")
 
 # Find week of peak in each quarter:
 peak.day <- ddply(quarter, .(quarter), summarize, peakday = startday.index[which.max(sick.total.week)] )
@@ -40,29 +43,26 @@ start.day<- ddply (quarter, .(quarter), summarize, startday = startday.index[min
 
 
 # Normalize incidence by population ---------------------------------------
+# Merge census and cholera data 
 census <- read.csv ("Census - quarter.csv", sep=",", header=T, stringsAsFactors=F)
+quarter <- merge(quarter, census, by.x="quarter", by.y="Quarter")
 
-#merge census and cholera data 
-quarter.by.week <- merge(quarter, census, by.x="quarter", by.y="Quarter")
+# Estimate 1853 population ------------------------------------------------
+quarter$est.pop.1853 <- round(((3/5) * (quarter$pop1855 - quarter$pop1850) + quarter$pop1850), digits = 0)
+quarter$pop1855 <- quarter$pop1850 <- NULL
 
-for (i in 1:nrow(quarter.by.week)){
-  quarter.by.week$normal.incidence[i] <- quarter.by.week$sick.total.week[i] / quarter.by.week$pop1855[i] * 1000
-  quarter.by.week$normal.mortality[i] <- quarter.by.week$dead.total.week[i] / quarter.by.week$pop1855[i] * 1000
-}
+quarter$normal.incidence <- quarter$sick.total.week / quarter$est.pop.1853 * 1000
+quarter$normal.mortality <- quarter$dead.total.week / quarter$est.pop.1853 * 1000
 
-write.csv (quarter.by.week, "Incident cases per week by quarter.csv")
-save(quarter.by.week, file = "Rdata\\Quarter - normailzed incidence per week.Rdata")
+write.csv (quarter, "Incident cases per week by quarter.csv")
+save(quarter, file = "Rdata\\Quarter - normailzed incidence per week.Rdata")
 
 
 
 
 
 # Add Cumulative No. infected at each week --------------------------------
-
-quarter.temp <- quarter.by.week
-quarter.temp$week.id <- quarter.temp$startday.index/7 # create time-step index
-quarter <- quarter.temp[, c(1,2,3, 8,9, 10:14)] # remove un-needed variables
-rm(quarter.temp)
+quarter$week.id <- quarter$startday.index/7 # create time-step index
 quarter$quarterID <- as.numeric(as.factor(quarter$quarter))
 quarter$cum.sick <- 0
 
@@ -82,14 +82,14 @@ for (i in 2:208){
 }
 
 # now find S and R based on the N and "cumulative sick" numbers
-quarter$S <- quarter$pop1850 - quarter$cum.sick # no. of susceptibles at each timestep
-quarter$R <- quarter$pop1850 - (quarter$S + quarter$sick.total.week)
+quarter$S <- quarter$est.pop.1853 - quarter$cum.sick # no. of susceptibles at each timestep
+quarter$R <- quarter$est.pop.1853 - (quarter$S + quarter$sick.total.week)
 
 save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
 write.csv(quarter,
           file = "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\quarter_eng.csv",
           row.names = F)
-rm(census, quarter.by.week, start.day, street.data)
+rm(census, quarter, start.day, street.data)
 
 
 
