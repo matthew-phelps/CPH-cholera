@@ -20,9 +20,9 @@ load("Rdata\\cholera_by_street.Rdata")
 # Summarize each quarter -------------------------------------------------------
 # summarize each quarter by day index (i.e. by week)
 quarter <- ddply( street.data, .(quarter, startday.index, start.date), summarize, 
-                  mensick.week = sum(male.sick),
-                  mendead.week = sum(male.dead),
-                  womensick.week = sum(female.sick),
+                  mensick.week = sum(male.sick, na.rm = T),
+                  mendead.week = sum(male.dead, na.rm = T),
+                  womensick.week = sum(female.sick, na.rm = T),
                   womendead.week = sum(female.dead, na.rm=T))
 
 # combine male and female counts
@@ -44,7 +44,7 @@ start.day<- ddply (quarter, .(quarter), summarize, startday = startday.index[min
 # Normalize incidence by population ---------------------------------------
 # Merge census and cholera data 
 census <- read.csv ("Census - quarter.csv", sep=",", header=T, stringsAsFactors=F)
-quarter <- merge(quarter, census, by.x="quarter", by.y="Quarter")
+quarter <- merge(quarter, census, by.x="quarter", by.y="Quarter", all.x = T)
 
 # Estimate 1853 population ------------------------------------------------
 quarter$est.pop.1853 <- round(((3/5) * (quarter$pop1855 - quarter$pop1850) + quarter$pop1850), digits = 0)
@@ -70,7 +70,7 @@ quarter$cum.sick <- 0
 
 ## Calculate the number of ppl in each compartment (S,I,R) at each time step:
 # calculate cumilative number of infected in each quarter 
-for (i in 2:208){
+for (i in 2:nrow(quarter)){
   
   # check to see if the current row is the same quarter as previous row
   if(quarter$quarterID[i] != quarter$quarterID[i-1]){
