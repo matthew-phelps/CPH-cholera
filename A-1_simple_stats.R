@@ -20,4 +20,3 @@ load("data\\Rdata\\quarter_eng.Rdata")
 sick <- sum(quarter$sick.total.week)
 dead <- sum(quarter$dead.total.week)
 CFR <- dead/sick
-

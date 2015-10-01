@@ -15,7 +15,6 @@ library (reshape) # for renaming variables
 # Read in data ------------------------------------------------------------
 
 
-#street.data <- read.xlsx("data/Cholera by street CPH.xlsx", sheetIndex = 1)
 street.data <- read.csv ("Cholera by street CPH_eng.csv", sep=",")
 head(street.data)
 
@@ -29,17 +28,18 @@ street.data$quarter <- gsub("Qvarter", "", street.data$quarter)
 # Recode 888 to missing data:
 street.data$female.dead[street.data$female.dead==888] <- NA
 
+# Remove un-used variables
+street.data$street.index <- street.data$end.date <- NULL
+
 # Count missing data
-missing <- street.data[!complete.cases(street.data), ]
+missing <- street.data[!complete.cases(street.data[, 4:7]), ]
 
 # create data index
 day0 <- as.Date("1853-06-12")
 
 street.data$startday.index <-0
-street.data$endday.index <-0
 for (i in 1:nrow(street.data)){
     street.data$startday.index[i] <- street.data$start.date[i] - day0
-    street.data$endday.index[i] <- street.data$end.date[i] - day0
 
 }
 
@@ -48,9 +48,6 @@ save(street.data, file = "Rdata\\cholera_by_street.Rdata") # save as an R object
 
 
 
-
-
-## note to future self - move this to seperate file
 
 
 
