@@ -70,17 +70,22 @@ quarter$cum.sick <- 0
 
 ## Calculate the number of ppl in each compartment (S,I,R) at each time step:
 # calculate cumilative number of infected in each quarter 
-for (i in 2:nrow(quarter)){
-  
-  # check to see if the current row is the same quarter as previous row
-  if(quarter$quarterID[i] != quarter$quarterID[i-1]){
-    quarter$cum.sick[i] <- quarter$sick.total.week[i] # if it's a differernt quarter, reset cummulative count to 0
-    
-    # if it's the same quarter, add the new sick to the total count of sick ppl
-  } else {
-    quarter$cum.sick[i] <- quarter$cum.sick[i-1] + quarter$sick.total.week[i]  
+
+quarter.split <- split(quarter, f = quarter$quarter)
+x1 <- quarter.split[[1]]
+
+# Write function to pass to lapply
+cumSick <- function(x1){
+  x1 <- x1[order(x1$start.date), ]
+  for (i in 2:nrow(x1)){
+    x1$cum.sick[i] <- x1$cum.sick[i - 1] + x1$sick.total.week[i]
   }
+  return (x1)
 }
+x2 <- lapply(quarter.split, cumSick)
+quarter <- do.call(rbind.data.frame, x2)
+row.names(quarter) <- NULL
+
 
 # now find S and R based on the N and "cumulative sick" numbers
 quarter$S <- quarter$est.pop.1853 - quarter$cum.sick # no. of susceptibles at each timestep
@@ -102,6 +107,8 @@ rm(start.day, peak.day)
 
 # Prepare 1 grouping of of combined quarter NOT based on topography ----------------------------------------
 
+
+# NEED to re-instate quarterID variable, or start using quarter name instead
 combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 | # this are quarters to be combined
                                            quarter$quarterID == 4 |
                                            quarter$quarterID == 5 |

@@ -18,7 +18,9 @@ library(reshape2)
 library(coda)
 library(parallel)
 library(rstan)
-
+# For execution on a local, multicore CPU with excess RAM we recommend calling
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
 
 
 
@@ -68,33 +70,35 @@ dataList <- list(Nquarter=Nquarter, quarterID=quarterID,
 # rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
-source("http://mc-stan.org/rstan/stan.R")
-stanDso = stan_model(file = "Rcodes\\cph_beta.stan" ) # compile model code
-stanDso.2 = stan_model(file = "Rcodes\\cph_simple.stan" ) # compile model code
+#source("http://mc-stan.org/rstan/stan.R")
+stanDso = stan_model(file = "Rcodes\\cph_beta.stan") # compile e
 stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
 stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
 stanDso.1.3 = stan_model(file = "Rcodes\\cph_model1_3.stan" )
 
-SIR.fit1<- sampling( object = stanDso,
+system.time(
+SIR.fit.beta<- sampling( object = stanDso,
                      data = dataList,
-                     iter = 50000, chains = 3)
+                     iter = 5000, chains = 4,
+                     cores = 8)
+)
 
 
-SIR.fit2<- sampling( object = stanDso.2,
-                     data = dataList,
-                     iter = 50000, chains = 3)
 
 SIR.fit1.1<- sampling( object = stanDso.1.1,
                      data = dataList,
-                     iter = 5000, chains = 3)
+                     iter = 5000, chains = 3,
+                     cores = 3)
 
 SIR.fit1.2<- sampling( object = stanDso.1.2,
                      data = dataList,
-                     iter = 20000, chains = 3)
+                     iter = 20000, chains = 3,
+                     cores = 3)
 
 SIR.fit1.3<- sampling( object = stanDso.1.3,
                        data = dataList,
-                       iter = 250000, chains = 3)
+                       iter = 250000, chains = 3,
+                       cores = 3)
 
 
 print(SIR.fit1.1)

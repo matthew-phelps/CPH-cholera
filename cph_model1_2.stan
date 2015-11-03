@@ -25,7 +25,9 @@ transformed parameters {
 	real <lower=0> phi;
 	real <lower=0> lambda[Nsteps, Nquarter];
 	alpha <- exp(log_alpha);
-	beta <- exp(log_beta);
+	for (i in 1:Nquarter){
+		beta[i] <- exp(log_beta[i]);
+	}
 	phi <- exp(logit_phi) / (1 + exp(logit_phi));
 	for (i in 1:Nquarter){
 		for (t in 1:Nsteps){
