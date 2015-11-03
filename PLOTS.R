@@ -27,10 +27,12 @@ citywide <- ggplot(outbreak, aes(x = day.index))+
   xlab("Day index") +
   ylab("People") +
   ggtitle ("Cholera cases and deaths, Copenhagen 1853") +
+  theme_classic() +
   theme(legend.title = element_blank(),
         axis.text.x = element_text(size = 13),
         axis.text.y = element_text(size = 13),
         plot.title = element_text(size = 20, face="bold"))
+  
 
   citywide
 

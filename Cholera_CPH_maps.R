@@ -75,7 +75,7 @@ cph +
            panel.grid.major = element_blank(),
            panel.background = element_blank()
      ) +
-     ggtitle("Normalized Cumulative Infections ") +
+     ggtitle("Cumulative infections per 100 people") +
   theme(plot.title = element_text(size = 25, face="bold"),
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 18))
