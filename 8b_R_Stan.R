@@ -36,31 +36,31 @@ quarterID <- as.numeric(combined$quarterID)
 n <- as.numeric(length(quarterID))
 Nquarter <- length(table(quarterID))
 
-S_ti <- matrix(0, Nsteps, Nquarter)
-I_ti <- matrix(0, Nsteps, Nquarter)
-R_t <- matrix(0, Nsteps, Nquarter)
-N_i <- matrix(0, Nsteps, Nquarter)
+S_ti <- matrix(0, Nquarter, Nsteps)
+I_ti <- matrix(0, Nquarter, Nsteps)
+R_t <- matrix(0, Nquarter, Nsteps)
+N_i <- matrix(0, Nquarter, Nsteps)
 for (i in 1:Nquarter){
   for( t in 1:Nsteps){
-    S_ti[t,i] <- (combined$S[which(combined$quarterID==i)])[t]
-    I_ti[t,i] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
-    R_t[t,i] <- (combined$R[which(combined$quarterID==i)])[t]
-    N_i[t,i] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+    S_ti[i, t] <- (combined$S[which(combined$quarterID==i)])[t]
+    I_ti[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
+    R_t[i, t] <- (combined$R[which(combined$quarterID==i)])[t]
+    N_i[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
   }
 }
 
 # calcualte the number of infected people in all OTHER quarters EXCEPT quarter "i"
-I_tj <- matrix(0, nrow = Nsteps, ncol = Nquarter)
+I_tj <- matrix(0, nrow = Nquarter, ncol = Nsteps)
 for (j in 1:Nquarter){
   for (t in 1:Nsteps){
-    I_tj[t,j] <- sum(I_ti[t,]) - I_ti[t,j]
+    I_tj[j, t] <- sum(I_ti[, t]) - I_ti[j, t]
   }
 }
 
-frac_suseptible_it <- matrix(0, nrow = Nsteps, ncol = Nquarter)
+frac_suseptible_it <- matrix(0, nrow = Nquarter, ncol = Nsteps)
 for (i in 1:Nquarter){
   for (t in 1:Nsteps){
-    frac_suseptible_it[t,i] <- S_ti[t,i] / N_i[t,i]
+    frac_suseptible_it[i, t] <- S_ti[i, t] / N_i[i, t]
   }
 }
 
