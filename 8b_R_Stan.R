@@ -71,9 +71,9 @@ dataList <- list(Nquarter=Nquarter, quarterID=quarterID,
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
 #source("http://mc-stan.org/rstan/stan.R")
-stanDso = stan_model(file = "Rcodes\\cph_beta.stan") # compile e
-stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
-stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
+# stanDso = stan_model(file = "Rcodes\\cph_beta.stan") # compile e
+# stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
+# stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
 stanDso.1.3 = stan_model(file = "Rcodes\\cph_model1_3.stan" )
 
 system.time(
@@ -97,7 +97,7 @@ SIR.fit1.2<- sampling( object = stanDso.1.2,
 
 SIR.fit1.3<- sampling( object = stanDso.1.3,
                        data = dataList,
-                       iter = 250000, chains = 3,
+                       iter = 25000, chains = 3,
                        cores = 3)
 
 
@@ -106,6 +106,7 @@ print(SIR.fit1.2)
 print(SIR.fit1.3)
 print(SIR.fit4)
 
+rstan::plot(SIR.fit1.3, pars = "beta")
 str(SIR.fit2)
 fit.extract <- extract(SIR.fit1, permuted = T)
 beta <- fit.extract$beta
