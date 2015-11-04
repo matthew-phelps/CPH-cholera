@@ -74,6 +74,7 @@ dataList <- list(Nquarter=Nquarter, quarterID=quarterID,
 # stanDso = stan_model(file = "Rcodes\\cph_beta.stan") # compile e
 # stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
 # stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
+stanDso.1.4 = stan_model(file = "Rcodes\\cph_model1_4.stan" )
 stanDso.1.3 = stan_model(file = "Rcodes\\cph_model1_3.stan" )
 
 system.time(
@@ -100,11 +101,14 @@ SIR.fit1.3<- sampling( object = stanDso.1.3,
                        iter = 25000, chains = 3,
                        cores = 3)
 
-
+SIR.fit1.4<- sampling( object = stanDso.1.4,
+                       data = dataList,
+                       iter = 2500, chains = 3,
+                       cores = 3)
 print(SIR.fit1.1)
 print(SIR.fit1.2)
 print(SIR.fit1.3)
-print(SIR.fit4)
+print(SIR.fit1.4)
 
 rstan::plot(SIR.fit1.3, pars = "beta")
 str(SIR.fit2)
