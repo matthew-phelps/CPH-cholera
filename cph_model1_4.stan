@@ -8,9 +8,9 @@ data {
 	int<lower=0> Nquarter; 	//# number of quarters (=13)
 	int<lower=0> n;			//# no. of observations (=208)
 	int<lower=0> Nsteps;	//# no. of time steps (=16)
-	int<lower=0> I_ti[Nquarter, Nsteps];		//# no. infected at each observation
-	int<lower=0> I_tj[Nquarter, Nsteps];
+	matrix <lower=0> [Nquarter, Nsteps] I_it;		//# no. infected at each observation
 	real<lower=0> frac_suseptible_it[Nquarter, Nsteps];
+
 }
 
 parameters {
@@ -19,7 +19,8 @@ parameters {
 }
 
 transformed parameters {
-	real <lower=0> beta[Nquarter, Nquarter];
+	matrix [Nquarter, Nsteps] I_it_sampled;
+	matrix <lower=0> [Nquarter, Nquarter]  beta;
 	real <lower=0> phi;
 	real <lower=0> lambda[Nquarter, Nsteps];
 	phi <- exp(logit_phi) / (1 + exp(logit_phi));
@@ -29,15 +30,15 @@ transformed parameters {
 		}
 	}
 	for (t in 1:Nsteps){
-		for (i in 1:Nquarter){
-				lambda[i, t] <- frac_suseptible_it[i, t] * phi * sum(beta[i, ]*I_ti[i, t])
+		for (i in 1:Nquarter){ //# Sum of element wise multiplication OR matrix multiplicatoin
+				lambda[i, t] <- frac_suseptible_it[i, t] * phi * (row(beta, i) * col(I_it, t));
 			}
 		}
 
 	}
 
 	model {
-		for (i in 1:Nquarter{
+		for (i in 1:Nquarter){
 			for (j in 1:Nquarter){
 				log_beta[i, j] ~ normal(0, 1/0.001);
 			}
@@ -46,7 +47,7 @@ transformed parameters {
 		logit_phi ~ normal(0, 1);
 		for (i in 1:Nquarter){
 			for (t in 1:Nsteps-1){
-				I_ti[i, t+1] ~ poisson(lambda[i, t]);
+				I_it_sampled[i, t+1] ~ poisson(lambda[i, t]);
 			}
 		}			
 	}

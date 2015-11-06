@@ -37,25 +37,18 @@ n <- as.numeric(length(quarterID))
 Nquarter <- length(table(quarterID))
 
 S_ti <- matrix(0, Nquarter, Nsteps)
-I_ti <- matrix(0, Nquarter, Nsteps)
+I_it <- matrix(0, Nquarter, Nsteps)
 R_t <- matrix(0, Nquarter, Nsteps)
 N_i <- matrix(0, Nquarter, Nsteps)
 for (i in 1:Nquarter){
   for( t in 1:Nsteps){
     S_ti[i, t] <- (combined$S[which(combined$quarterID==i)])[t]
-    I_ti[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
+    I_it[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
     R_t[i, t] <- (combined$R[which(combined$quarterID==i)])[t]
     N_i[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
   }
 }
 
-# calcualte the number of infected people in all OTHER quarters EXCEPT quarter "i"
-I_tj <- matrix(0, nrow = Nquarter, ncol = Nsteps)
-for (j in 1:Nquarter){
-  for (t in 1:Nsteps){
-    I_tj[j, t] <- sum(I_ti[, t]) - I_ti[j, t]
-  }
-}
 
 frac_suseptible_it <- matrix(0, nrow = Nquarter, ncol = Nsteps)
 for (i in 1:Nquarter){
@@ -64,9 +57,56 @@ for (i in 1:Nquarter){
   }
 }
 
-
+I_it_sampled <- matrix(0, Nquarter, Nsteps)
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
-                 frac_suseptible_it = frac_suseptible_it, n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_tj=I_tj)
+                 frac_suseptible_it = frac_suseptible_it, n=n, S_ti=S_ti, I_it=I_it, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_it_sampled = I_it_sampled)
+
+
+
+###############################################################################
+###############################################################################
+# Get model running in R alone
+
+# Initialize matrices
+log_beta <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
+log_phi <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
+beta <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
+lambda <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
+I_itplus1 <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
+
+
+# Populate log priors
+for (i in 1:Nquarter){
+  for (j in 1:Nquarter){
+    log_beta[i, j] <- rnorm(1, 0, 10)
+    log_phi[i, j] <- rnorm()
+  }
+}
+
+# Transform log priors into priors
+for (i in 1:Nquarter){
+  for (j in 1:Nquarter){
+    beta[i, j] <-exp(log_beta[i, j])
+  }
+}
+
+# Find lambda for each time/neighborhood
+for (t in 1:Nsteps){
+  for (i in 1:Nquarter){
+    lambda[i, t] <- frac_suseptible_it[i, t] * phi * sum(beta[i, ]*I_it[, t])
+  }
+}
+
+# Draw from possion for each lambda value to estimate I_t+1
+for (t in 1:Nsteps-1){
+  for (i in 1:Nquarter){
+    I_itplus1[i, t+1] <- rpois(1, lambda = lambda[i, t])
+  }
+}
+
+
+
+
 # rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
