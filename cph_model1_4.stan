@@ -8,18 +8,19 @@ data {
 	int<lower=0> Nquarter; 	//# number of quarters (=13)
 	int<lower=0> n;			//# no. of observations (=208)
 	int<lower=0> Nsteps;	//# no. of time steps (=16)
-	matrix <lower=0> [Nquarter, Nsteps] I_it;		//# no. infected at each observation
-	real<lower=0> frac_suseptible_it[Nquarter, Nsteps];
-
+	matrix [Nquarter, Nsteps] I_it;		//# no. infected at each observation
+	int <lower=0> I_it_sampled [Nquarter, Nsteps];
+	matrix <lower=0> [Nquarter, Nsteps] frac_suseptible_it;
 }
 
 parameters {
 	real log_beta[Nquarter, Nquarter];
 	real logit_phi;
+
 }
 
 transformed parameters {
-	matrix [Nquarter, Nsteps] I_it_sampled;
+	
 	matrix <lower=0> [Nquarter, Nquarter]  beta;
 	real <lower=0> phi;
 	real <lower=0> lambda[Nquarter, Nsteps];
@@ -31,7 +32,7 @@ transformed parameters {
 	}
 	for (t in 1:Nsteps){
 		for (i in 1:Nquarter){ //# Sum of element wise multiplication OR matrix multiplicatoin
-				lambda[i, t] <- frac_suseptible_it[i, t] * phi * (row(beta, i) * col(I_it, t));
+				lambda[i, t] <- frac_suseptible_it[i, t] * phi * ((beta[i]) * col(I_it, t));
 			}
 		}
 

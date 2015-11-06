@@ -38,12 +38,14 @@ Nquarter <- length(table(quarterID))
 
 S_ti <- matrix(0, Nquarter, Nsteps)
 I_it <- matrix(0, Nquarter, Nsteps)
+I_it_sampled <- matrix(0, Nquarter, Nsteps)
 R_t <- matrix(0, Nquarter, Nsteps)
 N_i <- matrix(0, Nquarter, Nsteps)
 for (i in 1:Nquarter){
   for( t in 1:Nsteps){
     S_ti[i, t] <- (combined$S[which(combined$quarterID==i)])[t]
     I_it[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
+    I_it_sampled[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
     R_t[i, t] <- (combined$R[which(combined$quarterID==i)])[t]
     N_i[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
   }
@@ -57,7 +59,8 @@ for (i in 1:Nquarter){
   }
 }
 
-I_it_sampled <- matrix(0, Nquarter, Nsteps)
+
+
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
                  frac_suseptible_it = frac_suseptible_it, n=n, S_ti=S_ti, I_it=I_it, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_it_sampled = I_it_sampled)
 
@@ -67,26 +70,29 @@ dataList <- list(Nquarter=Nquarter, quarterID=quarterID,
 ###############################################################################
 # Get model running in R alone
 
-# Initialize matrices
+# Initialize variables
 log_beta <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
-log_phi <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
 beta <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
 lambda <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
 I_itplus1 <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
+
 
 
 # Populate log priors
 for (i in 1:Nquarter){
   for (j in 1:Nquarter){
     log_beta[i, j] <- rnorm(1, 0, 10)
-    log_phi[i, j] <- rnorm()
   }
 }
+
+logit_phi <- rnorm(n = 1, mean = 0, sd = 10)
+phi <- exp(logit_phi)/(1+exp(logit_phi))
 
 # Transform log priors into priors
 for (i in 1:Nquarter){
   for (j in 1:Nquarter){
     beta[i, j] <-exp(log_beta[i, j])
+    
   }
 }
 
@@ -115,39 +121,13 @@ for (t in 1:Nsteps-1){
 # stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
 # stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
 stanDso.1.4 = stan_model(file = "Rcodes\\cph_model1_4.stan" )
-stanDso.1.3 = stan_model(file = "Rcodes\\cph_model1_3.stan" )
 
-system.time(
-SIR.fit.beta<- sampling( object = stanDso,
-                     data = dataList,
-                     iter = 5000, chains = 4,
-                     cores = 8)
-)
-
-
-
-SIR.fit1.1<- sampling( object = stanDso.1.1,
-                     data = dataList,
-                     iter = 5000, chains = 3,
-                     cores = 3)
-
-SIR.fit1.2<- sampling( object = stanDso.1.2,
-                     data = dataList,
-                     iter = 20000, chains = 3,
-                     cores = 3)
-
-SIR.fit1.3<- sampling( object = stanDso.1.3,
-                       data = dataList,
-                       iter = 25000, chains = 3,
-                       cores = 3)
 
 SIR.fit1.4<- sampling( object = stanDso.1.4,
                        data = dataList,
-                       iter = 2500, chains = 3,
+                       iter = 250, chains = 3,
                        cores = 3)
-print(SIR.fit1.1)
-print(SIR.fit1.2)
-print(SIR.fit1.3)
+
 print(SIR.fit1.4)
 
 rstan::plot(SIR.fit1.3, pars = "beta")
