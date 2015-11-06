@@ -21,6 +21,7 @@ library(maptools)
 library(RColorBrewer)
 library(ggmap)
 library(dplyr)
+library(grid)
 
 
 
@@ -41,7 +42,8 @@ citywide <- ggplot(outbreak, aes(x = day.index))+
          axis.text.y = element_text(size = 16),
          axis.title.x = element_text(size = 18, face = "bold"),
          axis.title.y = element_text(size = 18, face = "bold"),
-        plot.title = element_text(size = 24, face="bold")) +
+        plot.title = element_text(size = 24, face="bold"),
+        plot.margin = unit(c(0,0,0,0))) +
   coord_cartesian(xlim = c(0, 102), ylim = c(-5,max(outbreak$cholera.cases)+5))
 
 
@@ -68,23 +70,25 @@ panal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = no
   xlab("Day index") +
   ylab("Incidence per 1000") +
   xlim(0, 75) +
-  ggtitle (" Incident cases per 1000 people \n by week by quarter\n") +
+  ggtitle (" Normalized incident cases by quarter\n") +
   theme_classic() +
   theme(legend.title = element_blank(),
         legend.position = 'none',
-        axis.text.x = element_text(size = 13),
-        axis.text.y = element_text(size = 13),
-        axis.title.x = element_text(size = 17, face = "bold"),
-        axis.title.y = element_text(size = 17, face = "bold"),
-        plot.title = element_text(size = 20, face="bold"),
-        strip.text.x = element_text(size = 11),
-        strip.background = element_rect(color = '#F0F0F0', fill = '#F0F0F0')) 
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 21, face = "bold"),
+        axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4),
+        plot.title = element_text(size = 24, face="bold"),
+        strip.text.x = element_text(size = 16),
+        strip.background = element_rect(color = '#F0F0F0', fill = '#F0F0F0')) +
+  theme(panel.margin = unit(c(0.5,0.5,0.5,2), "lines"))
+        
 
 panal.incident.cases
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\quarter_panel.wmf',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\quarter_panel.tiff',
        plot = panal.incident.cases,
-       width = 20,
-       height = 18,
+       width = 24.47,
+       height = 22.46,
        units = 'cm')
 
 # MAP ---------------------------------------------------------------------
@@ -128,7 +132,7 @@ cph_map <- get_map(location = "Kongens Nytorv",
                    zoom = 14, 
                    maptype = "toner-lite")
 
-cph <- ggmap(cph_map, darken = c(.7))
+cph <- ggmap(cph_map, darken = c(0.4))
 
 # Normalized total infections
 map <- cph +
@@ -146,16 +150,18 @@ map <- cph +
         
         panel.grid.minor = element_blank(), # no gridlines
         panel.grid.major = element_blank(),
-        panel.background = element_blank()
+        panel.background = element_blank(),
+        plot.margin = unit(c(0,0,0,0), 'lines')
   ) +
-  ggtitle("Highest infection rate in \n Nyboder & Christianshavn \n ") +
+  ggtitle("High infection rates in \n Nyboder & Christianshavn \n ") +
   theme(plot.title = element_text(size = 23, face="bold"),
         legend.title = element_text(size = 18),
         legend.position = 'bottom')
 map
 
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.wmf',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.tiff',
        plot = map,
-       width = 30,
-       height = 26,
-       units = 'cm')
+       width = 26,
+       height = 31,
+       units = 'cm',
+       dpi = 150)

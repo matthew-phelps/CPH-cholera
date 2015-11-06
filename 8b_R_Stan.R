@@ -36,37 +36,83 @@ quarterID <- as.numeric(combined$quarterID)
 n <- as.numeric(length(quarterID))
 Nquarter <- length(table(quarterID))
 
-S_ti <- matrix(0, Nsteps, Nquarter)
-I_ti <- matrix(0, Nsteps, Nquarter)
-R_t <- matrix(0, Nsteps, Nquarter)
-N_i <- matrix(0, Nsteps, Nquarter)
+S_ti <- matrix(0, Nquarter, Nsteps)
+I_it <- matrix(0, Nquarter, Nsteps)
+I_it_sampled <- matrix(0, Nquarter, Nsteps)
+R_t <- matrix(0, Nquarter, Nsteps)
+N_i <- matrix(0, Nquarter, Nsteps)
 for (i in 1:Nquarter){
   for( t in 1:Nsteps){
-    S_ti[t,i] <- (combined$S[which(combined$quarterID==i)])[t]
-    I_ti[t,i] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
-    R_t[t,i] <- (combined$R[which(combined$quarterID==i)])[t]
-    N_i[t,i] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+    S_ti[i, t] <- (combined$S[which(combined$quarterID==i)])[t]
+    I_it[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
+    I_it_sampled[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
+    R_t[i, t] <- (combined$R[which(combined$quarterID==i)])[t]
+    N_i[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
   }
 }
 
-# calcualte the number of infected people in all OTHER quarters EXCEPT quarter "i"
-I_tj <- matrix(0, nrow = Nsteps, ncol = Nquarter)
-for (j in 1:Nquarter){
-  for (t in 1:Nsteps){
-    I_tj[t,j] <- sum(I_ti[t,]) - I_ti[t,j]
-  }
-}
 
-frac_suseptible_it <- matrix(0, nrow = Nsteps, ncol = Nquarter)
+frac_suseptible_it <- matrix(0, nrow = Nquarter, ncol = Nsteps)
 for (i in 1:Nquarter){
   for (t in 1:Nsteps){
-    frac_suseptible_it[t,i] <- S_ti[t,i] / N_i[t,i]
+    frac_suseptible_it[i, t] <- S_ti[i, t] / N_i[i, t]
   }
 }
+
 
 
 dataList <- list(Nquarter=Nquarter, quarterID=quarterID, 
-                 frac_suseptible_it = frac_suseptible_it, n=n, S_ti=S_ti, I_ti=I_ti, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_tj=I_tj)
+                 frac_suseptible_it = frac_suseptible_it, n=n, S_ti=S_ti, I_it=I_it, R_t=R_t, N_i=N_i, Nsteps=Nsteps, I_it_sampled = I_it_sampled)
+
+
+
+###############################################################################
+###############################################################################
+# Get model running in R alone
+
+# Initialize variables
+log_beta <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
+beta <- matrix(data = 0, nrow = Nquarter, ncol = Nquarter)
+lambda <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
+I_itplus1 <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
+
+
+
+# Populate log priors
+for (i in 1:Nquarter){
+  for (j in 1:Nquarter){
+    log_beta[i, j] <- rnorm(1, 0, 10)
+  }
+}
+
+logit_phi <- rnorm(n = 1, mean = 0, sd = 10)
+phi <- exp(logit_phi)/(1+exp(logit_phi))
+
+# Transform log priors into priors
+for (i in 1:Nquarter){
+  for (j in 1:Nquarter){
+    beta[i, j] <-exp(log_beta[i, j])
+    
+  }
+}
+
+# Find lambda for each time/neighborhood
+for (t in 1:Nsteps){
+  for (i in 1:Nquarter){
+    lambda[i, t] <- frac_suseptible_it[i, t] * phi * sum(beta[i, ]*I_it[, t])
+  }
+}
+
+# Draw from possion for each lambda value to estimate I_t+1
+for (t in 1:Nsteps-1){
+  for (i in 1:Nquarter){
+    I_itplus1[i, t+1] <- rpois(1, lambda = lambda[i, t])
+  }
+}
+
+
+
+
 # rm(i,j, Nquarter=Nquarter, quarterID=quarterID, 
 #    n=n, S_t=S_t, I_t=I_t, R_t=R_t, N_t=N_t, Nsteps=Nsteps)
 
@@ -74,37 +120,15 @@ dataList <- list(Nquarter=Nquarter, quarterID=quarterID,
 # stanDso = stan_model(file = "Rcodes\\cph_beta.stan") # compile e
 # stanDso.1.1 = stan_model(file = "Rcodes\\cph_model1_1.stan" )
 # stanDso.1.2 = stan_model(file = "Rcodes\\cph_model1_2.stan" )
-stanDso.1.3 = stan_model(file = "Rcodes\\cph_model1_3.stan" )
-
-system.time(
-SIR.fit.beta<- sampling( object = stanDso,
-                     data = dataList,
-                     iter = 5000, chains = 4,
-                     cores = 8)
-)
+stanDso.1.4 = stan_model(file = "Rcodes\\cph_model1_4.stan" )
 
 
-
-SIR.fit1.1<- sampling( object = stanDso.1.1,
-                     data = dataList,
-                     iter = 5000, chains = 3,
-                     cores = 3)
-
-SIR.fit1.2<- sampling( object = stanDso.1.2,
-                     data = dataList,
-                     iter = 20000, chains = 3,
-                     cores = 3)
-
-SIR.fit1.3<- sampling( object = stanDso.1.3,
+SIR.fit1.4<- sampling( object = stanDso.1.4,
                        data = dataList,
-                       iter = 25000, chains = 3,
+                       iter = 250, chains = 3,
                        cores = 3)
 
-
-print(SIR.fit1.1)
-print(SIR.fit1.2)
-print(SIR.fit1.3)
-print(SIR.fit4)
+print(SIR.fit1.4)
 
 rstan::plot(SIR.fit1.3, pars = "beta")
 str(SIR.fit2)
