@@ -39,16 +39,18 @@ transformed parameters {
 	}
 
 	model {
+		// Prior distributions
 		for (i in 1:Nquarter){
 			for (j in 1:Nquarter){
 				log_beta[i, j] ~ normal(0, 1/0.001);
 			}
 		}
-
 		logit_phi ~ normal(0, 1);
+		
+		// Likelihood function
 		for (i in 1:Nquarter){
 			for (t in 1:Nsteps-1){
-				I_it_sampled[i, t+1] ~ poisson(lambda[i, t]);
+				I_it[i, t+1] ~ poisson(lambda[i, t]);
 			}
 		}			
 	}

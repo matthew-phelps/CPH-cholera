@@ -1,0 +1,40 @@
+# To relax Model 1.1, we allowed for each location to have an independent internal transmission coefficient (βi)
+# and only allowed for one external transmission coecient shared by all locations (α). The natural logarithm
+# of all transmission coecients here were assigned independent N(0,   1/0.001 ) priors.
+
+model {
+	# Beta log hypreprior distributions
+	for (i in 1:Nquarter){
+		for (j in 1:Nquarter){
+			log_beta[i, j] ~ dnorm(mu, tau);
+		}
+	}
+	mu ~ dnorm(0, 0.00001)
+	tau <- pow(sigma, -2)
+	sigma ~ dunif(0, 1000)
+	
+	# Beta priors
+	for (i in 1:Nquarter){
+		for (j in 1:Nquarter){
+			beta[i, j] <- exp(log_beta[i, j]);
+		}
+	}
+
+	# Lambda
+	for (t in 1:Nsteps){
+		for (i in 1:Nquarter){
+			lambda[i, t] <- frac_suseptible_it[i, t] * phi * sum(beta[i, ] * I_it[, t]);
+		}
+	}
+
+	# Phi
+	logit_phi ~ dnorm(0, 10);
+	phi <- exp(logit_phi) / (1 + exp(logit_phi));
+	
+	# Likelihood function
+	for (i in 1:Nquarter){
+		for (t in 1:(Nsteps-1)){
+			I_it[i, t+1] ~ dpois(lambda[i, t]);
+		}
+	}			
+}
