@@ -135,14 +135,14 @@ par.jags <- run.jags(model = 'Rcodes\\model1.1.bug',method = 'parallel',
                      n.chains = 3,
                      adapt = 5000,
                      burnin = 10000,
-                     sample = 550000,
-                     thin = 2,
+                     sample = 500000,
+                     thin = 3,
                      summarise = F,
                      plots = F)
 
 par.jags.2 <- add.summary(par.jags)
-model1.1_coda = as.mcmc.list( par.jags )
-
+model1.1_coda = as.mcmc.list( par.jags.2 )
+rm(par.jags)
 save(par.jags.2, file = 'data\\Rdata\\par_jags_2.Rdata')
 
 # JAGS DIAGNOSTICS --------------------------------------------------------
