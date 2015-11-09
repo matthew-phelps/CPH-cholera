@@ -28,7 +28,7 @@ model {
 	# Lambda
 	for (t in 2:Nsteps){
 		for (i in 1:Nquarter){
-			lambda[i, t] <- ( (S_it[i, t-1] * phi) - (I_it[i, t-1] / phi) )  / N_i[i, t] * sum(beta[i, ] * I_it[, t]);
+			lambda[i, t] <- ( (S_it[i, t-1]) - (I_it[i, t-1] / phi) )  / N_i[i, t] * sum(beta[i, ] * I_it[, t]);
 		}
 	}
 	# Phi

@@ -66,17 +66,17 @@ dataList <- list(Nquarter=Nquarter,
 # JAGS --------------------------------------------------------------------
 
 # Non-parallel run of JAGS model
-jags <- jags.model('Rcodes\\model1.1.stan',
-                   data = dataList,
-                   n.chains = 1,
-                   n.adapt = 1000)
-
-update(object = jags, n.iter = 500)
-
-model1.1_fit <-coda.samples(model = jags, 
-                            variable.names = 'beta',
-                            n.iter = 15000)
-# plot(model1.1_fit[, 1])
+# jags <- jags.model('Rcodes\\model1.1.stan',
+#                    data = dataList,
+#                    n.chains = 1,
+#                    n.adapt = 1000)
+# 
+# update(object = jags, n.iter = 500)
+# 
+# model1.1_fit <-coda.samples(model = jags, 
+#                             variable.names = 'beta',
+#                             n.iter = 15000)
+# # plot(model1.1_fit[, 1])
 # gelman.plot(model1.1_fit[,1])
 
 # Run jags using parallel
@@ -119,20 +119,12 @@ save(phi_summary, file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
 
 
 
-beta_vect <-0
-for (i in 1:(Nquarter*Nquarter)){
-beta_vect[i] <- round(summary(model1.1_coda[,i])$statistics[1], digits = 3)
-}
+# Quarter x Quarter matrix of force of infection
 beta_pe <- as.data.frame(matrix(beta_vect, nrow = Nquarter, ncol = Nquarter))
-
 row.names(beta_pe) <- q_names[,1]
 colnames(beta_pe) <- q_names[,1]
 
-# Get Lambda PE into human readible matrix
-lambda_vect <- 0
-for (i in (Nquarter*Nquarter + 1):(Nquarter*Nsteps + Nquarter*Nquarter)){
-  lambda_vect[i  - (Nquarter*Nquarter)] <- round(summary(model1.1_coda[,i])$statistics[1], digits = 3)
-}
+
 lambda_pe <- as.data.frame(matrix(lambda_vect, nrow = Nquarter, ncol = Nsteps))
 row.names(lambda_pe) <- q_names[,1]
 
