@@ -51,12 +51,14 @@ for (z in 1:loops){
 }
 
 # Initialize matrix of I_it mean on each neighborhood/time-step
-for (z in 1:loops){
-  I_it_mean <- 
+for (i in 1:Nquarter){
+  for (t in 1:Nsteps){
+    I_it_mean[i, t] <- I_est_list[[z]][i, t]) 
+  }
 }
 
-I_est_list[[1]][2,3]
 
-
+i = 1
+t = 10
 # plot(S_it_est[1, ], type = 'l', col = 'darkred', lwd = 2)
 plot(I_it_est[1, ], type = 'l', col = 'darkred', lwd = '2')
