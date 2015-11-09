@@ -1,5 +1,5 @@
 # Author: Matthew Phelps
-#Desc: JAGS model of CPH 1853
+#Desc: Prepare data for model simulation based on posterior
 # Dependicies: Data 1, Data 2, 5_GLM_data_reshape, 8c_JAGS
 
 
@@ -33,21 +33,31 @@ q_names <-as.data.frame(unique(combined$quarter))
 
 
 I_it <- matrix(NA, Nquarter, Nsteps-1)
+S_it <- matrix(NA, Nquarter, Nsteps-1)
+
+N_it <- matrix(NA, Nquarter, Nsteps)
+
 I_i_t1 <- matrix(0, nrow = Nquarter, ncol = 1)
-N <- matrix(NA, Nquarter, Nsteps-1)
-S <- matrix(NA, Nquarter, Nsteps-1)
-# Initial infectious state for all quarters
+S_i_t1 <- matrix(0, nrow = Nquarter, ncol = 1)
+N_i_t1 <- matrix(0, nrow = Nquarter, ncol = 1)
+# Initial state for all quarters
 for (i in 1:Nquarter){
   I_i_t1[i, 1] <- (combined$sick.total.week[which(combined$quarterID==i)])[1]
-  S_i_t1[i, 1] <- 
+  S_i_t1[i, 1] <- (combined$S[which(combined$quarterID==i)])[1]
+}
+
+for(i in 1:Nquarter){
+  for (t in 1:Nsteps){
+    N_it[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+  }
 }
 
 # Bind first time-step of infection data to block of NAs the size of the remaining
 # timesteps. These NAs will be overwritten with simulated data 
-I_it_est <- as.data.frame(cbind(I_i_t1, I_it))
+I_it_est <- (cbind(I_i_t1, I_it))
+S_it_est <- (cbind(S_i_t1, S_it))
 
-
-
+rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
 
 # PREPARE MCMC DRAWS ------------------------------------------------------
 
@@ -64,39 +74,10 @@ betas_matrix <- rbind(chain1[, 1:n_param-1], chain2[, 1:n_param-1], chain3[, 1:n
 # Drop = F stops this from happening
 phi_matrix <- rbind(chain1[, 'phi', drop = FALSE], chain2[, 'phi', drop = FALSE], chain3[, 'phi', drop = FALSE])
 
-rm(chain1, chain2, chain3)
+rm(chain1, chain2, chain3, par.jags.2)
 
 
 
-# MODEL -------------------------------------------------------------------
 
-# For each model run, create 8x8 matrix so each neighborhood pair has beta estimate
-# Value is drawn from one row of MCMC posterior. Sampleing with replacement
-set.seed(123)
-step1 <- betas_matrix[sample(nrow(betas_matrix), 1), ]
-step2 <- do.call(rbind, step1)
-step3 <- matrix(step2, nrow = 8, ncol = 8, byrow = F)
-beta_sample_itr <- as.data.frame(step3)
-rm(step1, step2, step3)
-
-phi_sample <- phi_matrix[sample(nrow(phi_matrix), 1), ]
-
-
-# # Calculate Lambda for every neighborhood-Timestep pair
-
-# for (i in 1:Nquarter){
-#   for (t in 1:Nsteps){
-#    
-#   }
-# }
-
-# Estimate I,t+1
-Lambda_est <- matrix(data = 0, nrow = Nquarter, ncol = Nsteps)
-for (t in 1:(Nsteps-1)){
-  for (i in 1:Nquarter){
-    Lambda_est[i, t] <- S_est[i, t] / N_est[i, t] * phi_sample * sum(beta_sample_itr[i, ] * I_it_est[, t])
-    I_it_est[i, t+1] <- rpois(1, Lambda_est[i, t])
-    S
-  }
-}
+save(file = 'data\\Rdata\\model_sim_data.Rdata', list = ls())
 
