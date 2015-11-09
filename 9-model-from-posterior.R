@@ -20,7 +20,9 @@ rm(list = ls())
 load(file = "data\\Rdata\\quarter_combined.Rdata")
 
 
-### Prepare data to send to Stan
+
+# INITIALIZE EMPTY DF -----------------------------------------------------
+
 Nsteps <- 16
 quarterID <- as.numeric(combined$quarterID)
 n <- as.numeric(length(quarterID))
