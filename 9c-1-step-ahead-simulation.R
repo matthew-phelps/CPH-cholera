@@ -61,8 +61,18 @@ for (i in 1:Nquarter){
   I_quarter$week_index <- 1:Nsteps
   I_quarter$day_index <- 7 * I_quarter$week_index
   I_quarter$week_index <- NULL
-  I_quarter_melt_list[[i]] <- melt(I_quarter, id.vars = 'day_index')
+  I_quarter$quarter_name <- q_names[i, 1]
+  I_quarter_melt_list[[i]] <- melt(I_quarter, id.vars = c('day_index', 'quarter_name'))
 }
+
+
+# Merge all observations from all quarters into one long df
+I_quarter_melt <- I_quarter_melt_list[[1]]
+for (i in 2:Nquarter){
+  I_quarter_melt <- rbind(I_quarter_melt, I_quarter_melt_list[[i]])
+}
+rm(I_quarter_melt_list)
+
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
 city_pe <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
@@ -98,15 +108,46 @@ plot1 <- ggplot(data = city_pe_melt[which(city_pe_melt$variable != 'day_index'),
 plot1
 
 
-# Quartery Infectious (Christianshavn)
-plot_christianshavn<- ggplot(data = I_quarter_melt, aes(x = day_index, y = value, group = variable)) +
-  geom_line(color = 'darkred', alpha = 0.05) +
-  ggtitle('Christianshavn simulated\n n = 2000')
-plot_christianshavn
-ggsave(plot_christianshavn, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Christanshavn_t_plus1.pdf',
-       width=15, height=9,
+# Panel Quarters
+panel_data <- combined
+panel_data$day_index <- (combined$week.id +1) * 7
+panel_data <- dplyr::rename(panel_data, quarter_name = quarter)
+
+panel_I_quarter <- ggplot (I_quarter_melt, 
+                           aes( x = day_index, y = value, 
+                                group = variable, color = quarter_name)) +
+  geom_line(alpha = 0.01) +
+  geom_line(data = panel_data,
+            size = 1.2,
+            color = 'black',
+            linetype = 4,
+            aes(x = day_index, y = sick.total.week,
+                group = quarter_name)) +
+  geom_vline( xintercept = 40, linetype = 2, alpha = 0.6, color = "black") +
+  facet_wrap(~quarter_name) +
+  xlab("Day index") +
+  ylab("Incident cases") +
+  xlim(0, 105) +
+  ggtitle ("Incident cases per week by quarter") +
+  theme_minimal() +
+  theme(legend.title = element_blank(),
+        legend.position = 'none',
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 15),
+        axis.title.x = element_text(size = 21, face = "bold"),
+        axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4),
+        plot.title = element_text(size = 18, face="bold"),
+        strip.text.x = element_text(size = 16),
+        strip.background = element_rect(color = '#F0F0F0', fill = '#F0F0F0')) 
+
+ggsave(panel_I_quarter,
+       filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\panel_I_quarter_plus1.pdf',
+       width=20, height=12,
        units = 'in')
+
+
+
+
 
 # PLOTS of NON-SIM DATA FOR COMPARISON ------------------------------------
 
