@@ -80,21 +80,21 @@ dataList <- list(Nquarter=Nquarter,
 # gelman.plot(model1.1_fit[,1])
 
 # Run jags using parallel
-itr <- 50000
+
 par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
                      monitor = c('beta', 'phi'),
                      data = dataList,
                      n.chains = 3,
                      adapt = 5000,
                      burnin = 10000,
-                     sample = 50000,
+                     sample = 100000,
                      thin = 3,
                      plots = F)
 
 #par.jags.2 <- add.summary(par.jags)
 model1.1_coda = as.mcmc.list( par.jags )
 save(par.jags, file = 'data\\Rdata\\par_jags.Rdata')
-save(itr, file = 'data\\Rdata\\itr.Rdata' )
+
 
 # JAGS DIAGNOSTICS --------------------------------------------------------
 

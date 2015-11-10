@@ -21,7 +21,6 @@ load(file = "data\\Rdata\\quarter_combined.Rdata")
 load(file = 'data\\Rdata\\beta_summary.Rdata')
 load(file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
 load(file = 'data\\Rdata\\par_jags.Rdata')
-load(file = 'data\\Rdata\\itr.Rdata')
 
 
 
@@ -80,20 +79,24 @@ rm(chain1, chain2, chain3, par.jags)
 
 # 95% HDI for EACH PARAMETER ----------------------------------------------
 
-lower_sample <- 0.025 * itr
-upper_sample <- itr - lower_sample
+
+lower_sample <- round( 0.025 * nrow(betas_matrix), digits = 0)
+upper_sample <- nrow(betas_matrix) - lower_sample
 sample_size <- length(lower_sample + 1:upper_sample)
 
+# Beta parameter
 step2 <- matrix(nrow = sample_size, ncol = n_param-1 )
-
 for (i in 1:(n_param-1)){
-step1 <- betas_matrix[order(betas_matrix[, i]), ]
-step2[, i] <- step1[lower_sample + 1:upper_sample, i]
+  step1 <- betas_matrix[order(betas_matrix[, i]), ]
+  step2[, i] <- step1[lower_sample + 1:upper_sample, i]
 }
+betas_matrix <- as.data.frame(step2)
+rm(step1, step2)
 
-
-step5 <- cbind(step2, step4)
-
+# Phi parameter
+step1 <- as.data.frame(phi_matrix[order(phi_matrix[, 1]), ])
+phi_matrix <- as.data.frame(step1[lower_sample + 1 : upper_sample, 1])
+rm(step1)
 
 save(file = 'data\\Rdata\\model_sim_data.Rdata', list = ls())
 

@@ -1,5 +1,5 @@
 # Author: Matthew Phelps
-#Desc: Prepare data for model simulation based on posterior
+#Desc: Full model from Initial time-step
 # Dependicies: Data 1, Data 2, 5_GLM_data_reshape, 8c_JAGS
 
 
@@ -24,7 +24,7 @@ set.seed(123)
 
 # For each model run, create 8x8 matrix so each neighborhood pair has beta estimate
 # Value is drawn from one row of MCMC posterior. Sampleing with replacement
-loops <- 3000
+loops <- 2000
 I_est_list <- list()
 S_it_est_list <- list()
 
@@ -88,6 +88,7 @@ for (z in 1:loops){
 # Infectious Data for all quarters (city_stoch level). Flatten each matrix
 city_stoch <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
 city_stoch$week_index <- 1:Nsteps
+city_stoch$day_index <- city_stoch$week_index * 7
 for (z in 1:loops){
   city_stoch[z] <- as.data.frame(colSums(I_est_list[[z]]))
 }
@@ -97,10 +98,12 @@ city_stoch_melt <- melt(city_stoch, id.vars = 'week_index')
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
 city_pe <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
 city_pe$week_index <- 1:Nsteps
+city_pe$day_index <- city_pe$week_index * 7
+
 for (z in 1:loops){
   city_pe[z] <- as.data.frame(colSums(I_est_pe_list[[z]]))
 }
-city_pe_melt <- melt(city_pe, id.vars = 'week_index')
+city_pe_melt <- melt(city_pe, id.vars = 'day_index')
 
 
 
@@ -129,7 +132,7 @@ city_stoch_S_melt <- melt(city_stoch_S, id.vars = 'week_index')
 # Quartery Infectious (Christianshavn)
 plot1 <- ggplot(data = I_quarter_melt, aes(x = week_index, y = value, group = variable)) +
   geom_line(color = 'darkred', alpha = 0.05) +
-  ggtitle('Christianshavn simulated\n n = 3000')
+  ggtitle('Christianshavn simulated\n n = 2000')
 plot1
 ggsave(plot1, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Christanshavn.pdf',
@@ -140,7 +143,7 @@ ggsave(plot1,
 # city_stoch level Infectious
 plot2 <- ggplot(data = city_stoch_melt, aes(x = week_index, y = value, group = variable)) +
   geom_line(color = 'darkgreen', alpha = 0.05) +
-  ggtitle('city_stoch level simulated\n n = 3000')
+  ggtitle('city_stoch level simulated\n n = 2000')
 plot2
 ggsave(plot2, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\city_stoch-I.pdf',
@@ -151,7 +154,7 @@ ggsave(plot2,
 # city_stoch level Infectious
 plot3 <- ggplot(data = city_stoch_S_melt, aes(x = week_index, y = value, group = variable)) +
   geom_line(color = 'darkblue', alpha = 0.05) +
-  ggtitle('city_stoch level Susceptible\n n = 3000')
+  ggtitle('city_stoch level Susceptible\n n = 2000')
 plot3
 ggsave(plot3, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\city_stoch-S.pdf',
@@ -160,9 +163,9 @@ ggsave(plot3,
 
 
 # city_pe level Infectious
-plot4 <- ggplot(data = city_pe_melt, aes(x = week_index, y = value, group = variable)) +
+plot4 <- ggplot(data = city_pe_melt, aes(x = day_index, y = value, group = variable)) +
   geom_line(color = 'darkgreen', alpha = 0.05) +
-  ggtitle('city_pe level simulated\n n = 3000')
+  ggtitle('city_pe level simulated\n n = 2000')
 plot4
 ggsave(plot4, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\city_pe-I.pdf',

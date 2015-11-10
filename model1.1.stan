@@ -9,7 +9,7 @@ model {
 			log_beta[i, j] ~ dnorm(mu, tau);
 		}
 	}
-	mu ~ dnorm(0, 0.00001)
+	mu ~ dnorm(0, 0.001)
 	tau <- pow(sigma, -2)
 	sigma ~ dunif(0, 1.5)
 	
@@ -20,6 +20,10 @@ model {
 		}
 	}
 	
+	# Phi prior
+	logit_phi ~ dnorm(0, 0.01);
+	phi <- exp(logit_phi) / (1 + exp(logit_phi));
+
 	# First time-step
 	for (i in 1:Nquarter){
 		lambda[i, 1] <- 1 * sum(beta[i, ] * I_it[, 1]);
@@ -31,9 +35,7 @@ model {
 			lambda[i, t] <- ( (S_it[i, t-1]) - (I_it[i, t-1] / phi) )  / N_i[i, t] * sum(beta[i, ] * I_it[, t]);
 		}
 	}
-	# Phi
-	logit_phi ~ dnorm(0, 0.01);
-	phi <- exp(logit_phi) / (1 + exp(logit_phi));
+
 	
 
 	# Likelihood function
