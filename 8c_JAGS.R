@@ -80,6 +80,7 @@ dataList <- list(Nquarter=Nquarter,
 # gelman.plot(model1.1_fit[,1])
 
 # Run jags using parallel
+itr <- 50000
 par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
                      monitor = c('beta', 'phi'),
                      data = dataList,
@@ -90,16 +91,16 @@ par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
                      thin = 3,
                      plots = F)
 
-par.jags.2 <- add.summary(par.jags)
-model1.1_coda = as.mcmc.list( par.jags.2 )
-rm(par.jags)
-save(par.jags.2, file = 'data\\Rdata\\par_jags_2.Rdata')
+#par.jags.2 <- add.summary(par.jags)
+model1.1_coda = as.mcmc.list( par.jags )
+save(par.jags, file = 'data\\Rdata\\par_jags.Rdata')
+save(itr, file = 'data\\Rdata\\itr.Rdata' )
 
 # JAGS DIAGNOSTICS --------------------------------------------------------
 
-print(par.jags.2)
-gelman.diag(par.jags.2)
-plot(par.jags.2, layout=c(4, 3))
+print(par.jags)
+gelman.diag(par.jags)
+#plot(par.jags, layout=c(4, 3))
 
 
 plot(model1.1_coda[,1:10])
@@ -110,10 +111,10 @@ rmeanplot(model1.1_coda[, 1:10])
 
 # # Get beta PE into human readible matrix --------------------------------
 
-model1_out <-as.data.frame(print(par.jags.2))
+model1_out <-as.data.frame(print(par.jags))
 nrow(model1_out)
 beta_summary <- model1_out[1:64, ]
-phi_summary <- model1_out[193, ]
+phi_summary <- model1_out[65, ]
 save(beta_summary, file = 'data\\Rdata\\beta_summary.Rdata')
 save(phi_summary, file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
 

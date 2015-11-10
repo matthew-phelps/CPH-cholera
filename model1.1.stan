@@ -11,7 +11,7 @@ model {
 	}
 	mu ~ dnorm(0, 0.00001)
 	tau <- pow(sigma, -2)
-	sigma ~ dunif(0, 1000)
+	sigma ~ dunif(0, 1.5)
 	
 	# Beta priors
 	for (i in 1:Nquarter){
@@ -32,7 +32,7 @@ model {
 		}
 	}
 	# Phi
-	logit_phi ~ dnorm(0, 10);
+	logit_phi ~ dnorm(0, 0.01);
 	phi <- exp(logit_phi) / (1 + exp(logit_phi));
 	
 
