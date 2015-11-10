@@ -11,7 +11,8 @@ pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH"
 setwd(pc)
 rm(list = ls())
 
-
+library(ggplot2)
+library(reshape)
 
 # LOAD data ---------------------------------------------------------------
 
@@ -23,7 +24,7 @@ load(file = 'data\\Rdata\\model_sim_data.Rdata')
 
 # For each model run, create 8x8 matrix so each neighborhood pair has beta estimate
 # Value is drawn from one row of MCMC posterior. Sampleing with replacement
-loops <- 300
+loops <- 3000
 I_est_list <- list()
 
 for (z in 1:loops){
@@ -50,15 +51,54 @@ for (z in 1:loops){
   I_est_list[[z]] <- I_it_est
 }
 
-# Initialize matrix of I_it mean on each neighborhood/time-step
-for (i in 1:Nquarter){
-  for (t in 1:Nsteps){
-    I_it_mean[i, t] <- I_est_list[[z]][i, t]) 
-  }
+
+
+# AVERGAGE I --------------------------------------------------------------
+
+# # Initialize matrix of I_it mean on each neighborhood/time-step
+# I_sum <- matrix(data = 0, nrow = length(I_it_est), ncol = 1)
+# for (i in 1:length(I_it_est)){
+#   
+#   for (z in 1:loops){
+#     if(z == 1){
+#       I_sum[i, 1] <- I_est_list[[1]][i]
+#     } else if (z > 1) {
+#       I_sum[i, 1] <- I_est_list[[z - 1]][i] + I_est_list[[z]][i]
+#     }
+#     I_mean[i] <- I_sum[i] / loops
+#   }
+# }
+# 
+# I_mean_df <- matrix(data = I_mean, nrow = Nquarter, ncol = Nsteps)
+# 
+
+
+# OVERLAY PLOTS -----------------------------------------------------------
+
+
+# Matrix that ggplot can handle
+I_quarter <-(I_est_list[[1]][1, ])
+for (z in 2:(loops)){
+I_quarter <- rbind(I_quarter, I_est_list[[z]][1, ])
 }
+I_quarter <- as.data.frame(t(I_quarter))
+I_quarter$week_index <- 1:16
+I_quarter_melt <- melt(I_quarter, id.vars = 'week_index')
+
+# PLOTS -------------------------------------------------------------------
 
 
-i = 1
-t = 10
+ggplot(data = I_quarter_melt, aes(x = week_index, y = value, group = variable)) +
+  geom_line(color = 'darkred', alpha = 0.05)
+
+
+# Plot last model run
 # plot(S_it_est[1, ], type = 'l', col = 'darkred', lwd = 2)
 plot(I_it_est[1, ], type = 'l', col = 'darkred', lwd = '2')
+
+
+# Plot averages
+plot(I_mean_df[1, ], type = 'l', col = 'darkred', lwd = '2')
+
+
+# Plot each model run with a opacity
