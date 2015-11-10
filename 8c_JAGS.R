@@ -17,6 +17,7 @@ library(parallel)
 library(runjags)
 library(rjags)
 library(mcmcplots)
+library(ggmcmc)
 options(mc.cores = (parallel::detectCores()-1 ))
 
 
@@ -79,8 +80,19 @@ dataList <- list(Nquarter=Nquarter,
 # gelman.plot(model1.1_fit[,1])
 
 # Run jags using parallel
+# par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
+#                      monitor = c('beta', 'phi'),
+#                      data = dataList,
+#                      n.chains = 3,
+#                      adapt = 5000,
+#                      burnin = 10000,
+#                      sample = 100000,
+#                      thin = 3,
+#                      plots = F)
 
-par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
+# JAGS with model 1.2 - quarter phi's
+
+par.jags <- run.jags(model = 'Rcodes\\model1.2.stan', method = 'parallel',
                      monitor = c('beta', 'phi'),
                      data = dataList,
                      n.chains = 3,
@@ -102,9 +114,22 @@ gelman.diag(par.jags)
 #plot(par.jags, layout=c(4, 3))
 
 
-plot(model1.1_coda[,1:10])
-rmeanplot(model1.1_coda[, 1:10])
+plot(model1.1_coda[,65])
+rmeanplot(model1.1_coda[, 65])
 
+phi1 <- model1.1_coda[, 65]
+gelman.diag(phi1)
+
+model1_2_ggs <- ggs(model1.1_coda)
+
+ggmcmc(model1_2_ggs, file = 'Output\\MCMC\\model1_2.pdf',
+       family = 'phi')
+
+
+ggmcmc(model1_2_ggs, file = 'Output\\MCMC\\model1_2_rm.pdf',
+       family = 'phi', plot = c('ggs_running', 'ggs_uatocorelation, ggs_Rhat, ggs_caterpillar'))
+
+ggs_traceplot(model1_2_ggs, family = 'phi')
 
 
 
