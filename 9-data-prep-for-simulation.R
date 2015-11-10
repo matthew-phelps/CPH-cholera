@@ -98,5 +98,15 @@ step1 <- as.data.frame(phi_matrix[order(phi_matrix[, 1]), ])
 phi_matrix <- as.data.frame(step1[lower_sample + 1 : upper_sample, 1])
 rm(step1)
 
+
+# POINT ESTIMATES ---------------------------------------------------------
+
+# Beta
+step1 <- as.matrix(beta_summary['Mean'])
+beta_pe <- matrix(step1, nrow = Nquarter, ncol = Nquarter, byrow = F)
+
+# Phi
+phi_pe <- as.matrix(phi_summary['Mean'])
+
 save(file = 'data\\Rdata\\model_sim_data.Rdata', list = ls())
 

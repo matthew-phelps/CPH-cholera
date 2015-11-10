@@ -62,7 +62,6 @@ dataList <- list(Nquarter=Nquarter,
 
 
 
-
 # JAGS --------------------------------------------------------------------
 
 # Non-parallel run of JAGS model
@@ -93,7 +92,7 @@ par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
 
 #par.jags.2 <- add.summary(par.jags)
 model1.1_coda = as.mcmc.list( par.jags )
-save(par.jags, file = 'data\\Rdata\\par_jags.Rdata')
+
 
 
 # JAGS DIAGNOSTICS --------------------------------------------------------
@@ -115,8 +114,7 @@ model1_out <-as.data.frame(print(par.jags))
 nrow(model1_out)
 beta_summary <- model1_out[1:64, ]
 phi_summary <- model1_out[65, ]
-save(beta_summary, file = 'data\\Rdata\\beta_summary.Rdata')
-save(phi_summary, file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
+
 
 
 
@@ -139,6 +137,17 @@ for (i in 1:Nquarter){
 row.names(I_est) <- q_names[,1]
 
 
+# SAVE --------------------------------------------------------------------
+
+save(I_it, file = 'data\\Rdata\\I_it.Rdata')
+save(S_it, file = 'data\\Rdata\\S_it.Rdata')
+
+save(par.jags, file = 'data\\Rdata\\par_jags.Rdata')
+
+save(beta_summary, file = 'data\\Rdata\\beta_summary.Rdata')
+save(phi_summary, file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
+
+save(q_names, file = 'data\\Rdata\\q_names.Rdata')
 
 # Manual model ------------------------------------------------------------
 

@@ -58,10 +58,7 @@ for (z in 1:loops){
 # MODEL (POINT ESTIMATES) -------------------------------------------------------------------
 
 # Reshape parameters PE data
-step1 <- as.matrix(beta_summary['Mean'])
-beta_pe <- matrix(step1, nrow = Nquarter, ncol = Nquarter, byrow = F)
 
-phi_pe <- as.matrix(phi_summary['Mean'])
 
 
 # Estimate epidemic from initial state
