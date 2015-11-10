@@ -130,7 +130,8 @@ ggmcmc(model1_2_ggs, file = 'Output\\MCMC\\model1_2_rm.pdf',
        family = 'phi', plot = c('ggs_running', 'ggs_uatocorelation, ggs_Rhat, ggs_caterpillar'))
 
 ggs_traceplot(model1_2_ggs, family = 'phi')
-
+ggs_density(model1_2_ggs, family = 'phi')
+ggs_running(model1_2_ggs, family = 'phi')
 
 
 # # Get beta PE into human readible matrix --------------------------------
