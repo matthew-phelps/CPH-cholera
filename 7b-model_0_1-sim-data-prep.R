@@ -92,12 +92,16 @@ rm(step1)
 
 # POINT ESTIMATES ---------------------------------------------------------
 
-# Beta
+# Beta: extact mean from jags file
 step1 <- as.matrix(beta_summary_0_1['Mean'])
-beta_pe <- matrix(step1, nrow = Nquarter, ncol = Nquarter, byrow = F)
+beta_pe <- matrix(step1, nrow = 1, ncol = 1, byrow = F)
 
 # Phi
 phi_pe <- as.matrix(phi_summary_0_1['Mean'])
 
-save(list = ls(), file = 'data\\Rdata\\model_sim_data.Rdata' )
+
+
+# SAVE --------------------------------------------------------------------
+
+save(list = ls(), file = 'data\\Rdata\\model_0_1_sim_data.Rdata' )
 

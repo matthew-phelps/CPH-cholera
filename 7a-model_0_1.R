@@ -32,19 +32,30 @@ I_it <- I_it[1,]
 S_it <- S_it[1,]
 N_i <- N_i[1, ]
 
-dataList <- list(S_it = S_it,
-                N_i = N_i,
+
+
+dataList <- list(N_i = N_i,
                 I_it=I_it,
                 Nsteps=Nsteps)
+
+
+
+
+jags <- jags.model('Rcodes\\model_0_1.stan',
+                   data = dataList,
+                   n.chains = 1,
+                   n.adapt = 1000)
+
+
 # JAGS model 0.1 - quarter phi's --------------------------------------------------------------------
 
 model_0_1_jags <- run.jags(model = 'Rcodes\\model_0_1.stan', method = 'parallel',
-                           monitor = c('beta', 'phi'),
+                           monitor = c('beta', 'phi', 'mu', 'tau', 'sigma', 'logit_phi', 'lambda'),
                            data = dataList,
                            n.chains = 3,
                            adapt = 5000,
                            burnin = 10000,
-                           sample = 500000,
+                           sample = 100000,
                            thin = 3,
                            plots = F)
 
@@ -80,6 +91,18 @@ running_beta <- ggs_running(model_0_1_ggs, family = 'beta')
 ggsave(trace_beta, filename = "Output\\MCMC\\trace_beta.jpg")
 ggsave(density_beta, filename = 'Output\\MCMC\\density_beta.jpg')
 ggsave(running_beta, filename = 'Output\\MCMC\\running_beta.png')
+
+
+trace_phi <- ggs_traceplot(model_0_1_ggs, family = 'phi', simplify = .3)
+density_phi <- ggs_density(model_0_1_ggs, family = 'phi')
+running_phi <- ggs_running(model_0_1_ggs, family = 'phi')
+
+
+ggsave(trace_phi, filename = "Output\\MCMC\\trace_phi.jpg")
+ggsave(density_phi, filename = 'Output\\MCMC\\density_phi.jpg')
+ggsave(running_phi, filename = 'Output\\MCMC\\running_phi.png')
+
+
 
 # # Get beta PE into human readible matrix --------------------------------
 
