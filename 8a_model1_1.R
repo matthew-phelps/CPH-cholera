@@ -126,8 +126,8 @@ ggs_running(model1_1_ggs, family = 'phi')
 
 model1_1_out <-as.data.frame(print(model1_1_jags))
 nrow(model1_1_out)
-beta_summary_1_2 <- model1_1_out[1:64, ]
-phi_summary_1_2 <- model1_1_out[65, ]
+beta_summary_1_1 <- model1_1_out[1:64, ]
+phi_summary_1_1 <- model1_1_out[65, ]
 
 
 
@@ -154,10 +154,10 @@ row.names(lambda_pe) <- q_names[,1]
 save(I_it, file = 'data\\Rdata\\I_it.Rdata')
 save(S_it, file = 'data\\Rdata\\S_it.Rdata')
 
-save(model1_2_jags, file = 'data\\Rdata\\model1_1_jags.Rdata')
+save(model1_1_jags, file = 'data\\Rdata\\model1_1_jags.Rdata')
 
-save(beta_summary_1_2, file = 'data\\Rdata\\beta_summary_1_1.Rdata')
-save(phi_summary_1_2, file = 'data\\Rdata\\phi_summary_1_1.Rdata')
+save(beta_summary_1_1, file = 'data\\Rdata\\beta_summary_1_1.Rdata')
+save(phi_summary_1_1, file = 'data\\Rdata\\phi_summary_1_1.Rdata')
 
 save(q_names, file = 'data\\Rdata\\q_names.Rdata')
 
