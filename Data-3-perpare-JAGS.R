@@ -1,5 +1,5 @@
 # Author: Matthew Phelps
-#Desc: JAGS model of CPH 1853. Currently uses combined quarters 
+#Desc: Prep data to send to JAGS. Save data as list 
 # Dependicies: Data 1, Data 2, 5_GLM_data_reshape
 
 

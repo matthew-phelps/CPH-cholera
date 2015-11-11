@@ -8,7 +8,7 @@
 
 graphics.off()
 mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
-pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata\\"
+pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH"
 setwd(pc)
 rm(list = ls())
 library(plyr)
@@ -23,7 +23,7 @@ options(mc.cores = (parallel::detectCores()-1 ))
 
 # COMBINED quarters -------------------------------------------------------
 rm(list = ls())
-load(file = "Data_3.Rdata")
+load(file = "data\\Rdata\\Data_3.Rdata")
 
 
 # JAGS --------------------------------------------------------------------

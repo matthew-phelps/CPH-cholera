@@ -1,5 +1,5 @@
 # Author: Matthew Phelps
-#Desc: Prepare data for model simulation based on posterior
+#Desc: Prepare data simulation Model 0_1
 # Dependicies: Data 1, Data 2, 5_GLM_data_reshape, 8c_JAGS
 
 
@@ -18,40 +18,30 @@ rm(list = ls())
 
 
 load(file = "data\\Rdata\\quarter_combined.Rdata")
-load(file = 'data\\Rdata\\beta_summary_1_1.Rdata')
-load(file = 'data\\Rdata\\phi_summary_1_1.Rdata')
-load(file = 'data\\Rdata\\model1_1_jags.Rdata')
-JagsOutput <- model1_1_jags
-rm(model1_1_jags)
-
+load(file = 'data\\Rdata\\beta_summary_0_1.Rdata')
+load(file = 'data\\Rdata\\phi_summary_0_1.Rdata')
+load(file = 'data\\Rdata\\model_0_1_jags.Rdata')
+load(file = 'data\\Rdata\\Data_3.Rdata')
+JagsOutput <- model_0_1_jags
+rm(model_0_1_jags)
 
 # INITIALIZE EMPTY DF -----------------------------------------------------
 
-Nsteps <- 16
-quarterID <- as.numeric(combined$quarterID)
-Nquarter <- length(table(quarterID))
-q_names <-as.data.frame(unique(combined$quarter))
 
+I_it <- matrix(NA, 1, Nsteps-1)
+S_it <- matrix(NA, 1, Nsteps-1)
 
-I_it <- matrix(NA, Nquarter, Nsteps-1)
-S_it <- matrix(NA, Nquarter, Nsteps-1)
+N_it <- matrix(NA, 1, Nsteps)
 
-N_it <- matrix(NA, Nquarter, Nsteps)
+I_i_t1 <- matrix(0, nrow = 1, ncol = 1)
+S_i_t1 <- matrix(0, nrow = 1, ncol = 1)
+N_i_t1 <- matrix(0, nrow = 1, ncol = 1)
+I_i_t1[1, 1] <- (combined$sick.total.week[which(combined$quarterID==1)])[1]
+S_i_t1[1, 1] <- (combined$S[which(combined$quarterID==1)])[1]
 
-I_i_t1 <- matrix(0, nrow = Nquarter, ncol = 1)
-S_i_t1 <- matrix(0, nrow = Nquarter, ncol = 1)
-N_i_t1 <- matrix(0, nrow = Nquarter, ncol = 1)
-# Initial state for all quarters
-for (i in 1:Nquarter){
-  I_i_t1[i, 1] <- (combined$sick.total.week[which(combined$quarterID==i)])[1]
-  S_i_t1[i, 1] <- (combined$S[which(combined$quarterID==i)])[1]
-}
-
-for(i in 1:Nquarter){
-  for (t in 1:Nsteps){
-    N_it[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+for (t in 1:Nsteps){
+    N_it[1, t] <- (combined$pop1855[which(combined$quarterID==1)])[t]
   }
-}
 
 # Bind first time-step of infection data to block of NAs the size of the remaining
 # timesteps. These NAs will be overwritten with simulated data 
@@ -79,7 +69,7 @@ phi_matrix <- rbind(chain1[, 'phi', drop = FALSE],
                     chain2[, 'phi', drop = FALSE],
                     chain3[, 'phi', drop = FALSE])
 
-rm(chain1, chain2, chain3, model1_1_jags)
+rm(chain1, chain2, chain3, JagsOutput)
 
 
 # 95% HDI for EACH PARAMETER ----------------------------------------------
@@ -90,13 +80,9 @@ upper_sample <- nrow(betas_matrix) - lower_sample
 sample_size <- length(lower_sample + 1:upper_sample)
 
 # Beta parameter
-step2 <- matrix(nrow = sample_size, ncol = n_param-1 )
-for (i in 1:(n_param-1)){
-  step1 <- betas_matrix[order(betas_matrix[, i]), ]
-  step2[, i] <- step1[lower_sample + 1:upper_sample, i]
-}
-betas_matrix <- as.data.frame(step2)
-rm(step1, step2)
+step1 <- as.data.frame(betas_matrix[order(betas_matrix[, 1]), ])
+betas_matrix <- as.data.frame(step1[(lower_sample + 1) : upper_sample, 1])
+rm(step1)
 
 # Phi parameter
 step1 <- as.data.frame(phi_matrix[order(phi_matrix[, 1]), ])
@@ -107,11 +93,11 @@ rm(step1)
 # POINT ESTIMATES ---------------------------------------------------------
 
 # Beta
-step1 <- as.matrix(beta_summary_1_1['Mean'])
+step1 <- as.matrix(beta_summary_0_1['Mean'])
 beta_pe <- matrix(step1, nrow = Nquarter, ncol = Nquarter, byrow = F)
 
 # Phi
-phi_pe <- as.matrix(phi_summary_1_1['Mean'])
+phi_pe <- as.matrix(phi_summary_0_1['Mean'])
 
-save(file = 'data\\Rdata\\model_sim_data.Rdata', list = ls())
+save(list = ls(), file = 'data\\Rdata\\model_sim_data.Rdata' )
 

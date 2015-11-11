@@ -1,6 +1,6 @@
 # Author: Matthew Phelps
 #Desc: JAGS model of CPH 1853. Currently uses combined quarters 
-# Dependicies: Data 1, Data 2, 5_GLM_data_reshape
+# Dependicies: Data 1, Data 2, 5_GLM_data_reshape, Data-3
 
 
 

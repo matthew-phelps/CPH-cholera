@@ -19,7 +19,7 @@ model {
 
 	# Lambda
 	for (t in 2:Nsteps){
-			lambda[t] <- ( (S_it[t-1]) - (I_it[t-1] / phi) )  / N_i[t] * beta);
+			lambda[t] <- ( (S_it[t-1]) - (I_it[t-1] / phi) )  / N_i[t] * beta;
 	}
 
 	
@@ -30,7 +30,6 @@ model {
 	}			
 	
 	   #data# S_it
-	   #data# Nquarter
 	   #data# Nsteps
 	   #data# N_i
 	   #data# I_it
