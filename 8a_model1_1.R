@@ -92,7 +92,7 @@ dataList <- list(Nquarter=Nquarter,
 
 # JAGS with model 1.2 - quarter phi's
 
-par.jags <- run.jags(model = 'Rcodes\\model1.2.stan', method = 'parallel',
+model1_1_jags <- run.jags(model = 'Rcodes\\model1.2.stan', method = 'parallel',
                      monitor = c('beta', 'phi'),
                      data = dataList,
                      n.chains = 3,
@@ -102,44 +102,49 @@ par.jags <- run.jags(model = 'Rcodes\\model1.2.stan', method = 'parallel',
                      thin = 3,
                      plots = F)
 
-#par.jags.2 <- add.summary(par.jags)
-model1.1_coda = as.mcmc.list( par.jags )
+model_1_1_coda = as.mcmc.list( model1_1_jags )
 
 
 
 # JAGS DIAGNOSTICS --------------------------------------------------------
 
-print(par.jags)
-gelman.diag(par.jags)
-#plot(par.jags, layout=c(4, 3))
+print(model1_1_jags)
+gelman.diag(model1_1_jags)
 
 
-plot(model1.1_coda[,65])
-rmeanplot(model1.1_coda[, 65])
 
-phi1 <- model1.1_coda[, 65]
+plot(model_1_1_coda[,65])
+rmeanplot(model_1_1_coda[, 65])
+
+phi1 <- model_1_1_coda[, 65]
 gelman.diag(phi1)
 
-model1_2_ggs <- ggs(model1.1_coda)
+model1_2_ggs <- ggs(model_1_1_coda)
 
-ggmcmc(model1_2_ggs, file = 'Output\\MCMC\\model1_2.pdf',
+ggmcmc(model1_1_ggs, file = 'Output\\MCMC\\model1_2.pdf',
        family = 'phi')
 
 
-ggmcmc(model1_2_ggs, file = 'Output\\MCMC\\model1_2_rm.pdf',
+ggmcmc(model1_1_ggs, file = 'Output\\MCMC\\model1_2_rm.pdf',
        family = 'phi', plot = c('ggs_running', 'ggs_uatocorelation, ggs_Rhat, ggs_caterpillar'))
 
-ggs_traceplot(model1_2_ggs, family = 'phi')
-ggs_density(model1_2_ggs, family = 'phi')
-ggs_running(model1_2_ggs, family = 'phi')
+ggs_traceplot(model1_1_ggs, family = 'phi')
+ggs_density(model1_1_ggs, family = 'phi')
+ggs_running(model1_1_ggs, family = 'phi')
 
 
 # # Get beta PE into human readible matrix --------------------------------
 
-model1_out <-as.data.frame(print(par.jags))
-nrow(model1_out)
-beta_summary <- model1_out[1:64, ]
-phi_summary <- model1_out[65, ]
+model1_1_out <-as.data.frame(print(model1_1_jags))
+nrow(model1_1_out)
+beta_summary_1_2 <- model1_1_out[1:64, ]
+phi_summary_1_2 <- model1_1_out[65, ]
+
+
+
+# SAVE --------------------------------------------------------------------
+
+
 
 
 
@@ -153,14 +158,6 @@ colnames(beta_pe) <- q_names[,1]
 lambda_pe <- as.data.frame(matrix(lambda_vect, nrow = Nquarter, ncol = Nsteps))
 row.names(lambda_pe) <- q_names[,1]
 
-I_est <- as.data.frame(matrix(data = 0, nrow = Nquarter, ncol = Nsteps))
-for (i in 1:Nquarter){
-  for (t in 1:Nsteps){
-    I_est[i, t] <- rpois(1, lambda_pe[i, t])
-  }
-}
-
-row.names(I_est) <- q_names[,1]
 
 
 # SAVE --------------------------------------------------------------------
@@ -168,10 +165,10 @@ row.names(I_est) <- q_names[,1]
 save(I_it, file = 'data\\Rdata\\I_it.Rdata')
 save(S_it, file = 'data\\Rdata\\S_it.Rdata')
 
-save(par.jags, file = 'data\\Rdata\\par_jags.Rdata')
+save(model1_2_jags, file = 'data\\Rdata\\model1_1_jags.Rdata')
 
-save(beta_summary, file = 'data\\Rdata\\beta_summary.Rdata')
-save(phi_summary, file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
+save(beta_summary_1_2, file = 'data\\Rdata\\beta_summary_1_1.Rdata')
+save(phi_summary, file = 'data\\Rdata\\phi_summary_1_1.Rdata')
 
 save(q_names, file = 'data\\Rdata\\q_names.Rdata')
 
