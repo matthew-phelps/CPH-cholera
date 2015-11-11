@@ -13,6 +13,7 @@ rm(list = ls())
 
 library(ggplot2)
 library(reshape)
+require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
@@ -128,7 +129,7 @@ panel_I_quarter <- ggplot (I_quarter_melt,
   xlab("Day index") +
   ylab("Incident cases") +
   xlim(0, 105) +
-  ggtitle ("Incident cases per week by quarter") +
+  ggtitle ("Incident cases per week by quarter\n One-step-ahead") +
   theme_minimal() +
   theme(legend.title = element_blank(),
         legend.position = 'none',

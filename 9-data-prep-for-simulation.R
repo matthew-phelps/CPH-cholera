@@ -18,9 +18,9 @@ rm(list = ls())
 
 
 load(file = "data\\Rdata\\quarter_combined.Rdata")
-load(file = 'data\\Rdata\\beta_summary.Rdata')
-load(file = 'data\\Rdata\\phi_sumphi_summary.Rdata')
-load(file = 'data\\Rdata\\par_jags.Rdata')
+load(file = 'data\\Rdata\\beta_summary_1_1.Rdata')
+load(file = 'data\\Rdata\\phi_summary_1_1.Rdata')
+load(file = 'data\\Rdata\\model1_1_jags.Rdata')
 
 
 
@@ -62,11 +62,11 @@ rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
 # PREPARE MCMC DRAWS ------------------------------------------------------
 
 # Remove 1st 5000K iterations for burn in from each chain
-n_iter <- length(par.jags$mcmc[[1]][, 1])
-n_param <- as.numeric(length(par.jags$mcmc[[1]][1, ]))
-chain1 <- as.data.frame(par.jags$mcmc[[1]][5000:n_iter, ])
-chain2 <- as.data.frame(par.jags$mcmc[[2]][5000:n_iter, ])
-chain3 <- as.data.frame(par.jags$mcmc[[3]][5000:n_iter, ])
+n_iter <- length(model1_1_jags$mcmc[[1]][, 1])
+n_param <- as.numeric(length(model1_1_jags$mcmc[[1]][1, ]))
+chain1 <- as.data.frame(model1_1_jags$mcmc[[1]][5000:n_iter, ])
+chain2 <- as.data.frame(model1_1_jags$mcmc[[2]][5000:n_iter, ])
+chain3 <- as.data.frame(model1_1_jags$mcmc[[3]][5000:n_iter, ])
 
 betas_matrix <- rbind(chain1[, 1:n_param-1], chain2[, 1:n_param-1], chain3[, 1:n_param-1])
 
@@ -74,7 +74,7 @@ betas_matrix <- rbind(chain1[, 1:n_param-1], chain2[, 1:n_param-1], chain3[, 1:n
 # Drop = F stops this from happening
 phi_matrix <- rbind(chain1[, 'phi', drop = FALSE], chain2[, 'phi', drop = FALSE], chain3[, 'phi', drop = FALSE])
 
-rm(chain1, chain2, chain3, par.jags)
+rm(chain1, chain2, chain3, model1_1_jags)
 
 
 # 95% HDI for EACH PARAMETER ----------------------------------------------
@@ -102,11 +102,11 @@ rm(step1)
 # POINT ESTIMATES ---------------------------------------------------------
 
 # Beta
-step1 <- as.matrix(beta_summary['Mean'])
+step1 <- as.matrix(beta_summary_1_1['Mean'])
 beta_pe <- matrix(step1, nrow = Nquarter, ncol = Nquarter, byrow = F)
 
 # Phi
-phi_pe <- as.matrix(phi_summary['Mean'])
+phi_pe <- as.matrix(phi_summary_1_1['Mean'])
 
 save(file = 'data\\Rdata\\model_sim_data.Rdata', list = ls())
 

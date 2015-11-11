@@ -79,20 +79,9 @@ dataList <- list(Nquarter=Nquarter,
 # # plot(model1.1_fit[, 1])
 # gelman.plot(model1.1_fit[,1])
 
-# Run jags using parallel
-# par.jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
-#                      monitor = c('beta', 'phi'),
-#                      data = dataList,
-#                      n.chains = 3,
-#                      adapt = 5000,
-#                      burnin = 10000,
-#                      sample = 100000,
-#                      thin = 3,
-#                      plots = F)
-
 # JAGS with model 1.2 - quarter phi's
 
-model1_1_jags <- run.jags(model = 'Rcodes\\model1.2.stan', method = 'parallel',
+model1_1_jags <- run.jags(model = 'Rcodes\\model1.1.stan', method = 'parallel',
                      monitor = c('beta', 'phi'),
                      data = dataList,
                      n.chains = 3,
@@ -168,7 +157,7 @@ save(S_it, file = 'data\\Rdata\\S_it.Rdata')
 save(model1_2_jags, file = 'data\\Rdata\\model1_1_jags.Rdata')
 
 save(beta_summary_1_2, file = 'data\\Rdata\\beta_summary_1_1.Rdata')
-save(phi_summary, file = 'data\\Rdata\\phi_summary_1_1.Rdata')
+save(phi_summary_1_2, file = 'data\\Rdata\\phi_summary_1_1.Rdata')
 
 save(q_names, file = 'data\\Rdata\\q_names.Rdata')
 
