@@ -25,11 +25,10 @@ I_it <- I_it[1,]
 S_it <- S_it[1,]
 N_i <- N_i[1, ]
 
-
 # PE MODEL FROM INITIAL STATE ------------------------------------------------------------
 I_it_est[2] <- 1/phi_pe
 S_it_est[2] <- N_it[2]
-loops <- 2000
+loops <- 1000
 I_est_pe_list <- list()
 S_it_est_pe_list <- list()
 for (z in 1:loops){
@@ -49,14 +48,14 @@ for (z in 1:loops){
 # PE RESHAPE DATA ---------------------------------------------------------
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
-city_pe <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
-city_pe$week_index <- 1:Nsteps
-city_pe$day_index <- city_pe$week_index * 7
+christ_full <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
+christ_full$week_index <- 1:Nsteps
+christ_full$day_index <- christ_full$week_index * 7
 
 for (z in 1:loops){
-  city_pe[z] <- as.data.frame(colSums(I_est_pe_list[[z]]))
+  christ_full[z] <- as.data.frame(colSums(I_est_pe_list[[z]]))
 }
-city_pe_melt <- melt(city_pe, id.vars = 'day_index')
+christ_full_melt <- melt(christ_full, id.vars = 'day_index')
 
 
 
@@ -73,7 +72,7 @@ chrit_obs$week_index <- NULL
 
 # city_pe level Infectious
 christ_full_sim_plot <- ggplot() +
-  geom_line(data = city_pe_melt,
+  geom_line(data = christ_full_melt,
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.05) +
   geom_line(data = chrit_obs,
@@ -89,6 +88,8 @@ christ_full_sim_plot <- ggplot() +
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
   ggtitle('Christianshavn infectious\n simulated n = 2000')
 christ_full_sim_plot
+
+
 ggsave(christ_full_sim_plot, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\christ_full_sim.tiff',
        width=15, height=9,
@@ -103,7 +104,7 @@ ggsave(christ_full_sim_plot,
 
 
 # Run simulations
-loops <- 2000
+loops <- 1000
 I_plus1_list <- list()
 
 for (z in 1:loops){
@@ -152,9 +153,12 @@ christ_tplus1_plot <- ggplot() +
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
   ggtitle('Christianshavn Infectious\n 1-step-ahead simulated n = 2000')
 christ_tplus1_plot
+
+
 ggsave(christ_tplus1_plot, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\christ_tplus1-I.tiff',
        width=15, height=9,
        units = 'in')
+
 
 
