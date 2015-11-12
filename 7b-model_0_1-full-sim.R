@@ -27,7 +27,7 @@ N_i <- N_i[1, ]
 
 
 # PE MODEL FROM INITIAL STATE ------------------------------------------------------------
-I_it_est[2] <- 1
+I_it_est[2] <- 1/phi_pe
 S_it_est[2] <- N_it[2]
 loops <- 2000
 I_est_pe_list <- list()
@@ -89,7 +89,7 @@ christ_full_sim_plot <- ggplot() +
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
   ggtitle('Christianshavn infectious\n simulated n = 2000')
 christ_full_sim_plot
-ggsave(plot4, 
+ggsave(christ_full_sim_plot, 
        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\christ_full_sim.tiff',
        width=15, height=9,
        units = 'in')
