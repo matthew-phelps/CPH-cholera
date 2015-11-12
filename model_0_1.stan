@@ -15,7 +15,7 @@ model {
 	phi <- exp(logit_phi) / (1 + exp(logit_phi));
 
 	# First time-step
-	lambda[1] <-  * beta * (I_it[1]/phi + 0.01);
+	lambda[1] <-  beta * (I_it[1]/phi + 0.01);
 	S_it[1] <- N_i[1];
 
 

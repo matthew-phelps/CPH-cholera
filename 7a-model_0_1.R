@@ -66,41 +66,41 @@ model_0_1_coda = as.mcmc.list( model_0_1_jags )
 # JAGS DIAGNOSTICS --------------------------------------------------------
 
 print(model_0_1_jags)
-gelman.diag(model_0_1_jags)
-
-
-
-plot(model_0_1_coda[,1])
-rmeanplot(model_0_1_coda[, 1])
-
-phi1 <- model_0_1_coda[, 1]
-gelman.diag(phi1)
+# gelman.diag(model_0_1_jags)
+# 
+# 
+# 
+# plot(model_0_1_coda[,1])
+# rmeanplot(model_0_1_coda[, 1])
+# 
+# phi1 <- model_0_1_coda[, 1]
+# gelman.diag(phi1)
 
 model_0_1_ggs <- ggs(model_0_1_coda)
 
-ggmcmc(model_0_1_ggs, file = 'Output\\MCMC\\model_0_1.pdf',
-       family = 'beta')
+# ggmcmc(model_0_1_ggs, file = 'Output\\MCMC\\model_0_1.pdf',
+#        family = 'beta')
 
 
 
-trace_beta <- ggs_traceplot(model_0_1_ggs, family = 'beta', simplify = .3)
-density_beta <- ggs_density(model_0_1_ggs, family = 'beta')
-running_beta <- ggs_running(model_0_1_ggs, family = 'beta')
-
-
-ggsave(trace_beta, filename = "Output\\MCMC\\trace_beta.jpg")
-ggsave(density_beta, filename = 'Output\\MCMC\\density_beta.jpg')
-ggsave(running_beta, filename = 'Output\\MCMC\\running_beta.png')
-
-
-trace_phi <- ggs_traceplot(model_0_1_ggs, family = 'phi', simplify = .3)
-density_phi <- ggs_density(model_0_1_ggs, family = 'phi')
-running_phi <- ggs_running(model_0_1_ggs, family = 'phi')
-
-
-ggsave(trace_phi, filename = "Output\\MCMC\\trace_phi.jpg")
-ggsave(density_phi, filename = 'Output\\MCMC\\density_phi.jpg')
-ggsave(running_phi, filename = 'Output\\MCMC\\running_phi.png')
+# trace_beta <- ggs_traceplot(model_0_1_ggs, family = 'beta', simplify = .3)
+# density_beta <- ggs_density(model_0_1_ggs, family = 'beta')
+# running_beta <- ggs_running(model_0_1_ggs, family = 'beta')
+# 
+# 
+# ggsave(trace_beta, filename = "Output\\MCMC\\trace_beta.jpg")
+# ggsave(density_beta, filename = 'Output\\MCMC\\density_beta.jpg')
+# ggsave(running_beta, filename = 'Output\\MCMC\\running_beta.png')
+# 
+# 
+# trace_phi <- ggs_traceplot(model_0_1_ggs, family = 'phi', simplify = .3)
+# density_phi <- ggs_density(model_0_1_ggs, family = 'phi')
+# running_phi <- ggs_running(model_0_1_ggs, family = 'phi')
+# 
+# 
+# ggsave(trace_phi, filename = "Output\\MCMC\\trace_phi.jpg")
+# ggsave(density_phi, filename = 'Output\\MCMC\\density_phi.jpg')
+# ggsave(running_phi, filename = 'Output\\MCMC\\running_phi.png')
 
 
 
