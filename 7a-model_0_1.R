@@ -31,7 +31,7 @@ load(file = "data\\Rdata\\Data_3.Rdata")
 I_it <- I_it[1,]
 S_it <- S_it[1,]
 N_i <- N_i[1, ]
-
+I_it[1] <- I_it[2]
 
 
 dataList <- list(N_i = N_i,
