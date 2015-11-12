@@ -72,17 +72,25 @@ chrit_obs$week_index <- NULL
 
 
 # city_pe level Infectious
-plot4 <- ggplot() +
+christ_full_sim_plot <- ggplot() +
   geom_line(data = city_pe_melt,
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.05) +
   geom_line(data = chrit_obs,
             aes(x = day_index, y = I_it),
             color = 'darkred', alpha = 0.5, size = 1.3) +
-  ggtitle('Christianshavn Infectious\n(point estimates) simulated n = 3000')
-plot4
+  theme_minimal()+
+  ylab("People") +
+  xlab("Day index") + 
+  theme(plot.title = element_text(size = 22, face="bold"),
+        axis.text.y = element_text(size = 15),
+        axis.text.x = element_text(size = 15),
+        axis.title.x = element_text(size = 21, face = "bold"),
+        axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
+  ggtitle('Christianshavn infectious\n simulated n = 2000')
+christ_full_sim_plot
 ggsave(plot4, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\city_pe-I.pdf',
+       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\christ_full_sim.tiff',
        width=15, height=9,
        units = 'in')
 
@@ -134,10 +142,18 @@ christ_tplus1_plot <- ggplot() +
   geom_line(data = chrit_obs,
             aes(x = day_index, y = I_it),
             color = 'darkred', alpha = 0.5, size = 1.3) +
-  ggtitle('Christianshavn Infectious\n 1-step-ahead simulated n = 3000')
+  theme_minimal()+
+  ylab("People") +
+  xlab("Day index") + 
+  theme(plot.title = element_text(size = 22, face="bold"),
+        axis.text.y = element_text(size = 15),
+        axis.text.x = element_text(size = 15),
+        axis.title.x = element_text(size = 21, face = "bold"),
+        axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
+  ggtitle('Christianshavn Infectious\n 1-step-ahead simulated n = 2000')
 christ_tplus1_plot
 ggsave(christ_tplus1_plot, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\christ_tplus1-I.pdf',
+       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\christ_tplus1-I.tiff',
        width=15, height=9,
        units = 'in')
 
