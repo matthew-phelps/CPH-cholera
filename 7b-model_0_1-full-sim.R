@@ -21,11 +21,11 @@ load(file = 'data\\Rdata\\model_0_1_sim_data.Rdata')
 load(file = 'data\\Rdata\\Data_3.Rdata')
 set.seed(13)
 
-I_it <- I_it[1,]
-S_it <- S_it[1,]
-N_i <- N_i[1, ]
-
-# PE MODEL FROM INITIAL STATE ------------------------------------------------------------
+I_it <- I_it[1,2:16]
+S_it <- S_it[1,2:16]
+N_i <- N_i[1, 2:16]
+Nsteps <- 15
+#  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 I_it_est[2] <- 1/phi_pe
 S_it_est[2] <- N_it[2]
 loops <- 1000
@@ -48,7 +48,7 @@ for (z in 1:loops){
 # PE RESHAPE DATA ---------------------------------------------------------
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
-christ_full <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
+christ_full <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
 christ_full$week_index <- 1:Nsteps
 christ_full$day_index <- christ_full$week_index * 7
 
@@ -70,7 +70,7 @@ chrit_obs$day_index <- chrit_obs$week_index * 7
 chrit_obs$week_index <- NULL
 
 
-# city_pe level Infectious
+# # city_pe level Infectious
 christ_full_sim_plot <- ggplot() +
   geom_line(data = christ_full_melt,
             aes(x = day_index, y = value, group = variable),
@@ -105,18 +105,36 @@ ggsave(christ_full_sim_plot,
 
 # Run simulations
 loops <- 1000
-I_plus1_list <- list()
+I_plus1_list <- list() # List to contain all the loop outputs
+rm(I_it_est, S_it_est, step1, N_it)
+
+# Model for debugging. 1-loop only. Remove after debugging:
+ I_est_tplus1 <- (matrix(data = 0, nrow = 1, ncol = Nsteps))
+S_est_tplus1 <- (matrix(data = 0, nrow = 1, ncol = Nsteps))
+Lambda_est_tplus1 <- (matrix(data = 0, nrow = 1, ncol = Nsteps))
+S_est_tplus1[1] <- N_it[1] # S at t = 0 equals N
+
+for (t in 1:(Nsteps-1)){
+  Lambda_est_tplus1[t] <- S_est_tplus1[t] / N_it[t] * (beta_pe * I_it[t])
+  I_est_tplus1[t] <- rpois(1, Lambda_est_tplus1[1, t])
+  S_est_tplus1[t+1] <- S_it[t] - (I_it[t] / phi_pe)
+}
+
+
+
 
 for (z in 1:loops){
+  # Initialize dataframes
   I_est_tplus1 <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
   S_est_tplus1 <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
-  Lambda_est_pe <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
-  S_est_tplus1[1] <- N_it[1]
-  
+  Lambda_est_tplus1 <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
+  S_est_tplus1[1] <- N_it[1] # S at t = 0 equals N
+
+  # Model
   for (t in 1:(Nsteps-1)){
-    Lambda_est_pe[t] <- S_est_tplus1[t] / N_it[t] * (beta_pe * I_it[t])
-    I_est_tplus1[t+1] <- rpois(1, Lambda_est_pe[1, t])
-    S_est_tplus1[t+1] <- S_est_tplus1[t] - (I_it[t] / phi_pe)
+    Lambda_est_tplus1[t] <- S_est_tplus1[t] / N_it[t] * (beta_pe * I_it[t])
+    I_est_tplus1[t+1] <- rpois(1, Lambda_est_tplus1[1, t])
+    S_est_tplus1[t+1] <- S_it[t] - (I_it[t] / phi_pe)
   }
   
   
@@ -125,7 +143,7 @@ for (z in 1:loops){
   
 }
 
-christ_tplus1 <- as.data.frame(matrix(data = 0, nrow = 16, ncol = loops))
+christ_tplus1 <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
 christ_tplus1$week_index <- 1:Nsteps
 christ_tplus1$day_index <- christ_tplus1$week_index * 7
 
