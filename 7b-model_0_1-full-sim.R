@@ -21,10 +21,9 @@ load(file = 'data\\Rdata\\model_0_1_sim_data.Rdata')
 load(file = 'data\\Rdata\\Data_3.Rdata')
 set.seed(13)
 
-I_it <- I_it[1,2:16]
-S_it <- S_it[1,2:16]
-N_i <- N_i[1, 2:16]
-Nsteps <- 15
+I_it <- I_it[1,]
+S_it <- S_it[1,]
+N_i <- N_i[1, ]
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 I_it_est[2] <- 1/phi_pe
 S_it_est[2] <- N_it[2]
@@ -75,9 +74,9 @@ christ_full_sim_plot <- ggplot() +
   geom_line(data = christ_full_melt,
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.05) +
-  geom_line(data = chrit_obs,
+  geom_line (data = chrit_obs,
             aes(x = day_index, y = I_it),
-            color = 'darkred', alpha = 0.5, size = 1.3) +
+            color = 'darkred', alpha = 0.5, size = 1.2) +
   theme_minimal()+
   ylab("People") +
   xlab("Day index") + 
