@@ -29,35 +29,52 @@ N_i <- N_i[1, ]
 
 
 # VECTOR OF BETAS ---------------------------------------------------------
+n_fake <- 20
 
-beta_fake_vect <- matrix(data = 0, nrow = 20, ncol = 1)
-beta_fake_vect <- seq(from = 1.5, to = 2.5, length.out = 20)
+beta_fake_vect <- seq(from = 1.7, to = 2.2, length.out = n_fake)
+beta_fake_vect <- 2.1
+phi_fake_vect <- phi_pe
+
 
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 I_container_list <- list()
 
 for(k in 1:length(beta_fake_vect)){
   
-  I_it_est[2] <- 1/phi_pe
-  S_it_est[2] <- N_it[2]
-  loops <- 5000
+  I_it_est[1] <- 01/phi_fake_vect
+  S_it_est[1] <- N_it[1]
+  loops <- 1000
   I_est_pe_list <- list()
   S_it_est_pe_list <- list()
   for (z in 1:loops){
+    
     Lambda_est_pe <- matrix(data = 0, nrow = 1, ncol = Nsteps)
-    for (t in 2:(Nsteps-1)){
+    
+    for (t in 1:(Nsteps-1)){
       Lambda_est_pe[t] <- S_it_est[t] / N_it[t] *    (beta_fake_vect[k]*(I_it_est[t]))
       I_it_est[t+1] <- rpois(1, Lambda_est_pe[t])
-      S_it_est[t+1] <- (S_it_est[t]) -    (I_it_est[t]) / (phi_pe[1])
+      S_temp <- (S_it_est[t]) -    (I_it_est[t]) / (phi_fake_vect[1])
+      
+      if (S_temp < 0) {
+        S_it_est[t+1] <- 0
+      } else {
+        S_it_est[t + 1] <- S_temp
+      }
     }
+    
     I_est_pe_list[[z]] <- I_it_est
     S_it_est_pe_list[[z]] <- S_it_est
   }
+  
   I_container_list[[k]] <- I_est_pe_list
 }
 
 
 
+
+# manually go through I_container_list
+I_est_pe_list <- I_container_list[[17]]
+beta_sample <- beta_fake_vect[17]
 
 # PE RESHAPE DATA ---------------------------------------------------------
 

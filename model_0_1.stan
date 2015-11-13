@@ -24,13 +24,15 @@ model {
 		lambda[t] <-  (S_it[t]  / N_i[t]) * (beta * (I_it[t]+ 0.01));
 	}
 
-	
+	# S_it_tplus1
+	for (t in 1:(Nsteps-1)){
+		S_it[t+1] <- S_it[t] - (I_it[t] / phi);
+
+	}	
 
 	# Likelihood function
 	for (t in 1:(Nsteps-1)){
 		I_it[t+1] ~ dpois(lambda[t]);
-		S_it[t+1] <- S_it[t] - (I_it[t] / phi);
-
 	}
 
 	   #data# Nsteps
