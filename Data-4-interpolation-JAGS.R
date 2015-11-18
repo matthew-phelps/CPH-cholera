@@ -51,7 +51,8 @@ I_splined <- as.data.frame(t(do.call(rbind.data.frame, I_splined)))
 row.names(I_splined) <- NULL
 I_splined <- round(I_splined, digits = 0)
 
-
+# Remove negative values
+I_splined[I_splined < 0] <- 0
 
 # PLOT --------------------------------------------------------------------
 panel_data <- combined
@@ -82,5 +83,47 @@ panel_plot <- ggplot() +
   facet_wrap(~variable)
 panel_plot
 
+
+
+# SAVE FOR JAGS -----------------------------------------------------------
+
+Nsteps <- nrow(I_splined)
+S_it_daily <- matrix(0, Nquarter, Nsteps)
+I_it_daily <- matrix(0, Nquarter, Nsteps)
+N_i_daily <- matrix(0, Nquarter, Nsteps)
+
+
+for (i in 2:(Nquarter+1)){
+  I_it_daily[i-1, ] <- I_splined[, i]
+  N_i_daily[i-1, ] <- N_i[i-1, ]
+
+  }
+
+rownames(I_it_daily) <- q_names[, 1]
+
+# Make sure quarters are labeled correctly. Evaluates to T if correct:
+check <- function() {
+  if (sum(I_it_daily[1, ])/7 == sum(I_it[,1])){
+    print("CORRECT")
+  } else{
+    stop("Quarters to not match")
+  }
+}
+
+check()
+
+
+
+# SAVE OUTPUT -------------------------------------------------------------
+
+dataList <- list(Nquarter=Nquarter,
+                 S_it_daily = S_it_daily,
+                 N_i_daily = N_i_daily,
+                 I_it_daily=I_it_daily,
+                 Nsteps=Nsteps)
+rm(I_splined_long, I_it_long, I_splined, panel_plot,
+   panel_data, S_it, I_it, combined, N_i, i, t, n,
+   quarterID, check, I_daily_long, I_daily)
+save(list = ls(), file = "Data_4.Rdata")
 
 
