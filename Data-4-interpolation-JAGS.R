@@ -85,6 +85,14 @@ panel_plot
 
 
 
+# SLOPE AT EACH TIME_STEP (DAY) -------------------------------------------
+# This gives the number of new infections (incidence) at each time step.
+# Allows for easier calcuations later since our observed weekly 
+# data is incidence not prevelance
+
+diff(I_splined$Christianshavn) / diff(I_splined$day_index)
+
+
 # SAVE FOR JAGS -----------------------------------------------------------
 
 Nsteps <- nrow(I_splined)
