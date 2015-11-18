@@ -41,7 +41,9 @@ for (z in 1:loops){
   S_it_est_pe_list[[z]] <- S_it_est
 }
 
-
+# SAVE for likelhood calculation
+I_best_beta <- I_est_pe_list
+save(I_best_beta, file = 'data\\Rdata\\I_best_beta.Rdata')
 
 
 # PE RESHAPE DATA ---------------------------------------------------------

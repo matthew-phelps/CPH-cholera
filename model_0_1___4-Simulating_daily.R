@@ -1,6 +1,6 @@
 # Author: Matthew Phelps
-#Desc: Full model playing around with Beta
-# Dependicies: Data 1, Data 2, 5_GLM_data_reshape, 8c_JAGS
+#Desc: Using the fake beta value, change time-step to daily value
+
 
 
 # Intro -------------------------------------------------------------------
@@ -19,58 +19,74 @@ require(grid)
 
 load(file = 'data\\Rdata\\model_0_1_sim_data.Rdata')
 load(file = 'data\\Rdata\\Data_3.Rdata')
-set.seed(13)
+set.seed(12)
 
+
+
+Ndays <- Nsteps * 7
 I_it <- I_it[1,]
 S_it <- S_it[1,]
 N_i <- N_i[1, ]
 
+R_i <- seq(from = 0, to = 0, length.out = length(I_it))
+
+I_it_est <- matrix(data =  NA, nrow = 1, ncol = Ndays)
+S_it_est <- matrix(data = NA, nrow = 1, ncol = Ndays)
+R_new <- matrix(data =  NA, nrow = 1, ncol = Ndays)
+# SPECIFY RECOVERY --------------------------------------------------------
+
+duration <- 10 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
+gamma <- 1/duration
 
 
-
-# VECTOR OF BETAS ---------------------------------------------------------
-n_fake <- 20
-
-beta_fake_vect <- seq(from = 1.7, to = 2.2, length.out = n_fake)
+# SET FAKE PARAMETERS ---------------------------------------------------------
 beta_fake_vect <- 2.1
 phi_fake_vect <- phi_pe
-Ndays <- Nsteps * 7
 
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
-I_it_est[1] <- 01/phi_fake_vect
-S_it_est[1] <- N_it[1]
+# 1st week no infectious to match observed I
+I_it_est[1:13] <- 0
+S_it_est[1:14] <- N_it[1]
+R_new[1:14] <- 0
+
+# Middle 2nd week, infectious start
+I_it_est[14] <- .5/phi_fake_vect
+
 
 loops <- 1000
 I_est_pe_list <- list()
 S_it_est_pe_list <- list()
 for (z in 1:loops){
   
-  Lambda_est_pe <- matrix(data = 0, nrow = 1, ncol = Ndays)
-  
-  for (t in 1:(Ndays-1)){
-    Lambda_est_pe[t] <- S_it_est[t] / N_it[t] * (beta_fake_vect[1]*(I_it_est[t]))
-    I_it_est[t+1] <- rpois(1, Lambda_est_pe[t])
-    S_temp <- (S_it_est[t]) -    (I_it_est[t]) / (phi_fake_vect[1])
-    
-    if (S_temp < 0) {
-      S_it_est[t+1] <- 0
-    } else {
-      S_it_est[t + 1] <- S_temp
-    }
+  Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Ndays)
+  LambdaR <- matrix(data = NA, nrow = 1, ncol = Ndays)
+  for (t in 14:(Ndays-1)){
+    Lambda_est_pe[t] <- S_it_est[t] / N_it[1] * (beta_fake_vect[1]/7 *(I_it_est[t]))
+    LambdaR[t] <- I_it_est[t] * gamma
+    R_new[t +1 ] <- rpois(1, LambdaR[t])
+    I_new <- rpois(1, (Lambda_est_pe[t] ) )
+    I_it_est[t + 1] <- max(0, (I_new + I_it_est[t] - R_new[t + 1]))
+    S_temp <- (S_it_est[t]) -    (I_new) / (phi_fake_vect[1])
+    S_it_est[t + 1] <- max(0, S_temp)
   }
   
   I_est_pe_list[[z]] <- I_it_est
   S_it_est_pe_list[[z]] <- S_it_est
 }
 
+I_it_est
+
+
+# SAVE DATA FOR LIKELIHOOD CALCULATION ------------------------------------
+
 
 
 # PE RESHAPE DATA ---------------------------------------------------------
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
-christ_full <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
-christ_full$day_index <- 1:Nsteps
+christ_full <- as.data.frame(matrix(data = 0, nrow = Ndays, ncol = loops))
+christ_full$day_index <- 1:Ndays
 #christ_full$day_index <- christ_full$week_index * 7
 
 for (z in 1:loops){
@@ -89,6 +105,11 @@ chrit_obs <- as.data.frame(I_it)
 chrit_obs$week_index <- 1:Nsteps
 chrit_obs$day_index <- chrit_obs$week_index * 7
 chrit_obs$week_index <- NULL
+
+
+
+# INTERPOLATE BETWEEN WEEKLY OBSERVATIONS ---------------------------------
+
 
 
 # # city_pe level Infectious

@@ -7,11 +7,12 @@ model {
 	for (i in 1:Nquarter){
 		for (j in 1:Nquarter){
 			log_beta[i, j] ~ dnorm(mu, tau);
+			mu ~ dnorm(0, 0.001)
+			tau <- pow(sigma, -2)
+			sigma ~ dunif(0, 1.5)
 		}
 	}
-	mu ~ dnorm(0, 0.001)
-	tau <- pow(sigma, -2)
-	sigma ~ dunif(0, 1.5)
+	
 	
 	# Beta priors
 	for (i in 1:Nquarter){

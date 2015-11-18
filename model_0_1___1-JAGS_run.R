@@ -50,7 +50,7 @@ jags <- jags.model('Rcodes\\model_0_1.stan',
 # JAGS model 0.1 - quarter phi's --------------------------------------------------------------------
 
 model_0_1_jags <- run.jags(model = 'Rcodes\\model_0_1.stan', method = 'parallel',
-                           monitor = c('beta', 'phi', 'mu', 'tau', 'sigma', 'logit_phi', 'lambda'),
+                           monitor = c('beta', 'phi', 'lambda'),
                            data = dataList,
                            n.chains = 3,
                            adapt = 5000,

@@ -37,40 +37,31 @@ phi_fake_vect <- phi_pe
 
 
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
-I_container_list <- list()
 
-for(k in 1:length(beta_fake_vect)){
+
+I_it_est[1] <- 01/phi_fake_vect
+S_it_est[1] <- N_it[1]
+loops <- 1000
+I_est_pe_list <- list()
+S_it_est_pe_list <- list()
+for (z in 1:loops){
   
-  I_it_est[1] <- 01/phi_fake_vect
-  S_it_est[1] <- N_it[1]
-  loops <- 1000
-  I_est_pe_list <- list()
-  S_it_est_pe_list <- list()
-  for (z in 1:loops){
-    
-    Lambda_est_pe <- matrix(data = 0, nrow = 1, ncol = Nsteps)
-    
-    for (t in 1:(Nsteps-1)){
-      Lambda_est_pe[t] <- S_it_est[t] / N_it[t] *    (beta_fake_vect[k]*(I_it_est[t]))
-      I_it_est[t+1] <- rpois(1, Lambda_est_pe[t])
-      S_temp <- (S_it_est[t]) -    (I_it_est[t]) / (phi_fake_vect[1])
-      
-      if (S_temp < 0) {
-        S_it_est[t+1] <- 0
-      } else {
-        S_it_est[t + 1] <- S_temp
-      }
-    }
-    
-    I_est_pe_list[[z]] <- I_it_est
-    S_it_est_pe_list[[z]] <- S_it_est
+  Lambda_est_pe <- matrix(data = 0, nrow = 1, ncol = Nsteps)
+  
+  for (t in 1:(Nsteps-1)){
+    Lambda_est_pe[t] <- S_it_est[t] / N_it[t] *    (beta_fake_vect[1]*(I_it_est[t]))
+    I_it_est[t+1] <- rpois(1, Lambda_est_pe[t]+1)
+    S_temp <- (S_it_est[t]) -    (I_it_est[t]) / (phi_fake_vect[1])
+    S_it_est[t + 1] <- max(0, S_temp)
   }
   
-  I_container_list[[k]] <- I_est_pe_list
+  I_est_pe_list[[z]] <- I_it_est
+  S_it_est_pe_list[[z]] <- S_it_est
 }
 
 
-
+# Save output for LL calculations
+save(I_est_pe_list, file = "data\\Rdata\\weekly_sim.Rdata")
 
 # manually go through I_container_list
 I_est_pe_list <- I_container_list[[17]]

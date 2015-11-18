@@ -24,7 +24,7 @@ load(file = 'data\\Rdata\\model_0_1_jags.Rdata')
 load(file = 'data\\Rdata\\Data_3.Rdata')
 JagsOutput <- model_0_1_jags
 rm(model_0_1_jags)
-
+summary(JagsOutput)
 # INITIALIZE EMPTY DF -----------------------------------------------------
 
 
