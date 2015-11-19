@@ -40,6 +40,8 @@ I_daily_long <- merge(I_daily_long, I_it_long, by = c('day_index', 'variable'), 
 I_daily_long$value.x <- NULL
 I_daily_long$value.y[which(I_daily_long$day_index == 1)] <- 0
 
+Nsteps <- nrow(I_daily)
+
 # To wide form
 I_daily <- data.table::dcast(I_daily_long, day_index~variable)
 
@@ -91,7 +93,7 @@ panel_plot
 # data is incidence not prevelance
 
 I_incidence <- I_splined[, 2:9] / 7
-I_incidence$day_index <- 1:112
+I_incidence$day_index <- 1:Nsteps
 
 # Check summations to make sure we're on track
 do.call(rbind.data.frame, lapply(I_incidence, sum))

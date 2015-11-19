@@ -28,7 +28,7 @@ load(file = "data\\Rdata\\Data_4.Rdata")
 
 # DATA SHAPE --------------------------------------------------------------
 # Restrict to only Christianshavn
-I_it_daily <- I_it_daily[1,]
+I_it_daily <- I_it_daily[1, 13]
 S_it_daily <- S_it_daily[1,]
 N_i_daily <- N_i_daily[1, ]
 
