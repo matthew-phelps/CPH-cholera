@@ -27,6 +27,14 @@ set.seed(13)
 loops <- 1000
 I_est_pe_list <- list()
 S_it_est_pe_list <- list()
+
+
+duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
+
+
+R_i <- seq(from = 0, to = 0, length.out = length(I_it))
+R_new <- matrix(data =  NA, nrow = 1, ncol = Ndays)
+
 for (z in 1:loops){
   Lambda_est_pe <- matrix(data = 0, nrow = 1, ncol = Nsteps)
   for (t in 2:(Nsteps-1)){

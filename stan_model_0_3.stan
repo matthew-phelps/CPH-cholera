@@ -24,7 +24,7 @@ model {
 
 	# Lambda I
 	for (t in 2:(Nsteps-1)){
-		gamma[t] ~ dexp(1/5)
+		gamma[t] ~ dexp(5)
 		lambdaI[t] <-  (S_it_daily[t]  / N_i_daily[t]) * (beta * (I_it_daily[t]+ 0.01));
 		lambdaR[t] <- I_it_daily[t] * gamma[t]
 	}
@@ -45,7 +45,7 @@ model {
 
 	   #data# Nsteps
 	   #data# N_i_daily
-	   #data# I_it_daily
+	   #data# I_new
 
 
 
