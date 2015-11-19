@@ -46,15 +46,15 @@ I_daily <- data.table::dcast(I_daily_long, day_index~variable)
 
 # INTERPOLATING WITH SPLINES ----------------------------------------------
 # See: http://goo.gl/GyUf5K
+# Gives the prevalence at each day - not incidence
 I_splined <- lapply(I_daily, na.spline)
 I_splined <- as.data.frame(t(do.call(rbind.data.frame, I_splined)))
 row.names(I_splined) <- NULL
-I_splined <- round(I_splined, digits = 0)
 
 # Remove negative values
 I_splined[I_splined < 0] <- 0
 
-# PLOT --------------------------------------------------------------------
+# PLOT SPLINED--------------------------------------------------------------------
 panel_data <- combined
 panel_data$day_index <- (combined$week.id +1) * 7
 panel_data <- dplyr::rename(panel_data, variable = quarter)
@@ -85,13 +85,44 @@ panel_plot
 
 
 
-# SLOPE AT EACH TIME_STEP (DAY) -------------------------------------------
+# INCIDENCE PER DAY -------------------------------------------
 # This gives the number of new infections (incidence) at each time step.
 # Allows for easier calcuations later since our observed weekly 
 # data is incidence not prevelance
 
-diff(I_splined$Christianshavn) / diff(I_splined$day_index)
+I_incidence <- I_splined[, 2:9] / 7
+I_incidence$day_index <- 1:112
 
+# Check summations to make sure we're on track
+do.call(rbind.data.frame, lapply(I_incidence, sum))
+do.call(rbind.data.frame, lapply(I_it, sum))
+
+# PLOT INCIDENCE ----------------------------------------------------------
+
+# Reshape to long format again:
+I_incidence_long <- melt(I_incidence, id.vars = "day_index")
+
+
+panel_plot <- ggplot() +
+  geom_line(data = I_incidence_long,
+            aes(x = day_index, y = value,
+                group = variable),
+            color = "red",
+            size = 1.2) +
+  geom_line(data = panel_data,
+            size = 1.2,
+            color = 'black',
+            linetype = 1,
+            alpha = 0.3,
+            aes(x = day_index, y = sick.total.week,
+                group = variable)) +
+  geom_point(data = panel_data,
+             size = 3.2,
+             color = "black",
+             aes(x = day_index, y = sick.total.week,
+                 group = variable)) +
+  facet_wrap(~variable)
+panel_plot
 
 # SAVE FOR JAGS -----------------------------------------------------------
 
@@ -102,7 +133,7 @@ N_i_daily <- matrix(0, Nquarter, Nsteps)
 
 
 for (i in 2:(Nquarter+1)){
-  I_it_daily[i-1, ] <- I_splined[, i]
+  I_it_daily[i-1, ] <- I_incidence[, i]
   N_i_daily[i-1, ] <- N_i[i-1, ]
 
   }
@@ -111,7 +142,7 @@ rownames(I_it_daily) <- q_names[, 1]
 
 # Make sure quarters are labeled correctly. Evaluates to T if correct:
 check <- function() {
-  if (sum(I_it_daily[1, ])/7 == sum(I_it[,1])){
+  if (sum(I_it_daily[1, ]) == sum(I_it[,1])){
     print("CORRECT")
   } else{
     stop("Quarters to not match")
@@ -131,7 +162,7 @@ dataList <- list(Nquarter=Nquarter,
                  Nsteps=Nsteps)
 rm(I_splined_long, I_it_long, I_splined, panel_plot,
    panel_data, S_it, I_it, combined, N_i, i, t, n,
-   quarterID, check, I_daily_long, I_daily)
+   quarterID, check, I_daily_long, I_daily, I_incidence_long, I_incidence)
 save(list = ls(), file = "Data_4.Rdata")
 
 
