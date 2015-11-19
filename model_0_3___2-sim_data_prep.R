@@ -21,12 +21,15 @@ load(file = "data\\Rdata\\quarter_combined.Rdata")
 load(file = 'data\\Rdata\\beta_summary_0_3.Rdata')
 load(file = 'data\\Rdata\\phi_summary_0_3.Rdata')
 load(file = 'data\\Rdata\\model_0_3_jags.Rdata')
-load(file = 'data\\Rdata\\Data_4.Rdata')
+load("data\\Rdata\\model_0_3_dataList.Rdata")
+
+N_i_daily <- dataList[[1]]
+I_it_daily <- dataList[[2]]
+Nsteps <- dataList[[3]]
 JagsOutput <- model_0_3_jags
 rm(model_0_3_jags)
 summary(JagsOutput)
 # INITIALIZE EMPTY DF -----------------------------------------------------
-
 
 I_it <- matrix(NA, 1, Nsteps-1)
 S_it <- matrix(NA, 1, Nsteps-1)

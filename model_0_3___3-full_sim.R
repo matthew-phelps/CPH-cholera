@@ -18,15 +18,12 @@ require(grid)
 # LOAD data ---------------------------------------------------------------
 
 load(file = 'data\\Rdata\\model_0_3_sim_data.Rdata')
-load(file = 'data\\Rdata\\Data_4.Rdata')
+
 set.seed(13)
 
-I_it <- I_it[1,]
-S_it <- S_it[1,]
-N_i <- N_i[1, ]
+
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
-I_it_est[2] <- 1/phi_pe
-S_it_est[2] <- N_it[2]
+
 loops <- 1000
 I_est_pe_list <- list()
 S_it_est_pe_list <- list()

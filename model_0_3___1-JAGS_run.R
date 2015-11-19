@@ -28,10 +28,10 @@ load(file = "data\\Rdata\\Data_4.Rdata")
 
 # DATA SHAPE --------------------------------------------------------------
 # Restrict to only Christianshavn
-I_it_daily <- I_it_daily[1, 13]
-S_it_daily <- S_it_daily[1,]
-N_i_daily <- N_i_daily[1, ]
-
+I_it_daily <- I_it_daily[1, 13:Nsteps]
+S_it_daily <- S_it_daily[1,13:Nsteps]
+N_i_daily <- N_i_daily[1, 13:Nsteps]
+Nsteps <- length(I_it_daily)
 
 
 dataList <- list(N_i_daily = N_i_daily,
@@ -114,6 +114,8 @@ phi_summary_0_3 <- model_0_3_out[2, ]
 # SAVE --------------------------------------------------------------------
 
 save(model_0_3_jags, file = 'data\\Rdata\\model_0_3_jags.Rdata')
+save(Nsteps, file = "data\\Rdata\\model_0_3_Nsteps")
 
 save(beta_summary_0_3, file = 'data\\Rdata\\beta_summary_0_3.Rdata')
 save(phi_summary_0_3, file = 'data\\Rdata\\phi_summary_0_3.Rdata')
+save(dataList, file = 'data\\Rdata\\model_0_3_dataList.Rdata')
