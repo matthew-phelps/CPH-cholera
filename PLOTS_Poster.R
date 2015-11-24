@@ -22,7 +22,8 @@ library(RColorBrewer)
 library(ggmap)
 library(dplyr)
 library(grid)
-
+library(extrafont) 
+loadfonts(device = "win")# Use fonts with tiff
 
 
 # City-wide time-series ---------------------------------------------------
@@ -33,26 +34,27 @@ citywide <- ggplot(outbreak, aes(x = day.index))+
   geom_line(aes( y = cholera.deaths, color = "Deaths"), size = 1.5) +
   xlab("Day index") +
   ylab("People") +
-  ggtitle ("Cholera cases and deaths") +
+  ggtitle ("Daily cholera morbidity and mortality\n") +
   theme_classic() +
   theme(legend.title = element_blank(),
         legend.position = c(0.9, 0.5),
         legend.text = element_text(size = 19),
          axis.text.x = element_text(size = 16),
          axis.text.y = element_text(size = 16),
-         axis.title.x = element_text(size = 18, face = "bold"),
+         axis.title.x = element_text(size = 18, face = "bold", vjust = -0.1),
          axis.title.y = element_text(size = 18, face = "bold"),
-        plot.title = element_text(size = 24, face="bold"),
-        plot.margin = unit(c(0,0,0,0))) +
+        plot.title = element_text(size = 28, face="bold"),
+        plot.margin = unit(c(0,0,0.5,0), 'lines')) +
   coord_cartesian(xlim = c(0, 102), ylim = c(-5,max(outbreak$cholera.cases)+5))
 
 
 citywide
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\citywide.wmf',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\citywide.tiff',
        plot = citywide,
-       width = 20,
+       width = 24,
        height = 18,
-       units = 'cm')
+       units = 'cm',
+       dpi = 300)
 rm(outbreak)
 
 
@@ -87,9 +89,10 @@ panal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = no
 panal.incident.cases
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\quarter_panel.tiff',
        plot = panal.incident.cases,
-       width = 24.47,
-       height = 22.46,
-       units = 'cm')
+       width = 24,
+       height = 18,
+       units = 'cm',
+       dpi = 300)
 
 # MAP ---------------------------------------------------------------------
 
@@ -132,7 +135,7 @@ cph_map <- get_map(location = "Kongens Nytorv",
                    zoom = 14, 
                    maptype = "toner-lite")
 
-cph <- ggmap(cph_map, darken = c(0.4))
+cph <- ggmap(cph_map, darken = c(0.0))
 
 # Normalized total infections
 map <- cph +
@@ -153,15 +156,16 @@ map <- cph +
         panel.background = element_blank(),
         plot.margin = unit(c(0,0,0,0), 'lines')
   ) +
-  ggtitle("High infection rates in \n Nyboder & Christianshavn \n ") +
+  ggtitle("Cumulative infection \n at end of outbreak ") +
   theme(plot.title = element_text(size = 23, face="bold"),
         legend.title = element_text(size = 18),
         legend.position = 'bottom')
 map
 
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.tiff',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.png',
        plot = map,
-       width = 26,
-       height = 31,
+       type = 'cairo-png',
+       width = 40,
+       height = 40,
        units = 'cm',
-       dpi = 150)
+       dpi = 100)
