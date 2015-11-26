@@ -27,6 +27,27 @@ all_age <- excess_df[excess_df$Place == 'Koebenhavn', c('Year', 'Month','All')]
 
 
 # DATES -------------------------------------------------------------------
+all_age$Month <- formatC(all_age$Month, width = 2, format = 'd', flag = 0)
+all_age$month <- paste(all_age$Year, all_age$Month, 01, sep = "-")
+all_age$month <- base::as.Date(all_age$month, format = "%Y-%m-%d")
+all_age$fake_date <- paste('1800', all_age$Month, 01, sep = '-')
+all_age$fake_date <- base::as.Date(all_age$fake_date, format = "%Y-%m-%d")
+#all_age$Month <- as.numeric(all_age$Month)
 
-all_age$month <- paste(all_age$Year, all_age$Month, sep = "-")
-all_age$month <- base::as.Date(all_age$month, format = "%Y-%m")
+
+
+# SAVE --------------------------------------------------------------------
+
+save(all_age, file = "Data\\Rdata\\all_age.Rdata")
+
+
+
+# Age mortality -----------------------------------------------------------
+rm(list = ls())
+age_mortality <- read.csv('Data\\CPH_age_mortality.csv')
+
+
+
+# SAVE --------------------------------------------------------------------
+
+save(age_mortality, file = 'Data\\Rdata\\age_mortality.Rdata')
