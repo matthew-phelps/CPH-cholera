@@ -138,6 +138,32 @@ cph_map <- get_map(location = "Kongens Nytorv",
 
 cph <- ggmap(cph_map, darken = c(0.0))
 
+# Legend: see http://goo.gl/utU1lh
+bb <- attr(cph_map, 'bb')
+distHaversine <- function(long, lat){
+  dlong = (long[2] - long[1])*pi/180
+  dlat  = (lat[2] - lat[1])*pi/180
+  
+  # Haversine formula:
+  R = 6371;
+  a = sin(dlat/2)*sin(dlat/2) + cos(lat[1])*cos(lat[2])*sin(dlong/2)*sin(dlong/2)
+  c = 2 * atan2( sqrt(a), sqrt(1-a) )
+  d = R * c
+  return(d) # in km
+}
+
+
+sbar <- data.frame(lon.start = c(bb$ll.lon + 0.1*(bb$ur.lon - bb$ll.lon)),
+                   lon.end = c(bb$ll.lon + 0.25*(bb$ur.lon - bb$ll.lon)),
+                   lat.start = c(bb$ll.lat + 0.1*(bb$ur.lat - bb$ll.lat)),
+                   lat.end = c(bb$ll.lat + 0.1*(bb$ur.lat - bb$ll.lat)))
+
+sbar$distance = distHaversine(long = c(sbar$lon.start,sbar$lon.end),
+                              lat = c(sbar$lat.start,sbar$lat.end))
+
+ptspermm <- 2.83464567  # need this because geom_text uses mm, and themes use pts. Urgh.
+
+
 # Normalized total infections
 map <- cph +
   geom_polygon(data = mapdf[which(mapdf$week.id == 15),], aes(x = long, y = lat, group = id, 
@@ -145,7 +171,23 @@ map <- cph +
                color = "black") +
   #coord_equal(ratio = 0) +
   scale_fill_gradientn(name = "Cumulative infections \nper 100 people", colours = brewer.pal(9, "Reds")) +
-  
+  geom_segment(data = sbar,
+               size = 1.3,
+               aes(x = lon.start,
+                   xend = lon.end,
+                   y = lat.start,
+                   yend = lat.end)) +
+  geom_text(data = sbar,
+            aes(x = (lon.start + lon.end)/2,
+                y = lat.start + 0.025*(bb$ur.lat - bb$ll.lat),
+                label = paste(format(distance, 
+                                     digits = 2,
+                                     nsmall = 2),
+                              'km')),
+            hjust = 0.5,
+            vjust = 0,
+            size = 19/ptspermm,
+            face = "bold") +
   theme(axis.title.x = element_blank(), # remove x,y, label
         axis.title.y = element_blank(),
         axis.line = element_blank(),
@@ -157,19 +199,19 @@ map <- cph +
         panel.background = element_blank(),
         plot.margin = unit(c(0,0,0,0), 'lines')
   ) +
-  ggtitle("Cumulative infection \n at end of outbreak ") +
-  theme(plot.title = element_text(size = 23, face="bold"),
-        legend.title = element_text(size = 18),
+  ggtitle("Cumulative infection \n at end of outbreak\n ") +
+  theme(plot.title = element_text(size = 24, face="bold"),
+        legend.title = element_text(size = 19),
         legend.position = 'bottom')
 map
 
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.png',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.tiff',
        plot = map,
-       type = 'cairo-png',
-       width = 40,
-       height = 40,
+       type = 'cairo',
+       width = 24,
+       height = 31,
        units = 'cm',
-       dpi = 100)
+       dpi = 150)
 
 
 
