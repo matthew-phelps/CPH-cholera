@@ -52,8 +52,8 @@ citywide <- ggplot(outbreak, aes(x = day.index))+
 citywide
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\citywide.tiff',
        plot = citywide,
-       width = 24,
-       height = 18,
+       width = 26,
+       height = 16,
        units = 'cm',
        dpi = 300)
 rm(outbreak)
@@ -89,8 +89,8 @@ panal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = no
 panal.incident.cases
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\quarter_panel.tiff',
        plot = panal.incident.cases,
-       width = 24,
-       height = 22,
+       width = 26,
+       height = 20,
        units = 'cm',
        dpi = 300)
 
@@ -249,8 +249,8 @@ mortality_plot
 
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\mortality_plot.tiff',
        plot = mortality_plot,
-       width = 22,
-       height = 18,
+       width = 23,
+       height = 15,
        units = 'cm',
        dpi = 300)
 
@@ -290,7 +290,7 @@ age_mortality_plot <- ggplot() +
   
   ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\age_mortality_plot.tiff',
          plot = age_mortality_plot,
-         width = 24,
-         height = 18,
+         width = 26,
+         height = 16,
          units = 'cm',
          dpi = 300)
