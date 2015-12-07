@@ -92,21 +92,21 @@ panel_plot
 # Allows for easier calcuations later since our observed weekly 
 # data is incidence not prevelance
 
-I_incidence <- I_splined[, 2:9] / 7
-I_incidence$day_index <- 1:Nsteps
+I_incidence_temp <- I_splined[, 2:9] / 7
+I_incidence_temp$day_index <- 1:Nsteps
 
 # Check summations to make sure we're on track
-do.call(rbind.data.frame, lapply(I_incidence, sum))
+do.call(rbind.data.frame, lapply(I_incidence_temp, sum))
 do.call(rbind.data.frame, lapply(I_it, sum))
 
 # PLOT INCIDENCE ----------------------------------------------------------
 
 # Reshape to long format again:
-I_incidence_long <- melt(I_incidence, id.vars = "day_index")
+I_incidence_temp_long <- melt(I_incidence_temp, id.vars = "day_index")
 
 
 panel_plot <- ggplot() +
-  geom_line(data = I_incidence_long,
+  geom_line(data = I_incidence_temp_long,
             aes(x = day_index, y = value,
                 group = variable),
             color = "red",
@@ -130,21 +130,21 @@ panel_plot
 
 Nsteps <- nrow(I_splined)
 S_it_daily <- matrix(0, Nquarter, Nsteps)
-I_it_daily <- matrix(0, Nquarter, Nsteps)
+I_incidence <- matrix(0, Nquarter, Nsteps)
 N_i_daily <- matrix(0, Nquarter, Nsteps)
 
 
 for (i in 2:(Nquarter+1)){
-  I_it_daily[i-1, ] <- I_incidence[, i]
+  I_incidence[i-1, ] <- I_incidence_temp[, i]
   N_i_daily[i-1, ] <- N_i[i-1, ]
 
   }
 
-rownames(I_it_daily) <- q_names[, 1]
+rownames(I_incidence) <- q_names[, 1]
 
 # Make sure quarters are labeled correctly. Evaluates to T if correct:
 check <- function() {
-  if (sum(I_it_daily[1, ]) == sum(I_it[,1])){
+  if (sum(I_incidence[1, ]) == sum(I_it[,1])){
     print("CORRECT")
   } else{
     stop("Quarters to not match")
@@ -160,11 +160,11 @@ check()
 dataList <- list(Nquarter=Nquarter,
                  S_it_daily = S_it_daily,
                  N_i_daily = N_i_daily,
-                 I_it_daily=I_it_daily,
+                 I_incidence=I_incidence,
                  Nsteps=Nsteps)
 rm(I_splined_long, I_it_long, I_splined, panel_plot,
    panel_data, S_it, I_it, combined, N_i, i, t, n,
-   quarterID, check, I_daily_long, I_daily, I_incidence_long, I_incidence)
+   quarterID, check, I_daily_long, I_daily, I_incidence_temp_long, I_incidence_temp)
 save(list = ls(), file = "Data_4.Rdata")
 
 
