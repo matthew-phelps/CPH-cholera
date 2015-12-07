@@ -28,14 +28,16 @@ load(file = "data\\Rdata\\Data_4.Rdata")
 
 # DATA SHAPE --------------------------------------------------------------
 # Restrict to only Christianshavn
-I_it_daily <- I_it_daily[1, 13:Nsteps]
+I_incidence <- I_incidence[1, 13:Nsteps]
+I_prev <- I_prev[1, 13:Nsteps]
 S_it_daily <- S_it_daily[1,13:Nsteps]
 N_i_daily <- N_i_daily[1, 13:Nsteps]
-Nsteps <- length(I_it_daily)
+Nsteps <- length(I_incidence)
 
 
 dataList <- list(N_i_daily = N_i_daily,
-                 I_it_daily=I_it_daily,
+                 I_incidence=I_incidence,
+                 I_prev = I_prev,
                  Nsteps=Nsteps)
 
 
@@ -54,9 +56,9 @@ model_0_3_jags <- run.jags(model = 'Rcodes\\stan_model_0_3.stan', method = 'para
                            data = dataList,
                            n.chains = 4,
                            adapt = 1000,
-                           burnin = 10000,
-                           sample = 60000,
-                           thin = 3,
+                           burnin = 5000,
+                           sample = 50000,
+                           thin = 2,
                            plots = T)
 
 model_0_3_coda = as.mcmc.list( model_0_3_jags )

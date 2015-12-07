@@ -131,17 +131,19 @@ panel_plot
 Nsteps <- nrow(I_splined)
 S_it_daily <- matrix(0, Nquarter, Nsteps)
 I_incidence <- matrix(0, Nquarter, Nsteps)
+I_prev <- matrix(0, Nquarter, Nsteps)
 N_i_daily <- matrix(0, Nquarter, Nsteps)
 
 
 for (i in 2:(Nquarter+1)){
   I_incidence[i-1, ] <- I_incidence_temp[, i]
+  I_prev[i-1, ] <- I_splined[, i]
   N_i_daily[i-1, ] <- N_i[i-1, ]
 
   }
 
 rownames(I_incidence) <- q_names[, 1]
-
+rownames(I_prev) <- q_names[, 1]
 # Make sure quarters are labeled correctly. Evaluates to T if correct:
 check <- function() {
   if (sum(I_incidence[1, ]) == sum(I_it[,1])){
@@ -161,6 +163,7 @@ dataList <- list(Nquarter=Nquarter,
                  S_it_daily = S_it_daily,
                  N_i_daily = N_i_daily,
                  I_incidence=I_incidence,
+                 I_prev = I_prev,
                  Nsteps=Nsteps)
 rm(I_splined_long, I_it_long, I_splined, panel_plot,
    panel_data, S_it, I_it, combined, N_i, i, t, n,
