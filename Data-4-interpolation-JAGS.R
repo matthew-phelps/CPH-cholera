@@ -11,7 +11,7 @@ mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
 pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata"
 setwd(pc)
 rm(list = ls())
-
+library(dplyr)
 library(plyr)
 library(zoo) # For interpolation functions
 library(data.table)
@@ -99,6 +99,8 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\
 
 I_incidence_temp <- I_splined[, 2:9] / 7
 I_incidence_temp$day_index <- 1:Nsteps
+I_incidence_temp <- I_incidence_temp %>%
+  select(day_index, everything())
 
 # Check summations to make sure we're on track
 do.call(rbind.data.frame, lapply(I_incidence_temp, sum))
@@ -141,11 +143,10 @@ N_i_daily <- matrix(0, Nquarter, Nsteps)
 
 
 for (i in 1:(Nquarter)){
-  I_incidence[i, ] <- I_incidence_temp[, i]
-  I_prev[i, ] <- I_splined[, i]
   N_i_daily[i, ] <- N_i[i, ]
-  
 }
+I_incidence <- t(I_incidence_temp[2:(Nquarter + 1)])
+I_prev <- t(I_splined[, 2:(Nquarter + 1)])
 
 rownames(I_incidence) <- q_names[, 1]
 rownames(I_prev) <- q_names[, 1]
@@ -173,7 +174,7 @@ check()
   # Just for Christianshavn - need to exapnd for all quarters
   
   # Initialize
-  p_i <- matrix(data = I_incidence_temp[, 1], nrow = 7)
+  p_i <- matrix(data = I_splined[, "Christianshavn"], nrow = 7)
   p_i_sum <- colSums(p_i)
   q_i <- matrix(NA, nrow = dim(p_i)[1], ncol = dim(p_i)[2])
   
@@ -182,15 +183,15 @@ check()
       q_i[i, j] <- p_i[i, j] / p_i_sum[j]
     }
   }
-  
-  
+  plot((p_i_sum))
+  print(p_i_sum, digits = 0)
   
   # Re-distribute the incidence across the week -----------------------------
   # We will re-distribute the observed weekly incidence to each day
   # based upon the normalized pr of observing an infection on each day
   
-  (rowMeans(rmultinom(n = 100000, size = I_it[4, 1], prob = q_i[, 4])))
-  
+rowMeans(rmultinom(n = 1000000, size = I_it[4, "Christianshavn"], prob = q_i[, 4]))
+
   
   rbinom(n = 10, size = )
   
