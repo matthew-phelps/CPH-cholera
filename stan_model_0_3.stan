@@ -1,4 +1,4 @@
-# Model 0.1 - Fitting Christianshavn only
+# Model 0.1 - Fitting Christianshavn only with multinomial
 
 model {
 	# Beta log hypreprior distributions
@@ -24,7 +24,8 @@ model {
 #	lambdaR[1] <- I_prev[1] * gamma
 	S_it_daily[1] <- N_i_daily[1];
 	R_new[1] <- 0
-	I_prev[1] ~ dnorm(0.666, 10)
+	I_prev[1] <- 0.666
+
 
 
 	# Lambda I & R
@@ -36,20 +37,19 @@ model {
 	# S updates
 	for (t in 1:(Nsteps-1)){
 		S_it_daily[t+1] <- S_it_daily[t] - (I_incidence[t] / phi);
-		I_prev[t+1] ~ dnorm(I_prev[t] + I_incidence[t] - R_new[t + 1], 10)
+		I_prev[t+1] <- (I_prev[t] + I_incidence[t] - R_new[t + 1], .10)
 
 	}	
 
 	# Likelihood function
 	for (t in 1:(Nsteps-1)){
-		I_incidence[t] ~ dpois(lambdaI[t]);
+		I_incidence[t+1] ~ dpois(lambdaI[t]);
 		R_new[t + 1] ~ dpois(lambdaR[t])
 	}
 
 	   #data# Nsteps
 	   #data# N_i_daily
 
-	   #data# I_incidence
 
 
 

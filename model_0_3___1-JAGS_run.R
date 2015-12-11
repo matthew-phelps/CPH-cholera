@@ -37,7 +37,6 @@ Nsteps <- length(I_incidence)
 
 dataList <- list(N_i_daily = N_i_daily,
                  I_incidence=I_incidence,
-                 I_prev = I_prev,
                  Nsteps=Nsteps)
 
 

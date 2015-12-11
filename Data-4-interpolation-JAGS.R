@@ -85,7 +85,12 @@ panel_plot <- ggplot() +
   facet_wrap(~variable)
 panel_plot
 
-
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\splined_panel.tiff',
+       plot = panel_plot,
+       width = 26,
+       height = 20,
+       units = 'cm',
+       dpi = 300)
 
 # INCIDENCE PER DAY -------------------------------------------
 # This gives the number of new infections (incidence) at each time step.
@@ -135,10 +140,10 @@ I_prev <- matrix(0, Nquarter, Nsteps)
 N_i_daily <- matrix(0, Nquarter, Nsteps)
 
 
-for (i in 2:(Nquarter+1)){
-  I_incidence[i-1, ] <- I_incidence_temp[, i]
-  I_prev[i-1, ] <- I_splined[, i]
-  N_i_daily[i-1, ] <- N_i[i-1, ]
+for (i in 1:(Nquarter)){
+  I_incidence[i, ] <- I_incidence_temp[, i]
+  I_prev[i, ] <- I_splined[, i]
+  N_i_daily[i, ] <- N_i[i, ]
 
   }
 
@@ -154,6 +159,28 @@ check <- function() {
 }
 
 check()
+
+
+# NORMALIZED PR FOR EACH DAY ----------------------------------------------
+# find normalized incidence during each day of the week
+# q_i = p_i / sum_over_i(p_i)
+
+# Just for Christianshavn - need to exapnd for all quarters
+
+# Initialize
+q_i <- matrix(NA, nrow = dim(p_i)[1], ncol = dim(p_i)[2])
+p_i <- matrix(data = I_incidence_temp[, 1], nrow = 7)
+p_i_sum <- colSums(p_i)
+
+for (i in 1:7){
+  for (j in 1:length(p_i_sum)){
+    q_i[i, j] <- p_i[i, j] / p_i_sum[i]
+  }
+}
+
+
+
+
 
 
 
