@@ -47,5 +47,5 @@ dataList <- list(Nquarter=Nquarter,
 
 
 # SAVE --------------------------------------------------------------------
-
+rm(i, t)
 save(list = ls(), file = 'Data_3.Rdata')
