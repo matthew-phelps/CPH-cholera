@@ -155,8 +155,8 @@ check <- function() {
   x <- matrix(NA, 0, 0)
   y <- matrix(NA, 0, 0)
   for(i in 1:Nquarter){
-   x[i]<- round(sum(I_incidence[i, ]), digits = 0)
-   y[i] <- sum(I_it[,i])
+    x[i]<- round(sum(I_incidence[i, ]), digits = 0)
+    y[i] <- sum(I_it[,i])
   } 
   result = list()
   result[[1]] <- x
@@ -166,48 +166,73 @@ check <- function() {
 }
 check()
 
-  
-  # NORMALIZED PR FOR EACH DAY ----------------------------------------------
-  # find normalized incidence during each day of the week
-  # q_i = p_i / sum_over_i(p_i)
-  
-  # Just for Christianshavn - need to exapnd for all quarters
-  
-  # Initialize
-  p_i <- matrix(data = I_splined[, "Christianshavn"], nrow = 7)
-  p_i_sum <- colSums(p_i)
-  q_i <- matrix(NA, nrow = dim(p_i)[1], ncol = dim(p_i)[2])
-  
-  for (i in 1:7){
-    for (j in 1:length(p_i_sum)){
-      q_i[i, j] <- p_i[i, j] / p_i_sum[j]
-    }
-  }
-  plot((p_i_sum))
-  print(p_i_sum, digits = 0)
-  
-  # Re-distribute the incidence across the week -----------------------------
-  # We will re-distribute the observed weekly incidence to each day
-  # based upon the normalized pr of observing an infection on each day
-  
-rowMeans(rmultinom(n = 1000000, size = I_it[4, "Christianshavn"], prob = q_i[, 4]))
 
+# NORMALIZED PR FOR EACH DAY ----------------------------------------------
+# find normalized incidence during each day of the week
+# q_i = p_i / sum_over_i(p_i)
+
+# Just for Christianshavn - need to exapnd for all quarters
+
+# Initialize
+# 
+
+p_i <- matrix(data = I_splined[, "St. Annae Vester"], nrow = 7)
+p_i_sum <- colSums(p_i)
+q_i <- matrix(NA, nrow = dim(p_i)[1], ncol = dim(p_i)[2])
+
+for (i in 1:7){
+  for (j in 1:length(p_i_sum)){
+    q_i[i, j] <- p_i[i, j] / p_i_sum[j]
+  }
+}
+
+# Function fo get p_i and Q_i for each quarter:
+q_names[] <- lapply(q_names, as.character) # converts q_names to character df
+
+# Get data by week for each quarter
+p_i_ls <- lapply(I_splined[, q_names[, 1]], matrix, nrow = 7)
+
+# Sum of prevalence per week
+p_i_sum_ls <- lapply(pilist, colSums)
+p_i_fn <- function(data, nsteps = Nsteps, nquarter = Nquarter){
+  P_I <- list()
+  for (i in 1:nquarter){
+    P_I[[i]] <- matrix(data = data[, i], nrow = 7)
+  }
   
-  rbinom(n = 10, size = )
-  
-  
-  # SAVE OUTPUT -------------------------------------------------------------
-  
-  dataList <- list(Nquarter=Nquarter,
-                   S_it_daily = S_it_daily,
-                   N_i_daily = N_i_daily,
-                   I_incidence=I_incidence,
-                   I_prev = I_prev,
-                   Nsteps=Nsteps)
-  rm(I_splined_long, I_it_long, I_splined, panel_plot,
-     panel_data, S_it, I_it, combined, N_i, i, t, n,
-     quarterID, check, I_daily_long, I_daily, I_incidence_temp_long, I_incidence_temp)
-  save(list = ls(), file = "Data_4.Rdata")
-  
-  
-  
+  }
+
+plot((p_i_sum))
+print(p_i_sum, digits = 0)
+
+
+
+
+# Re-distribute the incidence across the week -----------------------------
+# We will re-distribute the observed weekly incidence to each day
+# based upon the normalized pr of observing an infection on each day
+
+I_incidence <- matrix(data = NA, nrow = 7, ncol = Nsteps/7)
+
+for (i in 1:(Nsteps/7)){
+  I_incidence[, i] <- rowMeans(rmultinom(n = 1000000, size = I_it[i, "St. Annae Vester"], prob = q_i[, i]))
+}
+
+i2 <- matrix(data = (I_incidence), nrow = Nsteps)
+
+plot(i2, type = 'l')
+
+# SAVE OUTPUT -------------------------------------------------------------
+
+dataList <- list(Nquarter=Nquarter,
+                 S_it_daily = S_it_daily,
+                 N_i_daily = N_i_daily,
+                 I_incidence=I_incidence,
+                 I_prev = I_prev,
+                 Nsteps=Nsteps)
+rm(I_splined_long, I_it_long, I_splined, panel_plot,
+   panel_data, S_it, I_it, combined, N_i, i, t, n,
+   quarterID, check, I_daily_long, I_daily, I_incidence_temp_long, I_incidence_temp)
+save(list = ls(), file = "Data_4.Rdata")
+
+
