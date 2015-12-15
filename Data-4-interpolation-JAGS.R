@@ -195,26 +195,17 @@ p_i_ls <- lapply(I_splined[, q_names[, 1]], matrix, nrow = 7)
 # Sum of prevalence per week
 p_i_sum_ls <- lapply(p_i_ls, colSums)
 
-
-
-
-q_i_fn <- function(numerator, denominator, nsteps = Nsteps, nquarter = Nquarter){
-  
-  q_i <- matrix()
-  
-  # for each quarter calcualte q_i
-  for (l in 1:length(denominator)){
-    for(i in 1:7){
-      for(j in 1:length(denominator)){
-        q_i[i, j] <- numerator[i, j] / denominator[j]
-      }
+q_i <- p_i_ls
+for (l in 1:length(p_i_sum_ls)){
+  for (days in 1:7){
+    for (weeks in 1:length(p_i_sum_ls[[l]])){
+     q_i[[l]][days, weeks] <- p_i_ls[[l]][days, weeks] / p_i_sum_ls[[l]][weeks] 
     }
   }
-  return(q_i)
 }
-q_i_ls <- lapply(p_i_ls, q_i_fn, denominator = p_i_sum_ls)
 
-split(p_i_ls, f = )
+
+
 
 
 
