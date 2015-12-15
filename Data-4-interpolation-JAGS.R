@@ -176,18 +176,6 @@ check()
 # Initialize
 # 
 
-p_i <- matrix(data = I_splined[, "St. Annae Vester"], nrow = 7)
-p_i_sum <- colSums(p_i)
-q_i <- matrix(NA, nrow = dim(p_i)[1], ncol = dim(p_i)[2])
-
-for (i in 1:7){
-  for (j in 1:length(p_i_sum)){
-    q_i[i, j] <- p_i[i, j] / p_i_sum[j]
-  }
-}
-
-# Function fo get p_i and Q_i for each quarter:
-q_names[] <- lapply(q_names, as.character) # converts q_names to character df
 
 # Get data by week for each quarter
 p_i_ls <- lapply(I_splined[, q_names[, 1]], matrix, nrow = 7)
@@ -199,7 +187,12 @@ q_i <- p_i_ls
 for (l in 1:length(p_i_sum_ls)){
   for (days in 1:7){
     for (weeks in 1:length(p_i_sum_ls[[l]])){
-     q_i[[l]][days, weeks] <- p_i_ls[[l]][days, weeks] / p_i_sum_ls[[l]][weeks] 
+      if (p_i_sum_ls[[l]][weeks] > 0){
+        q_i[[l]][days, weeks] <- p_i_ls[[l]][days, weeks] / p_i_sum_ls[[l]][weeks]
+      }
+      else {
+        q_i[[l]][days, weeks] <- 0
+      }
     }
   }
 }
