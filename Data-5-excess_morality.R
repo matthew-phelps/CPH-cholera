@@ -21,6 +21,7 @@ library(grid)
 
 # LOAD DATA ---------------------------------------------------------------
 
+
 excess_df <- read.csv2('Data\\Excess_mortality.csv', sep = ',')
 
 all_age <- excess_df[excess_df$Place == 'Koebenhavn', c('Year', 'Month','All')]
@@ -44,10 +45,15 @@ save(all_age, file = "Data\\Rdata\\all_age.Rdata")
 
 # Age mortality -----------------------------------------------------------
 rm(list = ls())
-age_mortality <- read.csv('Data\\CPH_age_mortality.csv')
+age1855 <- read.csv('Data\\census1855_age.csv')
+age1850 <- read.csv('Data\\census1850_age.csv')
+age_mortality <- read.csv('Data\\age_morbidity_mortality.csv')
 
 
 
 # SAVE --------------------------------------------------------------------
 
 save(age_mortality, file = 'Data\\Rdata\\age_mortality.Rdata')
+save(age1855, file = 'Data\\age1855.Rdata')
+save(age1850, file = 'Data\\age1850.Rdata')
+

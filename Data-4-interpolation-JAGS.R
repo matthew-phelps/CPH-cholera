@@ -172,7 +172,8 @@ panel_plot <- ggplot() +
 #              color = "black",
 #              aes(x = day_index, y = sick.total.week,
 #                  group = variable)) +
-  facet_wrap(~variable)
+  facet_wrap(~variable) +
+  ggtitle("Daily Incidence with multinomial" )
 panel_plot
 
 
