@@ -111,7 +111,7 @@ rm(start.day, peak.day)
 
 
 # NEED to re-instate quarterID variable, or start using quarter name instead
-combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 | # this are quarters to be combined
+combined.quarters <- ddply(quarter[which(quarter$quarter == 2 | # this are quarters to be combined
                                            quarter$quarterID == 4 |
                                            quarter$quarterID == 5 |
                                            quarter$quarterID == 9 |
