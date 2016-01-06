@@ -4,9 +4,11 @@
 
 ## intro
 rm(list = ls())
-pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
+ifelse(grepl("wrz741", getwd()),
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
 
-setwd(pc)
+setwd(wd.path)
 
 library (MASS) # used for fiting distributions
 library (ggplot2)
@@ -118,7 +120,7 @@ combined.quarters <- ddply(quarter[which(quarter$quarterID == 2 | # this are qua
                            .(week.id), summarize,
                            sick.total.week = sum(sick.total.week),
                            dead.total.week = sum(dead.total.week),
-                           pop1855 = sum(pop1855),
+                           pop1855 = sum(est.pop.1853),
                            cum.sick = sum(cum.sick),
                            S = sum(S),
                            R = sum(R))

@@ -7,9 +7,11 @@
 # Intro -------------------------------------------------------------------
 
 graphics.off()
-mac <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
-pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata"
-setwd(pc)
+ifelse(grepl("wrz741", getwd()),
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
+
+setwd(wd.path)
 rm(list = ls())
 library(dplyr)
 library(plyr)
