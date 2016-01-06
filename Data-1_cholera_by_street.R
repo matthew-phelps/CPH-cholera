@@ -4,9 +4,11 @@
 
 ## intro
 rm(list = ls())
-pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
+ifelse(grepl("zrc340", getwd()),
+      wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
+      wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
 
-setwd(pc)
+setwd(wd.path)
 
 library (reshape) # for renaming variables
 #library (gdata) # reading excel files
