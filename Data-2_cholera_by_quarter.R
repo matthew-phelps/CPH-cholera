@@ -9,7 +9,7 @@ ifelse(grepl("wrz741", getwd()),
        wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
 
 setwd(wd.path)
-
+rm(list = ls())
 library (MASS) # used for fiting distributions
 library (ggplot2)
 library (stats)
@@ -111,40 +111,45 @@ rm(start.day, peak.day)
 
 
 # NEED to re-instate quarterID variable, or start using quarter name instead
-combined.quarters <- ddply(quarter[which(quarter$quarter == 2 | # this are quarters to be combined
-                                           quarter$quarterID == 4 |
-                                           quarter$quarterID == 5 |
-                                           quarter$quarterID == 9 |
-                                           quarter$quarterID == 12 |
-                                           quarter$quarterID == 13),],
+combined.quarters <- ddply(quarter[which(quarter$quarter == "Vester" | # this are quarters to be combined
+                                           quarter$quarter ==  "Snarens"|
+                                           quarter$quarter == "Strand" |
+                                           quarter$quarter == "Frimands" |
+                                           quarter$quarter == "Klaedebo" |
+                                           quarter$quarter == "Noerre"),],
                            .(week.id), summarize,
                            sick.total.week = sum(sick.total.week),
                            dead.total.week = sum(dead.total.week),
-                           pop1855 = sum(est.pop.1853),
+                           est.pop.1853 = sum(est.pop.1853),
                            cum.sick = sum(cum.sick),
                            S = sum(S),
                            R = sum(R))
 combined.quarters$quarter <- "Combined"
 combined.quarters$quarterID <- 99
 combined.quarters <- combined.quarters[, c(8,1,2,3,4,9,5,6,7)]
+temp_names <- colnames(combined.quarters)
+# Remove columns from original data from in order to bind with Cominbed df
+quarter <- quarter[(temp_names)]
 
-combined <- rbind(quarter[which(quarter$quarterID==1 |
-                                  quarter$quarterID==3 |
-                                  quarter$quarterID==6 |
-                                  quarter$quarterID==7 |
-                                  quarter$quarterID==8 |
-                                  quarter$quarterID==10 |
-                                  quarter$quarterID==11), ],
+combined <- rbind(quarter[which(quarter$quarter== "Nyboder" |
+                                  quarter$quarter== "St. Annae Oester" |
+                                  quarter$quarter== "St. Annae Vester" |
+                                  quarter$quarter== "Kjoebmager" |
+                                  quarter$quarter== "Rosenborg" |
+                                  quarter$quarter== "Oester" |
+                                  quarter$quarter== "Christianshavn"), ],
                   combined.quarters)
 
 # renumber Quarter ID so it's sequential from 1:8
 x1 <- with(combined, paste(quarterID))
 combined <- within(combined, quarterID <- match(x1, unique(x1)))
-rm(x1)
+rm(x1, combined.quarters, temp_names, x2, quarter.split, i)
 save(combined, file = "Rdata\\quarter_combined.Rdata")
 
 
-
+#
+#
+# BEWLOW HERE CODE HAS NOT BEEN UPDATED - NEED TO UPDATE AS PER ABOVE SECTION
 # Combine quarters based on Topography ------------------------------------
 # Provides greater discrimination between high and lower areas
 topo.combined.quarters.1 <- ddply(quarter[which(quarter$quarterID == 2 |
