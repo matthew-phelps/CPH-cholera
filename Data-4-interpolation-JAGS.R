@@ -55,31 +55,38 @@ I_daily <- data.table::dcast(I_daily_long, day_index~variable)
 # with 1 - 7 repeated over and over. These are the case counts for each day?
 
 dayCount_fn <- function(x) {
+  # Creates vector with a length = # of cases observed that week.
+  # Each element of vector is a number (1-7) that represents the
+  # day of the week to assign a single case
   z <- sample(1:7, x, replace = T)
   z
 }
-# Remove day indexing:
-I_temp <- I_it[q_names[, 1]]
 
-for (i in 1:nrow(I_temp)){
-  for (j in 1:ncol(I_temp)){
-    if (I_temp[i, j] > 0) {
-    print(dayCount_fn(I_temp[i, j]))
-    } else {
-       print(0)
-    }
+days_list_1 <- list()
+for (i in 1:nrow(I_it_long)){
+  # Loop through observed data and for each week apply dayCount_fn
+  # to create a random distribution of cases over the week
+  if (I_it_long$value[i] > 0) {
+    days_list_1[i] <-as.data.frame(dayCount_fn(I_it_long$value[i]))
+  } else {
+    days_list_1[i] <- 0
   }
 }
 
-lapply(I_it, dayCount_fn)
+day_sum <- data.frame(cases = matrix(data = 0, nrow = 7, ncol = 1))
+for (j in 1:length(days_list_1)){
+  for (i in 1:7){
+    # Count number of cases for each week and quarter
+    # assigned to each day
+    day_sum[i, j] <- sum(days_list_1[[j]] == i )
+  }
+}
 
-
-dayCount_fn(12)
-
-
-
-
-
+# Re-create original data structure, but with each row == one day
+x <- data.frame(cases = day_sum[, 1])
+for (i in 2:(ncol(day_sum) - 1)){
+  x <- rbind(x, day_sum[i])
+}
 
 
 
@@ -188,19 +195,19 @@ panel_plot <- ggplot() +
             color = "red",
             size = 1.2) +
   theme_minimal() +
-#   geom_line(data = panel_data,
-#             size = 1.2,
-#             color = 'black',
-#             linetype = 1,
-#             alpha = 0.3,
-#             aes(x = day_index, y = sick.total.week,
-#                 group = variable)) +
-#   geom_point(data = panel_data,
-#              size = 3.2,
-#              color = "black",
-#              aes(x = day_index, y = sick.total.week,
+  #   geom_line(data = panel_data,
+  #             size = 1.2,
+  #             color = 'black',
+  #             linetype = 1,
+  #             alpha = 0.3,
+  #             aes(x = day_index, y = sick.total.week,
+  #                 group = variable)) +
+  #   geom_point(data = panel_data,
+  #              size = 3.2,
+  #              color = "black",
+  #              aes(x = day_index, y = sick.total.week,
 #                  group = variable)) +
-  facet_wrap(~variable) +
+facet_wrap(~variable) +
   ggtitle("Daily Incidence with multinomial" )
 panel_plot
 
