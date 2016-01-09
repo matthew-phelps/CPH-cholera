@@ -102,11 +102,6 @@ rm(start.day, peak.day)
 
 
 
-
-
-
-
-
 # Prepare 1 grouping of of combined quarter NOT based on topography ----------------------------------------
 
 
