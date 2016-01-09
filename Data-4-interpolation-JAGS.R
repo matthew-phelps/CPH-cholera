@@ -84,10 +84,12 @@ for (j in 1:length(days_list_1)){
 
 # Re-create original data structure, but with each row == one day
 x <- data.frame(cases = day_sum[, 1])
-for (i in 2:(ncol(day_sum) - 1)){
-  x <- rbind(x, day_sum[i])
+for (i in 2:ncol(day_sum)){
+  for (j in 1:7){
+  x <- rbind(x, day_sum[, i][j])
+  }
 }
-
+(day_sum[, i][4])
 
 
 
