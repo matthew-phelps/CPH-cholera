@@ -48,15 +48,38 @@ Nsteps <- nrow(I_daily)
 I_daily <- data.table::dcast(I_daily_long, day_index~variable)
 
 
-# INTERPOLATING WITH SPLINES ----------------------------------------------
-# See: http://goo.gl/GyUf5K
-# Gives the prevalence at each day - not incidence
-I_splined <- lapply(I_daily, na.spline)
-I_splined <- as.data.frame(t(do.call(rbind.data.frame, I_splined)))
-row.names(I_splined) <- NULL
 
-# Remove negative values
-I_splined[I_splined < 0] <- 0
+
+# REPLICATE SETS ----------------------------------------------------------
+# sample 1 - 7, N cases times, with replacement. Gives vector of N cases 
+# with 1 - 7 repeated over and over. These are the case counts for each day?
+
+count_list <- list(I_it)
+for (i in 1:nrow(I_it)){
+  for (j in 1:ncol(I_it)){
+    if (I_it[i, j] > 0) {
+    count_list[[1]][j, i] <- (dayCount_fn(I_it[i, j]))
+    } else {
+      count_list[[1]][j, i] <- 0
+    }
+  }
+}
+
+lapply(I_it, dayCount_fn)
+
+dayCount_fn <- function(x) {
+  z <- sample(1:7, x, replace = T)
+  z
+}
+dayCount_fn(12)
+
+
+
+
+
+
+
+
 
 # PLOT SPLINED--------------------------------------------------------------------
 panel_data <- combined
