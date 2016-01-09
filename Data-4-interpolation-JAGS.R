@@ -54,6 +54,9 @@ I_daily <- data.table::dcast(I_daily_long, day_index~variable)
 # sample 1 - 7, N cases times, with replacement. Gives vector of N cases 
 # with 1 - 7 repeated over and over. These are the case counts for each day?
 
+
+# Sort I_daily_long by Quarter then day.index - this will allow easier binding downstream
+I_daily_long <- I_daily_long[order(I_daily_long$variable, I_daily_long$day_index), ]
 dayCount_fn <- function(x) {
   # Creates vector with a length = # of cases observed that week.
   # Each element of vector is a number (1-7) that represents the
@@ -83,13 +86,32 @@ for (j in 1:length(days_list_1)){
 }
 
 # Re-create original data structure, but with each row == one day
-x <- data.frame(cases = day_sum[, 1])
+I_daily_replicate <- data.frame(cases = day_sum[, 1])
 for (i in 2:ncol(day_sum)){
   for (j in 1:7){
-  x <- rbind(x, day_sum[, i][j])
+    I_daily_replicate <- rbind(I_daily_replicate, day_sum[, i][j])
   }
 }
-(day_sum[, i][4])
+I_daily_replicate$day_index <- I_daily_long$day_index
+I_daily_replicate$quarter <- I_daily_long$variable
+
+
+
+# VERIFY DATA MUNGING -----------------------------------------------------
+
+# All statements should evaluate to TRUE if everything worked correctly
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Christianshavn") ]) == combined$cum.sick[which(combined$quarter == "Christianshavn" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Kjoebmager") ]) == combined$cum.sick[which(combined$quarter == "Kjoebmager" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Nyboder") ]) == combined$cum.sick[which(combined$quarter == "Nyboder" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Oester") ]) == combined$cum.sick[which(combined$quarter == "Oester" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Rosenborg") ]) == combined$cum.sick[which(combined$quarter == "Rosenborg" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "St. Annae Oester") ]) == combined$cum.sick[which(combined$quarter == "St. Annae Oester" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "St. Annae Vester") ]) == combined$cum.sick[which(combined$quarter == "St. Annae Vester" & combined$week.id == 15)]
+sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Combined") ]) == combined$cum.sick[which(combined$quarter == "Combined" & combined$week.id == 15)]
+
+
+
+
 
 
 
