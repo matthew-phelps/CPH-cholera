@@ -95,6 +95,9 @@ for (i in 2:ncol(day_sum)){
 I_daily_replicate$day_index <- I_daily_long$day_index
 I_daily_replicate$quarter <- I_daily_long$variable
 
+# Re-order columns
+I_daily_replicate <- I_daily_replicate[, c("day_index", 'quarter', 'cases')]
+
 
 
 # VERIFY DATA MUNGING -----------------------------------------------------
