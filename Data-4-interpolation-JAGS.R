@@ -114,22 +114,18 @@ sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Combined") ]) ==
 
 
 
-
-
-
-
 # PLOT SPLINED--------------------------------------------------------------------
 panel_data <- combined
 panel_data$day_index <- (combined$week.id +1) * 7
-panel_data <- dplyr::rename(panel_data, variable = quarter)
+panel_data <- dplyr::rename(panel_data, quarter = quarter)
 
 
 # Reshape to long format again:
-I_splined_long <- melt(I_splined, id.vars = "day_index")
+
 panel_plot <- ggplot() +
-  geom_line(data = I_splined_long,
-            aes(x = day_index, y = value,
-                group = variable),
+  geom_line(data = I_daily_replicate,
+            aes(x = day_index, y = cases,
+                group = quarter),
             color = "red",
             size = 1.2) +
   geom_line(data = panel_data,
@@ -137,14 +133,14 @@ panel_plot <- ggplot() +
             color = 'black',
             linetype = 1,
             alpha = 0.3,
-            aes(x = day_index, y = sick.total.week,
-                group = variable)) +
+            aes(x = day_index, y = sick.total.week/7,
+                group = quarter)) +
   geom_point(data = panel_data,
              size = 3.2,
              color = "black",
-             aes(x = day_index, y = sick.total.week,
-                 group = variable)) +
-  facet_wrap(~variable)
+             aes(x = day_index, y = sick.total.week/7,
+                 group = quarter)) +
+  facet_wrap(~quarter)
 panel_plot
 
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\splined_panel.tiff',
@@ -155,88 +151,6 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\
        dpi = 300)
 
 
-
-
-
-# NORMALIZED PR FOR EACH DAY ----------------------------------------------
-# find normalized incidence during each day of the week
-# q_i = p_i / sum_over_i(p_i)
-
-q_names[] <- lapply(q_names, as.character)
-# Get data by week for each quarter
-p_i_ls <- lapply(I_splined[, q_names[, 1]], matrix, nrow = 7)
-
-# Sum of prevalence per week
-p_i_sum_ls <- lapply(p_i_ls, colSums)
-
-q_i <- p_i_ls
-for (l in 1:length(p_i_sum_ls)){
-  for (days in 1:7){
-    for (weeks in 1:(Nsteps/7)){
-      if (p_i_sum_ls[[l]][weeks] > 0){
-        q_i[[l]][days, weeks] <- p_i_ls[[l]][days, weeks] / p_i_sum_ls[[l]][weeks]
-      }
-      else {
-        q_i[[l]][days, weeks] <- 0
-      }
-    }
-  }
-}
-
-rm(p_i_sum_ls, p_i_ls, l, days, weeks)
-
-
-# Re-distribute the incidence across the week -----------------------------
-# We will re-distribute the observed weekly incidence to each day
-# based upon the normalized pr of observing an infection on each day
-
-I_incidence <- q_i
-
-for (l in 1:length(q_i)){
-  for (weeks in 1:(Nsteps/7)){
-    if (I_it[weeks, l] == 0){
-      I_incidence[[l]][, weeks] <- 0
-    } else {
-      I_incidence[[l]][, weeks] <- rowMeans(rmultinom(n = 100000, size = I_it[weeks, l], prob = q_i[[l]][, weeks]))
-    }
-  }
-}
-rm(l, weeks)
-
-I_incidence <- lapply(I_incidence, matrix, nrow = Nsteps)
-I_in <- do.call(rbind.data.frame, I_incidence)
-row.names(I_in) <- NULL
-I_incidence <- as.data.frame(matrix(data = I_in[, "V1"], nrow = Nsteps, ncol = Nquarter))
-colnames(I_incidence) <- q_names[,1]
-I_incidence$day_index <- 1:Nsteps
-rm(I_in)
-
-
-
-# PLOT INCIDENCE ----------------------------------------------------------
-I_incidence_long <- melt(I_incidence, id.vars = "day_index")
-panel_plot <- ggplot() +
-  geom_line(data = I_incidence_long,
-            aes(x = day_index, y = value,
-                group = variable),
-            color = "red",
-            size = 1.2) +
-  theme_minimal() +
-  #   geom_line(data = panel_data,
-  #             size = 1.2,
-  #             color = 'black',
-  #             linetype = 1,
-  #             alpha = 0.3,
-  #             aes(x = day_index, y = sick.total.week,
-  #                 group = variable)) +
-  #   geom_point(data = panel_data,
-  #              size = 3.2,
-  #              color = "black",
-  #              aes(x = day_index, y = sick.total.week,
-#                  group = variable)) +
-facet_wrap(~variable) +
-  ggtitle("Daily Incidence with multinomial" )
-panel_plot
 
 
 

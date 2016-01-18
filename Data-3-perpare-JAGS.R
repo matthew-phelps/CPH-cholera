@@ -37,7 +37,7 @@ for (i in 1:Nquarter){
   for( t in 1:Nsteps){
     S_it[i, t] <- (combined$S[which(combined$quarterID==i)])[t]
     I_it[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
-    N_i[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+    N_i[i, t] <- (combined$est.pop.1853[which(combined$quarterID==i)])[t]
   }
 }
 row.names(I_it) <- q_names[, 1]
