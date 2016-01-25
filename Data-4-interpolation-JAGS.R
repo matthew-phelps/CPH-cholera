@@ -65,45 +65,71 @@ dayCount_fn <- function(x) {
   z
 }
 
-days_list_1 <- list()
-for (i in 1:nrow(I_it_long)){
-  # Loop through observed data and for each week apply dayCount_fn
-  # to create a random distribution of cases over the week
-  if (I_it_long$value[i] > 0) {
-    days_list_1[i] <-as.data.frame(dayCount_fn(I_it_long$value[i]))
-  } else {
-    days_list_1[i] <- 0
+# Sampling:
+n <- 100 # number of replicated datasets
+replicate_list <- list() # to store the replicates lists
+
+for (k in 1:n){
+  days_list_1 <- list()
+  for (i in 1:nrow(I_it_long)){
+    # Loop through observed data and for each week apply dayCount_fn
+    # to create a random distribution of cases over the week
+    if (I_it_long$value[i] > 0) {
+      days_list_1[i] <-as.data.frame(dayCount_fn(I_it_long$value[i]))
+    } else {
+      days_list_1[i] <- 0
+    }
   }
+  
+  # For each replication, store results as 7xn_days df
+  day_sum <- data.frame(cases = matrix(data = 0, nrow = 7, ncol = 1))
+  for (j in 1:length(days_list_1)){
+    for (i in 1:7){
+      # Count number of cases for each week and quarter
+      # assigned to each day
+      day_sum[i, j] <- sum(days_list_1[[j]] == i )
+    }
+  }
+  replicate_list[k] <- list(day_sum)
 }
 
-day_sum <- data.frame(cases = matrix(data = 0, nrow = 7, ncol = 1))
-for (j in 1:length(days_list_1)){
-  for (i in 1:7){
-    # Count number of cases for each week and quarter
-    # assigned to each day
-    day_sum[i, j] <- sum(days_list_1[[j]] == i )
-  }
-}
 
 # Re-create original data structure, but with each row == one day
-I_daily_replicate <- data.frame(cases = day_sum[, 1])
-for (i in 2:ncol(day_sum)){
-  for (j in 1:7){
-    I_daily_replicate <- rbind(I_daily_replicate, day_sum[, i][j])
+I_daily_replicate <- data.frame(cases = replicate_list[[1]][, 1])
+
+
+I_daily_replicate_ls <- list()
+for (k in 1:n){
+  I_daily_replicate <- data.frame(paste("cases", k) = replicate_list[[1]][, 1])
+  for (i in 2:ncol(replicate_list[[k]])){
+    for (j in 1:7){
+      I_daily_replicate <- rbind(I_daily_replicate, replicate_list[[k]][, i][j])
+    }
   }
+  I_daily_replicate_ls[k] <- list(I_daily_replicate)
 }
+
+# Add variables & re-order columns
 I_daily_replicate$day_index <- I_daily_long$day_index
 I_daily_replicate$quarter <- I_daily_long$variable
-
-# Re-order columns
 I_daily_replicate <- I_daily_replicate[, c("day_index", 'quarter', 'cases')]
+
+x <- I_daily_replicate
+for (k in 1:n){
+  
+  x <- cbind(x, I_daily_replicate_ls[k])
+}
+x <- 
+I_multi_replicate <- I_daily_replicate
+I_multi_replicate[, ncol(I_daily_replicate):n] <- NA
+
 
 
 
 # VERIFY DATA MUNGING -----------------------------------------------------
 
 # All statements should evaluate to TRUE if everything worked correctly
-sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Christianshavn") ]) == combined$cum.sick[which(combined$quarter == "Christianshavn" & combined$week.id == 15)]
+sum(x$cases[which(x$quarter == "Christianshavn") ]) == combined$cum.sick[which(combined$quarter == "Christianshavn" & combined$week.id == 15)]
 sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Kjoebmager") ]) == combined$cum.sick[which(combined$quarter == "Kjoebmager" & combined$week.id == 15)]
 sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Nyboder") ]) == combined$cum.sick[which(combined$quarter == "Nyboder" & combined$week.id == 15)]
 sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Oester") ]) == combined$cum.sick[which(combined$quarter == "Oester" & combined$week.id == 15)]
@@ -114,7 +140,7 @@ sum(I_daily_replicate$cases[which(I_daily_replicate$quarter == "Combined") ]) ==
 
 
 
-# PLOT SPLINED--------------------------------------------------------------------
+# PLOT REPLICATE --------------------------------------------------------------------
 panel_data <- combined
 panel_data$day_index <- (combined$week.id +1) * 7
 panel_data <- dplyr::rename(panel_data, quarter = quarter)
@@ -143,12 +169,15 @@ panel_plot <- ggplot() +
   facet_wrap(~quarter)
 panel_plot
 
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\splined_panel.tiff',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\replicate_panel.tiff',
        plot = panel_plot,
        width = 26,
        height = 20,
        units = 'cm',
        dpi = 300)
+
+
+
 
 
 
