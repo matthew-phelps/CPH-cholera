@@ -146,8 +146,8 @@ panel_data <- dplyr::rename(panel_data, quarter = quarter)
 # Reshape to long format again:
 
 panel_plot <- ggplot() +
-  geom_line(data = I_daily_replicate,
-            aes(x = day_index, y = cases,
+  geom_line(data = I_multi_replicate,
+            aes(x = day_index, y = rep1,
                 group = quarter),
             color = "red",
             size = 1.2) +
@@ -166,6 +166,8 @@ panel_plot <- ggplot() +
   facet_wrap(~quarter)
 panel_plot
 
+
+
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\replicate_panel.tiff',
        plot = panel_plot,
        width = 26,
@@ -179,6 +181,12 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\
 
 
 
+
+# AVERGAES ----------------------------------------------------------------
+# Just to check that things are behaving as they should
+day_avg <- data.frame(avg = rowMeans(I_multi_replicate[,3:(n+3)]))
+day_avg$quarter <- I_daily_long$variable
+day_avg$day_index <- I_daily_long$day_index
 
 # SAVE OUTPUT -------------------------------------------------------------
 
