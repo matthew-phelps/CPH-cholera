@@ -46,15 +46,15 @@ for (t in 2:nrow(X_ch)){
 Nsteps <- nrow(I_chris)
 Nrep <- ncol(X_ch)
 N_christianshavn <- 15836
-S_it <- matrix(0, Nsteps, Nrep)
-I_it <- X_ch
-N_i  <- matrix(0, Nsteps, Nrep)
-N_i <- N_christianshavn
+S_it_daily <- matrix(0, Nsteps, Nrep)
+I_incidence <- X_ch
+N_i_daily  <- matrix(0, Nsteps, Nrep)
+N_i_daily <- N_christianshavn
 
 for (rep in 1:Nrep){
   for( t in 1:Nsteps){
-    S_it[t, rep] <- N_christianshavn - cum_chris[t, rep]
+    S_it_daily[t, rep] <- N_christianshavn - cum_chris[t, rep]
   }
 }
-row.names(I_it) <- q_names[, 1]
+
 
