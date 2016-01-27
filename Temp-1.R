@@ -32,17 +32,28 @@ X_ch <- I_chris[, grepl("rep", names(I_chris))]
 
 # DATA PREP FOR STAN ------------------------------------------------------
 # Once method is tested, repeat for all quarters
+
+# Count cumilative infections:
+cum_chris <- data.frame(matrix(NA, dim(X_ch)[1], dim(X_ch)[2]))
+colnames(cum_chris) <- colnames(X_ch)
+cum_chris[1, ] <- X_ch[1, ]
+for (t in 2:nrow(X_ch)){
+  for (rep in 1:ncol(X_ch)){
+    cum_chris[t, rep] <- cum_chris[t - 1, rep] + X_ch[t, rep]
+  }
+}
+
 Nsteps <- nrow(I_chris)
 Nrep <- ncol(X_ch)
+N_christianshavn <- 15836
 S_it <- matrix(0, Nsteps, Nrep)
-I_it <- matrix(0, Nsteps, Nrep)
+I_it <- X_ch
 N_i  <- matrix(0, Nsteps, Nrep)
+N_i <- N_christianshavn
 
-for (i in 1:Nrep){
+for (rep in 1:Nrep){
   for( t in 1:Nsteps){
-    S_it[t, i] <- (combined$S[which(combined$quarterID==i)])[t]
-    I_it[t, i] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
-    N_i[t, i] <- (combined$est.pop.1853[which(combined$quarterID==i)])[t]
+    S_it[t, rep] <- N_christianshavn - cum_chris[t, rep]
   }
 }
 row.names(I_it) <- q_names[, 1]
