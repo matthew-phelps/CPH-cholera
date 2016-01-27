@@ -184,11 +184,21 @@ day_avg <- data.frame(avg = rowMeans(I_multi_replicate[,3:(n+3)]))
 day_avg$quarter <- I_daily_long$variable
 day_avg$day_index <- I_daily_long$day_index
 
+
+
+# CLEAN UP ----------------------------------------------------------------
+
+rm(I_it_long, panel_plot, panel_data, S_it,
+   I_it, combined, N_i, i, n, quarterID, day_avg,
+   I_daily_long, I_daily, I_daily_replicate,
+   I_daily_replicate_ls, replicate_list, j, k,
+   days_list_1)
+
+
+
 # SAVE OUTPUT -------------------------------------------------------------
 
-rm(I_it_long, panel_plot,
-   panel_data, S_it, I_it, combined, N_i, i, n,
-   quarterID, I_daily_long, I_daily)
+
 save(list = ls(), file = "Data_4.Rdata")
 
 
