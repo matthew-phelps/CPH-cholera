@@ -178,10 +178,6 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\
 
 
 
-
-
-
-
 # AVERGAES ----------------------------------------------------------------
 # Just to check that things are behaving as they should
 day_avg <- data.frame(avg = rowMeans(I_multi_replicate[,3:(n+3)]))
