@@ -186,15 +186,9 @@ day_avg$day_index <- I_daily_long$day_index
 
 # SAVE OUTPUT -------------------------------------------------------------
 
-dataList <- list(Nquarter=Nquarter,
-                 S_it_daily = S_it_daily,
-                 N_i_daily = N_i_daily,
-                 I_incidence=I_incidence,
-                 I_prev = I_prev,
-                 Nsteps=Nsteps)
-rm(I_splined_long, I_it_long, I_splined, panel_plot,
-   panel_data, S_it, I_it, combined, N_i, i, t, n,
-   quarterID, check, I_daily_long, I_daily, I_incidence_temp_long, I_incidence_temp)
+rm(I_it_long, panel_plot,
+   panel_data, S_it, I_it, combined, N_i, i, n,
+   quarterID, I_daily_long, I_daily)
 save(list = ls(), file = "Data_4.Rdata")
 
 
