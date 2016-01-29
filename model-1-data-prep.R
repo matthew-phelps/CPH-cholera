@@ -21,12 +21,12 @@ library(ggplot2)
 load("Data_4.Rdata")
 
 
-# SUBSET to CHRISTIANIA ---------------------------------------------------
+# SUBSET to 1 QUARTER ---------------------------------------------------
 
-I_chris <- I_multi_replicate[which(I_multi_replicate$quarter == "Christianshavn"), ]
+I_qrt <- I_multi_replicate[which(I_multi_replicate$quarter == "St. Annae Vester"), ]
 
 # Selecton only columns with "rep" in name. See: http://goo.gl/s9xRKr
-X_ch <- I_chris[, grepl("rep", names(I_chris))]
+X_qrt <- I_qrt[, grepl("rep", names(I_qrt))]
 
 
 
@@ -34,26 +34,26 @@ X_ch <- I_chris[, grepl("rep", names(I_chris))]
 # Once method is tested, repeat for all quarters
 
 # Count cumilative infections:
-cum_chris <- data.frame(matrix(NA, dim(X_ch)[1], dim(X_ch)[2]))
-colnames(cum_chris) <- colnames(X_ch)
-cum_chris[1, ] <- X_ch[1, ]
-for (t in 2:nrow(X_ch)){
-  for (rep in 1:ncol(X_ch)){
-    cum_chris[t, rep] <- cum_chris[t - 1, rep] + X_ch[t, rep]
+cum_qrt <- data.frame(matrix(NA, dim(X_qrt)[1], dim(X_qrt)[2]))
+colnames(cum_qrt) <- colnames(X_qrt)
+cum_qrt[1, ] <- X_qrt[1, ]
+for (t in 2:nrow(X_qrt)){
+  for (rep in 1:ncol(X_qrt)){
+    cum_qrt[t, rep] <- cum_qrt[t - 1, rep] + X_qrt[t, rep]
   }
 }
 
-Nsteps <- nrow(I_chris)
-Nrep <- ncol(X_ch)
-N_christianshavn <- 15836
+Nsteps <- nrow(cum_qrt)
+Nrep <- ncol(X_qrt)
+N_St_annae_v <- 24655
 S_it_daily <- matrix(0, Nsteps, Nrep)
-I_incidence <- X_ch
+I_incidence <- X_qrt
 N_i_daily  <- matrix(0, Nsteps, Nrep)
-N_i_daily <- N_christianshavn
+N_i_daily <- N_St_annae_v
 
 for (rep in 1:Nrep){
   for( t in 1:Nsteps){
-    S_it_daily[t, rep] <- N_christianshavn - cum_chris[t, rep]
+    S_it_daily[t, rep] <- N_St_annae_v - cum_qrt[t, rep]
   }
 }
 

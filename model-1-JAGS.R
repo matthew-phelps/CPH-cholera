@@ -24,10 +24,10 @@ load(file = "data\\Rdata\\model-1-data-prep.Rdata")
 
 # DATA SHAPE --------------------------------------------------------------
 # Restrict to only one replicate
-I_incidence <- data.frame(I_incidence[, 1])
+I_incidence <- (I_incidence[, 1])
 I_prev <- matrix(data = NA, nrow = Nsteps, ncol = 1)
 I_prev[1] <- 0
-S_it_daily <- data.frame(S_it_daily[, 1])
+S_it_daily <- (S_it_daily[, 1])
 
 # Save in list form to pass to JAGS
 dataList <- list(N_i_daily = N_i_daily,
@@ -40,3 +40,26 @@ jags <- jags.model('Rcodes\\stan-model_Fitting-one-replicate.stan',
                    data = dataList,
                    n.chains = 1,
                    n.adapt = 1000)
+
+
+# JAGS 2 ------------------------------------------------------------------
+
+
+model_0_3_jags <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
+                           method = 'parallel',
+                           monitor = c('beta', 'phi'),
+                           data = dataList,
+                           n.chains = 4,
+                           adapt = 1000,
+                           burnin = 5000,
+                           sample = 5000,
+                           thin = 2,
+                           plots = T)
+
+model_0_3_coda = as.mcmc.list( model_0_3_jags )
+
+
+
+# JAGS DIAGNOSTICS --------------------------------------------------------
+
+print(model_0_3_jags)

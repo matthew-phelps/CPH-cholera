@@ -23,7 +23,7 @@ model {
   # First time-step
   #	lambdaI[1] <-  beta * (I_prev[1]/phi + 0.01);
   #	lambdaR[1] <- I_prev[1] * gamma
-  S_it_daily[1] <- N_i_daily[1];
+  S_it_daily[1] <- N_i_daily;
   R_new[1] <- 0
   I_prev[1] <- 0.666
   
@@ -31,7 +31,7 @@ model {
   
   # Lambda I & R
   for (t in 1:(Nsteps-1)){
-    lambdaI[t] <-  (S_it_daily[t]  / N_i_daily[t]) * (beta * (I_prev[t]));
+    lambdaI[t] <-  (S_it_daily[t]  / N_i_daily) * (beta * (I_prev[t]));
     lambdaR[t] <- I_prev[t] * gamma
   }
   
@@ -50,6 +50,7 @@ model {
   
   #data# Nsteps
   #data# N_i_daily
+  #data# I_incidence
   
   
   
