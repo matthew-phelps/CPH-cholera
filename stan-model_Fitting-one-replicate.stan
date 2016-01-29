@@ -38,7 +38,7 @@ model {
   # S updates
   for (t in 1:(Nsteps-1)){
     S_it_daily[t+1] <- S_it_daily[t] - (I_incidence[t] / phi);
-    I_prev[t+1] <- (I_prev[t] + I_incidence[t] - R_new[t + 1], .10)
+    I_prev[t+1] <- (I_prev[t] + I_incidence[t] - R_new[t + 1])
     
   }	
   

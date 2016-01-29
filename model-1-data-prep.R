@@ -58,3 +58,6 @@ for (rep in 1:Nrep){
 }
 
 
+# SAVE --------------------------------------------------------------------
+
+save(list = ls(), file = "model-1-data-prep.Rdata")
