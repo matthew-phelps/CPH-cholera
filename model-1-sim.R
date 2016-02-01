@@ -19,9 +19,9 @@ rm(list = ls())
 
 
 load(file = "data\\Rdata\\quarter_combined.Rdata")
-load(file = 'data\\Rdata\\beta_summary-1.Rdata')
-load(file = 'data\\Rdata\\phi_summary-1.Rdata')
-load(file = 'data\\Rdata\\model-1jags.Rdata')
+load(file = 'data\\Rdata\\beta-summary-1.Rdata')
+load(file = 'data\\Rdata\\phi-summary-1.Rdata')
+load(file = 'data\\Rdata\\model-1-jags.Rdata')
 load("data\\Rdata\\model-1-dataList.Rdata")
 
 N_i_daily <- dataList[[1]]
@@ -40,11 +40,11 @@ N_it <- matrix(NA, 1, Nsteps)
 I_i_t1 <- matrix(0, nrow = 1, ncol = 1)
 S_i_t1 <- matrix(0, nrow = 1, ncol = 1)
 N_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-I_i_t1[1, 1] <- (combined$sick.total.week[which(combined$quarterID==1)])[1]
-S_i_t1[1, 1] <- (combined$S[which(combined$quarterID==1)])[1]
+I_i_t1[1, 1] <- (combined$sick.total.week[which(combined$quarter== "St. Annae Vester")])[1]
+S_i_t1[1, 1] <- (combined$S[which(combined$quarter== "St. Annae Vester")])[1]
 
 for (t in 1:Nsteps){
-  N_it[1, t] <- (combined$pop1855[which(combined$quarterID==1)])[t]
+  N_it[1, t] <- (combined$est.pop.1853[which(combined$quarter== "St. Annae Vester")])[t]
 }
 
 # Bind first time-step of infection data to block of NAs the size of the remaining
