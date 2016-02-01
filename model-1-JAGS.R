@@ -49,17 +49,36 @@ model_0_3_jags <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.sta
                            method = 'parallel',
                            monitor = c('beta', 'phi'),
                            data = dataList,
-                           n.chains = 4,
+                           n.chains = 5,
                            adapt = 1000,
                            burnin = 5000,
-                           sample = 5000,
-                           thin = 2,
+                           sample = 200000,
+                           thin = 3,
                            plots = T)
 
 model_0_3_coda = as.mcmc.list( model_0_3_jags )
 
-
+ 
 
 # JAGS DIAGNOSTICS --------------------------------------------------------
 
 print(model_0_3_jags)
+
+model_0_3_ggs <- ggs(model_0_3_coda)
+trace_beta <- ggs_traceplot(model_0_3_ggs, family = 'beta', simplify = .3) +
+  theme(legend.position = 'none')
+density_beta <- ggs_density(model_0_3_ggs, family = 'beta')
+running_beta <- ggs_running(model_0_3_ggs, family = 'beta')
+
+ggsave(trace_beta, filename = "Output\\MCMC\\trace-beta-model-1.jpg")
+ggsave(density_beta, filename = 'Output\\MCMC\\density-beta-model-1.jpg')
+ggsave(running_beta, filename = 'Output\\MCMC\\running-beta-model-1.jpg')
+
+trace_phi <- ggs_traceplot(model_0_3_ggs, family = 'phi', simplify = .3)
+density_phi <- ggs_density(model_0_3_ggs, family = 'phi')
+running_phi <- ggs_running(model_0_3_ggs, family = 'phi')
+
+ggsave(trace_phi, filename = "Output\\MCMC\\trace_phi_0_3.jpg")
+ggsave(density_phi, filename = 'Output\\MCMC\\density_phi_0_3.jpg')
+ggsave(running_phi, filename = 'Output\\MCMC\\running_phi_0_3.png')
+
