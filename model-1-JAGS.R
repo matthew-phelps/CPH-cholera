@@ -45,7 +45,7 @@ dataList <- list(N_i_daily = N_i_daily,
 
 # JAGS 2 ------------------------------------------------------------------
 
-
+set.seed(13)
 model_1_jags <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
                            method = 'parallel',
                            monitor = c('beta', 'phi'),
