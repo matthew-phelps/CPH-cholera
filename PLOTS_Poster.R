@@ -258,14 +258,14 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epi
 
 # AGE ADJUSTED MORTALITY --------------------------------------------------
 rm(list = ls())
-load('Rdata\\age_mortality.Rdata')
+load('Rdata\\mortality_rates.Rdata')
 
 # Re-order levels of factor so that plotting works: http://goo.gl/CD2fEC
-age_char <- as.character(age_mortality$age)
-age_mortality$age <- factor(age_char, levels = c(age_char))
+age_char <- as.character(mortality_rates$age)
+mortality_rates$age <- factor(age_char, levels = c(age_char))
 
 age_mortality_plot <- ggplot() +
-  geom_bar(data = age_mortality,
+  geom_bar(data = mortality_rates,
            stat = 'identity',
            aes(x = age, y = deaths, fill = 'red')) +
   xlab("Age group") +
