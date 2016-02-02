@@ -32,8 +32,8 @@ n0
 
 # Un-normalized incident cases per week -----------------------------------
 
-load("Rdata\\incident_cases_per_week.Rd")
-m1 <- nPlot(sick.total.week~startday.index, group ='quarter', type='lineChart',  data = quarter)
+load(file = "Rdata\\Data_3.Rdata")
+m1 <- nPlot(sick.total.week~week.id, group ='quarter', type='lineChart',  data = combined)
 m1$yAxis(axisLabel = "Number infected", width = 40)
 m1$xAxis(axisLabel = "Day Index", width = 90)
 m1$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"

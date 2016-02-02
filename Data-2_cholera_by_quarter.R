@@ -67,7 +67,7 @@ rm(census, street.data)
 # Add Cumulative No. infected at each week --------------------------------
 quarter$week.id <- quarter$startday.index/7 # create time-step index
 quarter$quarterID <- as.numeric(as.factor(quarter$quarter))
-quarter$cum.sick <- 0
+quarter$cum.sick <- quarter$sick.total.week
 
 
 ## Calculate the number of ppl in each compartment (S,I,R) at each time step:
@@ -98,11 +98,6 @@ write.csv(quarter,
           file = "quarter_eng.csv",
           row.names = F)
 rm(start.day, peak.day)
-
-
-
-
-
 
 
 

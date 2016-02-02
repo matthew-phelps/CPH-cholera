@@ -37,12 +37,6 @@ all_age$fake_date <- base::as.Date(all_age$fake_date, format = "%Y-%m-%d")
 
 
 
-# SAVE --------------------------------------------------------------------
-
-save(all_age, file = "Data\\Rdata\\all_age.Rdata")
-
-
-
 # Age mortality -----------------------------------------------------------
 rm(list = ls())
 age1855 <- read.csv('Data\\census1855_age.csv')
