@@ -94,15 +94,15 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epi
        units = 'cm',
        dpi = 300)
 
+
+
+
 # MAP ---------------------------------------------------------------------
-
-
-
 load("Rdata\\quarter_eng.Rdata")
 quarter.sheet <- reshape::rename(quarter, replace = c("sick.total.week" = "I"))
 
 # shapefile
-quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters2", stringsAsFactors = F)
+quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters3", stringsAsFactors = F)
 plot(quarter.shp)
 quarter.shp@data$id <- as.numeric(quarter.shp@data$id)
 quarter.shp@data
@@ -186,8 +186,7 @@ map <- cph +
                               'km')),
             hjust = 0.5,
             vjust = 0,
-            size = 19/ptspermm,
-            face = "bold") +
+            size = 19/ptspermm) +
   theme(axis.title.x = element_blank(), # remove x,y, label
         axis.title.y = element_blank(),
         axis.line = element_blank(),
