@@ -75,13 +75,12 @@ ggplot(data = map_df,
 
 # OVERLAY DATA ON BACKGROUND MAP ------------------------------------------
 
-cholera_map <- cph_map +
+cholera_map <- ggplot()+
   geom_polygon(data = mapdf[which(mapdf$week.id == 15),],
-               color = "black",
                aes(x = long, y = lat, group = id, 
                    fill = (cum.sick/est.pop.1853)*100)) +
   #coord_equal(ratio = 0) +
-  #scale_fill_gradientn(name = "Cumulative infections \nper 100 people", colours = brewer.pal(9, "Reds")) +
+  scale_fill_gradientn(name = "Cumulative infections \nper 100 people", colours = brewer.pal(9, "Reds")) +
 #   geom_segment(data = sbar,
 #                size = 1.3,
 #                aes(x = lon.start,
