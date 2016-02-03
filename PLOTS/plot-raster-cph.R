@@ -16,6 +16,7 @@ library(rasterVis)
 library(rgdal)
 library(maptools)
 library(dplyr)
+library(rgeos)
 ## To Instal rgdal on my mac - -note: check pathnames to GDAL.framework
 #install.packages("http://cran.r-project.org/src/contrib/rgdal_1.1-3.tar.gz", repos = NULL, type="source", configure.args = "--with-gdal-config=/Library/Frameworks/GDAL.framework/Versions/1.11/unix/bin/gdal-config --with-proj-include=/Library/Frameworks/PROJ.framework/unix/include --with-proj-lib=/Library/Frameworks/PROJ.framework/unix/lib")
 
@@ -32,8 +33,9 @@ plot(quarter.shp)
 quarter.shp@data$id <- as.numeric(quarter.shp@data$id)
 quarter.shp@data
 
-
-
+# Find area of all quarters:
+#https://goo.gl/No33KP
+sapply(slot(quarter.shp, "polygons"), slot, "area")
 
 # Get spatial data into a form that ggplot2 can handle
 # mapdf is what ggplot will use
