@@ -18,11 +18,11 @@ rm(list = ls())
 # LOAD & PREP DATA ---------------------------------------------------------------
 
 
-load(file = "data\\Rdata\\quarter_combined.Rdata")
-load(file = 'data\\Rdata\\beta-summary-1.Rdata')
-load(file = 'data\\Rdata\\phi-summary-1.Rdata')
-load(file = 'data\\Rdata\\model-1-jags.Rdata')
-load("data\\Rdata\\model-1-dataList.Rdata")
+load(file = "Data/Rdata/quarter_combined.Rdata")
+load(file = 'Data/Rdata/beta-summary-1.Rdata')
+load(file = 'Data/Rdata/phi-summary-1.Rdata')
+load(file = 'Data/Rdata/model-1-jags.Rdata')
+load("Data/Rdata/model-1-dataList.Rdata")
 
 N_i_daily <- dataList[[1]]
 I_it_daily <- dataList[[2]]
@@ -51,6 +51,9 @@ for (t in 1:Nsteps){
 # timesteps. These NAs will be overwritten with simulated data 
 I_it_est <- (cbind(I_i_t1, I_it))
 S_it_est <- (cbind(S_i_t1, S_it))
+
+I_plus1 <- I_it_est
+S_plus1 <- S_it_est
 
 rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
 
@@ -99,15 +102,15 @@ rm(step1)
 # POINT ESTIMATES ---------------------------------------------------------
 
 # Beta: extact mean from jags file
-step1 <- as.matrix(beta_summary_1['Mean'])
+step1 <- as.matrix(beta_summary_1_['Mean'])
 beta_pe <- matrix(step1, nrow = 1, ncol = 1, byrow = F)
 
 # Phi
-phi_pe <- as.matrix(phi_summary_1['Mean'])
+phi_pe <- as.matrix(phi_summary_1_['Mean'])
 
 
 
 # SAVE --------------------------------------------------------------------
 
-save(list = ls(), file = 'data\\Rdata\\model-1-sim_data.Rdata' )
+save(list = ls(), file = 'data/Rdata/model-1-sim_data.Rdata' )
 

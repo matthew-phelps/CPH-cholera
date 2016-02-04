@@ -17,7 +17,7 @@ require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = 'data\\Rdata\\model-1-sim_data.Rdata')
+load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
@@ -114,52 +114,33 @@ ggsave(model_1_full_sim_plot,
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
 
-
-
-
-# Run simulations
 loops <- 1000
-I_plus1_list <- list() # List to contain all the loop outputs
-rm(I_it_est, S_it_est, step1, N_it)
-
-# Model for debugging. 1-loop only. Remove after debugging:
-I_est_tplus1 <- (matrix(data = 0, nrow = 1, ncol = Nsteps))
-S_est_tplus1 <- (matrix(data = 0, nrow = 1, ncol = Nsteps))
-Lambda_est_tplus1 <- (matrix(data = 0, nrow = 1, ncol = Nsteps))
-S_est_tplus1[1] <- N_it[1] # S at t = 0 equals N
-
-for (t in 1:(Nsteps-1)){
-  Lambda_est_tplus1[t] <- S_est_tplus1[t] / N_it[t] * (beta_pe * I_it[t])
-  I_est_tplus1[t] <- rpois(1, Lambda_est_tplus1[1, t])
-  S_est_tplus1[t+1] <- S_it[t] - (I_it[t] / phi_pe)
-}
-
-
-
-
+R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
+R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
+I_plus1_list <- list()
+S_plus1_list <- list()
 for (z in 1:loops){
-  # Initialize dataframes
-  I_est_tplus1 <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
-  S_est_tplus1 <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
-  Lambda_est_tplus1 <- as.data.frame(matrix(data = 0, nrow = 1, ncol = Nsteps))
-  S_est_tplus1[1] <- N_it[1] # S at t = 0 equals N
   
-  # Model
+  Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+  LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+  
   for (t in 1:(Nsteps-1)){
-    Lambda_est_tplus1[t] <- S_est_tplus1[t] / N_it[t] * (beta_pe * I_it[t])
-    I_est_tplus1[t+1] <- rpois(1, Lambda_est_tplus1[1, t])
-    S_est_tplus1[t+1] <- S_it[t] - (I_it[t] / phi_pe)
+    Lambda_est_pe[t] <- S_plus1[t] / N_i_daily * (beta_pe[1] *(I_it_daily[t]))
+    LambdaR[t] <- I_it_daily[t] * gamma
+    R_new[t +1 ] <- rpois(1, LambdaR[t])
+    I_new <- rpois(1, (Lambda_est_pe[t] ) )
+    I_plus1[t + 1] <- max(0, (I_new + I_it_daily[t] - R_new[t + 1]))
+    S_temp <- (S_plus1[t]) -    (I_new) / (phi_pe[1])
+    S_plus1[t + 1] <- max(0, S_temp)
   }
   
-  
-  I_plus1_list[[z]] <- I_est_tplus1
-  row.names(I_plus1_list[[z]]) <- q_names[1, 1]
-  
+  I_plus1_list[[z]] <- I_plus1
+  S_plus1_list[[z]] <- S_plus1
 }
 
+
 model_1_tplus1 <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
-model_1_tplus1$week_index <- 1:Nsteps
-model_1_tplus1$day_index <- model_1_tplus1$week_index * 7
+model_1_tplus1$day_index <- 1:Nsteps
 
 for (z in 1:loops){
   model_1_tplus1[z] <- as.data.frame(colSums(I_plus1_list[[z]]))
@@ -173,7 +154,7 @@ model_1_tplus1_plot <- ggplot() +
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.05) +
   geom_line(data = model_1_obs,
-            aes(x = day_index, y = I_it),
+            aes(x = day_index, y = I_it_daily),
             color = 'darkred', alpha = 0.5, size = 1.3) +
   theme_minimal()+
   ylab("People") +
