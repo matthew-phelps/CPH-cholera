@@ -48,6 +48,6 @@ age_mortality <- read.csv('Data\\age_morbidity_mortality.csv')
 # SAVE --------------------------------------------------------------------
 
 save(age_mortality, file = 'Data\\Rdata\\age_mortality.Rdata')
-save(age1855, file = 'Data\\age1855.Rdata')
-save(age1850, file = 'Data\\age1850.Rdata')
+save(age1855, file = 'Data\\Rdata\\age1855.Rdata')
+save(age1850, file = 'Data\\Rdata\\age1850.Rdata')
 
