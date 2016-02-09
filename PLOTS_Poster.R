@@ -102,7 +102,7 @@ load("Rdata\\quarter_eng.Rdata")
 quarter.sheet <- reshape::rename(quarter, replace = c("sick.total.week" = "I"))
 
 # shapefile
-quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters3", stringsAsFactors = F)
+quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters2", stringsAsFactors = F)
 plot(quarter.shp)
 quarter.shp@data$id <- as.numeric(quarter.shp@data$id)
 quarter.shp@data
@@ -258,7 +258,7 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epi
 # AGE ADJUSTED MORTALITY --------------------------------------------------
 rm(list = ls())
 load('Rdata\\mortality_rates.Rdata')
-
+ 
 # Re-order levels of factor so that plotting works: http://goo.gl/CD2fEC
 age_char <- as.character(mortality_rates$age)
 mortality_rates$age <- factor(age_char, levels = c(age_char))
