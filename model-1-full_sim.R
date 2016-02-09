@@ -105,7 +105,7 @@ model_1_full_sim_plot
 
 system.time(
 ggsave(model_1_full_sim_plot, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim.pdf',
+       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim-fake-phi.pdf',
        width=15, height=9,
        units = 'in')
 )
