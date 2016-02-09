@@ -266,7 +266,7 @@ mortality_rates$age <- factor(age_char, levels = c(age_char))
 age_mortality_plot <- ggplot() +
   geom_bar(data = mortality_rates,
            stat = 'identity',
-           aes(x = age, y = deaths, fill = 'red')) +
+           aes(x = age, y = rate, fill = 'red')) +
   xlab("Age group") +
   ylab("Mortality per 100 people") +
   ggtitle ("How did mortality vary with age? \n") +
