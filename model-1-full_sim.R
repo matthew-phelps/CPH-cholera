@@ -26,10 +26,10 @@ set.seed(13)
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
+phi_pe <- 0.025
 
 
-
-loops <- 2000
+loops <- 9000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 I_est_pe_list <- list()
@@ -88,7 +88,7 @@ model_1_obs$day_index <- 1:Nsteps
 model_1_full_sim_plot <- ggplot() +
   geom_line(data = model_1_full_melt,
             aes(x = day_index, y = value, group = variable),
-            color = 'darkgreen', alpha = 0.05) +
+            color = 'darkgreen', alpha = 0.02) +
   geom_line (data = model_1_obs,
              aes(x = day_index, y = I_it_daily),
              color = 'darkred', alpha = 0.5, size = 1.2) +
