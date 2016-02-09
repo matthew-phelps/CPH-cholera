@@ -11,10 +11,10 @@ model {
   # Beta
   beta <- exp(log_beta);
   
-  # Phi prior
+  # Phi prior (under-reporting fraction)
   logit_phi ~ dnorm(0, .001);
   
-  # Phi
+  # Phi (under-reporting fraction)
   phi <- exp(logit_phi) / (1 + exp(logit_phi));
   
   # Gamma
