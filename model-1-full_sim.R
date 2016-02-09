@@ -29,7 +29,7 @@ gamma <- 1/duration
 
 
 
-loops <- 1000
+loops <- 2000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 I_est_pe_list <- list()
@@ -100,21 +100,21 @@ model_1_full_sim_plot <- ggplot() +
         axis.text.x = element_text(size = 15),
         axis.title.x = element_text(size = 21, face = "bold"),
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
-  ggtitle('St. Annae Vester infectious\n simulated n = 2000')
+  ggtitle('St. Annae Vester infectious\n simulated from t = 0; n = 2000')
 model_1_full_sim_plot
 
-
+system.time(
 ggsave(model_1_full_sim_plot, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim.jpg',
+       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim.pdf',
        width=15, height=9,
        units = 'in')
-
+)
 
 
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
 
-loops <- 1000
+loops <- 2000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 I_plus1_list <- list()
@@ -164,17 +164,14 @@ model_1_tplus1_plot <- ggplot() +
         axis.text.x = element_text(size = 15),
         axis.title.x = element_text(size = 21, face = "bold"),
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
-  ggtitle('St. Annae Vester Infectious\n 1-step-ahead simulated n = 2000')
+  ggtitle('St. Annae Vester daily infected\n 1-step-ahead simulated n = 2000')
 model_1_tplus1_plot
 
-
-ggsave(model_1_tplus1_plot, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model_1_tplus1-I.tiff',
-       width=15, height=9,
-       units = 'in')
-
-
-
+system.time(ggsave(model_1_tplus1_plot, 
+                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model_1_tplus1-I.pdf',
+                   width=15, height=9,
+                   units = 'in')
+)
 
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
