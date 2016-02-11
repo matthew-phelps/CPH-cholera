@@ -27,7 +27,7 @@ set.seed(13)
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 
-loops <- 9000
+loops <- 2000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)

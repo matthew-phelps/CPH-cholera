@@ -26,39 +26,44 @@ set.seed(13)
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- 0.025
-
-
+phi_pe <- seq(from = 0.01, to = 0.06, length.out = 20)
 loops <- 2000
+
+# Initialize lists and matrices
+container_ls <- vector("list", length(phi_pe))
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-I_est_pe_list <- list()
-S_it_est_pe_list <- list()
-for (z in 1:loops){
-  
-  Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  
-  for (t in 1:(Nsteps-1)){
-    Lambda_est_pe[t] <- S_it_est[t] / N_it[1] * (beta_pe[1] *(I_it_est[t]))
-    LambdaR[t] <- I_it_est[t] * gamma
-    R_new[t +1 ] <- rpois(1, LambdaR[t])
-    I_new <- rpois(1, (Lambda_est_pe[t] ) )
-    I_it_est[t + 1] <- max(0, (I_new + I_it_est[t] - R_new[t + 1]))
-    S_temp <- (S_it_est[t]) -    (I_new) / (phi_pe[1])
-    S_it_est[t + 1] <- max(0, S_temp)
-  }
-  
-  I_est_pe_list[[z]] <- I_it_est
-  S_it_est_pe_list[[z]] <- S_it_est
-}
 
-I_it_est
+Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+
+system.time(for(phi_vect in 1:length(phi_pe)){
+  I_est_pe_list <- vector("list", loops)
+  S_it_est_pe_list <- vector("list", loops)
+  
+  for (z in 1:loops){
+    
+    for (t in 1:(Nsteps-1)){
+      Lambda_est_pe[t] <- S_it_est[t] / N_it[1] * (beta_pe[1] *(I_it_est[t]))
+      LambdaR[t] <- I_it_est[t] * gamma
+      R_new[t +1 ] <- rpois(1, LambdaR[t])
+      I_new <- rpois(1, (Lambda_est_pe[t] ) )
+      I_it_est[t + 1] <- max(0, (I_new + I_it_est[t] - R_new[t + 1]))
+      S_temp <- (S_it_est[t]) -    (I_new) / (phi_pe[phi_vect])
+      S_it_est[t + 1] <- max(0, S_temp)
+    }
+    
+    I_est_pe_list[[z]] <- I_it_est
+    S_it_est_pe_list[[z]] <- S_it_est
+  }
+  container_ls[[phi_vect]] <- I_est_pe_list
+})
+container_ls[[1]][2]
 
 
 # SAVE for likelhood calculation
-I_fake_phi <- I_est_pe_list
-save(I_fake_phi, file = 'data\\Rdata\\I_fake_phi.Rdata')
+I_phi_vect <- container_ls
+save(I_phi_vect, file = 'data\\Rdata\\I_phi_vect.Rdata')
 
 
 # PE RESHAPE DATA ---------------------------------------------------------
@@ -104,10 +109,10 @@ model_1_full_sim_plot <- ggplot() +
 model_1_full_sim_plot
 
 system.time(
-ggsave(model_1_full_sim_plot, 
-       file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim-fake-phi.pdf',
-       width=15, height=9,
-       units = 'in')
+  ggsave(model_1_full_sim_plot, 
+         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim-fake-phi.pdf',
+         width=15, height=9,
+         units = 'in')
 )
 
 
