@@ -30,13 +30,13 @@ gamma <- 1/duration
 loops <- 9000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-I_est_pe_list <- list()
-S_it_est_pe_list <- list()
-for (z in 1:loops){
-  
-  Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  
+Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+# Pre-allocate Lists! http://goo.gl/9xO3HN
+I_est_pe_list <- vector("list", loops)
+S_it_est_pe_list <- vector("list", loops)
+
+system.time(for (z in 1:loops){
   for (t in 1:(Nsteps-1)){
     Lambda_est_pe[t] <- S_it_est[t] / N_it[1] * (beta_pe[1] *(I_it_est[t]))
     LambdaR[t] <- I_it_est[t] * gamma
@@ -50,15 +50,13 @@ for (z in 1:loops){
   I_est_pe_list[[z]] <- I_it_est
   S_it_est_pe_list[[z]] <- S_it_est
 }
-
-I_it_est
-
+)
 
 # SAVE for likelhood calculation
 I_fitted_phi <- I_est_pe_list
 save(I_fitted_phi, file = 'data\\Rdata\\I_fitted_phi.Rdata')
 
-
+plot(I_fitted_phi[[2]][1:112])
 # PE RESHAPE DATA ---------------------------------------------------------
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
