@@ -26,6 +26,8 @@ set.seed(13)
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
+phi_pe <- 0.025
+
 
 loops <- 9000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
@@ -55,8 +57,8 @@ I_it_est
 
 
 # SAVE for likelhood calculation
-I_fitted_phi <- I_est_pe_list
-save(I_fitted_phi, file = 'data\\Rdata\\I_fitted_phi.Rdata')
+I_fake_phi <- I_est_pe_list
+save(I_fake_phi, file = 'data\\Rdata\\I_fake_phi.Rdata')
 
 
 # PE RESHAPE DATA ---------------------------------------------------------

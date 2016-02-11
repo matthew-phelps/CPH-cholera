@@ -93,6 +93,9 @@ phi_summary_1 <- model_1_out[2, ]
 
 # SAVE --------------------------------------------------------------------
 
+# Save the specific replicate that was used to fit model
+save(I_incidence, file = "data\\Rdata\\I_incidence.Rdata")
+
 save(model_1_coda, file = "data\\Rdata\\model-1-mcmc-output.Rdata")
 save(model_1_jags, file = 'data\\Rdata\\model-1-jags.Rdata')
 
