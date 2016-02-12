@@ -21,13 +21,12 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 
-loops <- 2000
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
@@ -110,7 +109,7 @@ ggsave(model_1_full_sim_plot,
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
 
-loops <- 2000
+loops <- loops # See intro to set loops
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 I_plus1_list <- list()
@@ -135,6 +134,13 @@ for (z in 1:loops){
 }
 
 
+# SAVE for likelhood calculation
+I_fit_plus1_phi <- I_plus1_list
+save(I_fit_plus1_phi, file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
+
+
+
+# Reshape for Plotting ----------------------------------------------------
 model_1_tplus1 <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
 model_1_tplus1$day_index <- 1:Nsteps
 

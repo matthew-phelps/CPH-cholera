@@ -21,13 +21,13 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- seq(from = 0.01, to = 0.07, length.out = 120)
-loops <- 2000
+
 
 # Initialize lists and matrices
 container_ls <- vector("list", length(phi_pe))
@@ -68,8 +68,10 @@ save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
-
-loops <- 1000
+loops <- loops # See Intro to set loops - has to be same for t+1 & Full sim
+duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
+gamma <- 1/duration
+phi_pe <- seq(from = 0.01, to = 0.07, length.out = 120)
 container_tplus1_ls <- vector("list", length(phi_pe))
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
@@ -100,7 +102,7 @@ for(phi_vect in 1:length(phi_pe)){
 }
 
 # SAVE for likelhood calculation
-I_phi_vect <- container_ls
+I_phi_plus1_vect <- container_tplus1_ls
 save(I_phi_plus1_vect, file = 'data\\Rdata\\I_phi_plus1_vect.Rdata')
 save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 
