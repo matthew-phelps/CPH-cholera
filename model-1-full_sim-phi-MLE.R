@@ -26,7 +26,7 @@ set.seed(13)
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.01, to = 0.06, length.out = 20)
+phi_pe <- seq(from = 0.02, to = 0.028, length.out = 20)
 loops <- 2000
 
 # Initialize lists and matrices
@@ -64,6 +64,7 @@ container_ls[[1]][2]
 # SAVE for likelhood calculation
 I_phi_vect <- container_ls
 save(I_phi_vect, file = 'data\\Rdata\\I_phi_vect.Rdata')
+save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 
 
 # PE RESHAPE DATA ---------------------------------------------------------

@@ -21,6 +21,7 @@ load(file = 'data\\Rdata\\I_fitted_phi.Rdata')
 load(file = 'data\\Rdata\\I_fake_phi.Rdata')
 load(file = 'data\\Rdata\\I_incidence.Rdata')
 load(file = 'data\\Rdata\\I_phi_vect.Rdata')
+load(file = 'data\\Rdata\\phi_vect.Rdata')
 
 # Just check to make sure we're dealing with the correct data set
 plot(I_incidence)
@@ -84,7 +85,10 @@ model_ll_fitted_phi > model_ll_fake_phi
 
 
 # MLE for vector of Phis --------------------------------------------------
-rm(list = setdiff(ls(), c("I_phi_vect_50", "I_incidence_50"))) #http://goo.gl/88L5C2
+rm(list = setdiff(ls(), c("I_phi_vect_50", 
+                          "I_incidence_50",
+                          "phi_pe"))) #http://goo.gl/88L5C2
+
 
 ll_t <- vector("list", length(I_phi_vect_50[[1]]))
 ll_z <- vector(length = length(I_phi_vect_50[[1]]))
@@ -94,6 +98,10 @@ for(vect in 1:length(I_phi_vect_50)){
     ll_t[[z]] <- dpois(I_incidence_50, I_phi_vect_50[[vect]][[z]], log = T)
     ll_z[z] <- exp(sum(ll_t[[z]]))
   }
-}
-model_ll_phi_vect <- sum(ll_z)
+  model_ll_phi_vect[1, vect] <- sum(ll_z)
+  }
 
+model_ll_phi_vect <- rbind(model_ll_phi_vect, phi_pe)
+plot(model_ll_phi_vect[2,], model_ll_phi_vect[1,])
+dev.copy(png, "Output\\Simulations\\LL_phi-1.png")
+dev.off()
