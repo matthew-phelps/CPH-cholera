@@ -103,5 +103,26 @@ for(vect in 1:length(I_phi_vect_50)){
 
 model_ll_phi_vect <- rbind(model_ll_phi_vect, phi_pe)
 plot(model_ll_phi_vect[2,], model_ll_phi_vect[1,])
+
+
+# SAVE --------------------------------------------------------------------
 dev.copy(png, "Output\\Simulations\\LL_phi-1.png")
 dev.off()
+
+
+
+# GGPLOTs ------------------------------------------------------------------
+model_ll <- data.frame(t(model_ll_phi_vect))
+colnames(model_ll) <- c("LL", "phi")
+
+ll_plot <- ggplot() +
+  geom_point(data = model_ll,
+             aes(x = phi, y = LL),
+             size = 2) +
+  theme_minimal()
+
+ggsave(filename = "Output\\Simulations\\LL-phi-1.png",
+       plot = ll_plot,
+       width = 23,
+       height = 15,
+       units = 'cm')
