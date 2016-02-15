@@ -193,7 +193,7 @@ colnames(model_ll) <- c("LL", "phi")
 
 # Dynamic subtitle to reflect number of loops
 no_loops <- as.character(length(I_fit_plus1_phi_60))
-sub_title <- paste("loops = ", no_loops, sept = "")
+sub_title <- paste("No. simulations = ", no_loops, sept = "")
 
 ll_plot <- ggplot(data = model_ll,
                   aes(x = phi, y = log(LL), label = phi)) +
@@ -206,7 +206,7 @@ ll_plot <- ggplot(data = model_ll,
 #             size = 3) +
   geom_text(aes(label = ifelse(LL==max(LL), paste("phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
   theme_minimal() +
-  ggtitle("Step-ahead LL")
+  ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
   
 ll_plot
 
