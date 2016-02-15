@@ -50,8 +50,8 @@ for(z in 1:length(I_fake_phi)){
   I_fake_plus1_phi_60[[z]] <- I_fake_plus1_phi[[z]][20:65]
   
   # Seperate for-loop for phi-vector since it is a nested list
-  for(vect in 1:length(I_phi_vect)){
-    I_phi_vect_60[[vect]][[z]] <- I_phi_vect[[vect]][[z]][20:65]
+  for(vect in 1:length(I_phi_plus1_vect)){
+   # I_phi_vect_60[[vect]][[z]] <- I_phi_vect[[vect]][[z]][20:65]
     I_phi_plus1_vect_60[[vect]][[z]] <- I_phi_plus1_vect[[vect]][[z]][20:65]
   }
 }
@@ -109,36 +109,36 @@ rm(list = setdiff(ls(), c("I_phi_vect_60",
                           "phi_pe"))) #http://goo.gl/88L5C2
 
 
-ll_t <- vector("list", length(I_phi_vect_60[[1]]))
-ll_z <- vector(length = length(I_phi_vect_60[[1]]))
-model_ll_phi_vect <- matrix(data = NA, nrow = 1, ncol = length(I_phi_vect_60))
-for(vect in 1:length(I_phi_vect_60)){
-  for(z in 1:length(I_incidence_60)){
-    ll_t[[z]] <- dpois(I_incidence_60, I_phi_vect_60[[vect]][[z]], log = T)
-    ll_z[z] <- exp(sum(ll_t[[z]]))
-  }
-  model_ll_phi_vect[1, vect] <- sum(ll_z)
-  }
-
-model_ll_phi_vect <- rbind(model_ll_phi_vect, phi_pe)
-plot(model_ll_phi_vect[2,], model_ll_phi_vect[1,])
-
-
-# GGPLOTs
-model_ll <- data.frame(t(model_ll_phi_vect))
-colnames(model_ll) <- c("LL", "phi")
-
-ll_plot <- ggplot() +
-  geom_point(data = model_ll,
-             aes(x = phi, y = LL),
-             size = 2) +
-  theme_minimal()
-
-ggsave(filename = "Output\\Simulations\\LL-phi-1.png",
-       plot = ll_plot,
-       width = 23,
-       height = 15,
-       units = 'cm')
+# ll_t <- vector("list", length(I_phi_vect_60[[1]]))
+# ll_z <- vector(length = length(I_phi_vect_60[[1]]))
+# model_ll_phi_vect <- matrix(data = NA, nrow = 1, ncol = length(I_phi_vect_60))
+# for(vect in 1:length(I_phi_vect_60)){
+#   for(z in 1:length(I_incidence_60)){
+#     ll_t[[z]] <- dpois(I_incidence_60, I_phi_vect_60[[vect]][[z]], log = T)
+#     ll_z[z] <- exp(sum(ll_t[[z]]))
+#   }
+#   model_ll_phi_vect[1, vect] <- sum(ll_z)
+#   }
+# 
+# model_ll_phi_vect <- rbind(model_ll_phi_vect, phi_pe)
+# plot(model_ll_phi_vect[2,], model_ll_phi_vect[1,])
+# 
+# 
+# # GGPLOTs
+# model_ll <- data.frame(t(model_ll_phi_vect))
+# colnames(model_ll) <- c("LL", "phi")
+# 
+# ll_plot <- ggplot() +
+#   geom_point(data = model_ll,
+#              aes(x = phi, y = LL),
+#              size = 2) +
+#   theme_minimal()
+# 
+# ggsave(filename = "Output\\Simulations\\LL-phi-1.png",
+#        plot = ll_plot,
+#        width = 23,
+#        height = 15,
+#        units = 'cm')
 
 
 ######################################################
@@ -197,10 +197,14 @@ ll_plot <- ggplot(data = model_ll,
   geom_point(size = 2) +
   # Add labels: http://goo.gl/pE9JPI
   geom_text(aes(label = ifelse(LL==max(LL), paste("phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
-  theme_minimal()
+  theme_minimal() +
+  ggtitle("Step-ahead LL") +
+  geom_vline(xintercept = 0.0689, linetype = 2)
 ll_plot
 
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-1-log.png",
+
+
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-1.png",
        plot = ll_plot,
        width = 23,
        height = 15,
