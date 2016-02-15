@@ -64,7 +64,7 @@ rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
 plot(I_incidence_60)
 plot(I_fake_phi_60[[2]])
 plot(I_fitted_phi_60[[2]])
-plot(I_phi_vect_60[[1]][[2]])
+plot(I_phi_plus1_vect_60[[120]][[2]])
 
 ######################################################
 # FUL SIMULATION
@@ -204,7 +204,7 @@ ll_plot
 
 
 
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-1.png",
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-3.png",
        plot = ll_plot,
        width = 23,
        height = 15,
