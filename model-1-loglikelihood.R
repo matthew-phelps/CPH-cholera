@@ -212,7 +212,7 @@ ll_plot
 
 
 
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-5.png",
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-6-seed13.png",
        plot = ll_plot,
        width = 23,
        height = 15,
