@@ -191,15 +191,16 @@ plot(model_ll_phi_plus1_vect[2,], model_ll_phi_plus1_vect[1,])
 model_ll <- data.frame(t(model_ll_phi_plus1_vect))
 colnames(model_ll) <- c("LL", "phi")
 
+
 ll_plot <- ggplot(data = model_ll,
-                  aes(x = phi, y = LL, label = phi)) +
+                  aes(x = phi, y = log(LL), label = phi)) +
   geom_point(size = 2) +
   # Add labels: http://goo.gl/pE9JPI
-  geom_text(aes(label = ifelse(LL==max(LL), paste("phi=", as.character(signif(phi), digits = 3),sep=""), '')), hjust = -0.1, vjust = 0) +
+  geom_text(aes(label = ifelse(LL==max(LL), paste("phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
   theme_minimal()
 ll_plot
 
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-1.png",
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-1-log.png",
        plot = ll_plot,
        width = 23,
        height = 15,
