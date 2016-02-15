@@ -21,7 +21,7 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 2000 # Has to be the same for both full sum and t+1 sim
+loops <- 5000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
