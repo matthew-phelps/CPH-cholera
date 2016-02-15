@@ -17,14 +17,14 @@ require(grid)
 library(foreach)
 library(doSNOW)
 # LOAD data ---------------------------------------------------------------
-cl <- makeCluster(5, type = "SOCK")
+cl <- makeCluster(7, type = "SOCK")
 registerDoSNOW(cl)
 
 load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(130)
 
-loops <- 10 # Has to be the same for both full sum and t+1 sim
+loops <- 5000 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- seq(from = 0.01, to = 0.07, length.out = 250)
@@ -72,7 +72,7 @@ phi_pe <- seq(from = 0.01, to = 0.07, length.out = 250)
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
 loops <- loops # See Intro to set loops - has to be same for t+1 & Full sim
-duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
+duration <- 5000 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- phi_pe
 container_tplus1_ls <- vector("list", length(phi_pe))
@@ -84,10 +84,8 @@ LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 
 system.time (
   for(phi_vect in 1:length(phi_pe)) {
-  I_plus1_list <- vector("list", loops)
-  S_plus1_list <- vector("list", loops)
-  
-  foreach (z = 1:loops, .combine=list) %dopar% {
+
+  I_plus1_list  <- foreach (z = 1:loops, .combine=rbind) %dopar% {
     
     for (t in 1:(Nsteps-1)){
       Lambda_est_pe[t] <- S_plus1[t] / N_i_daily * (beta_pe[1] *(I_it_daily[t]))
@@ -99,11 +97,13 @@ system.time (
       S_plus1[t + 1] <- max(0, S_temp)
     }
     
-    I_plus1_list[[z]] <- I_plus1
-    S_plus1_list[[z]] <- S_plus1
+    I_plus1
+    
   }
   container_tplus1_ls[[phi_vect]] <- I_plus1_list
 })
+
+x <-  container_tplus1_ls[[phi_vect]]
 
 # SAVE for likelhood calculation
 I_phi_plus1_vect <- container_tplus1_ls

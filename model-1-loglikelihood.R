@@ -42,19 +42,19 @@ I_incidence_60 <- I_incidence[20:65]
 # I_phi_vect_60 <- I_phi_vect
 # I_fake_plus1_phi_60 <- list()
 I_phi_plus1_vect_60 <- I_phi_plus1_vect
-I_fit_plus1_phi_60 <- list()
+I_fit_plus1_phi_60 <- vector("list", length = length(I_fit_plus1_phi))
 for(z in 1:length(I_fit_plus1_phi)){
 #   I_fake_phi_60[[z]] <- I_fake_phi[[z]][20:65]
 #   I_fitted_phi_60[[z]] <- I_fitted_phi[[z]][1 ,20:65]
   I_fit_plus1_phi_60[[z]] <- I_fit_plus1_phi[[z]][20:65]
   # I_fake_plus1_phi_60[[z]] <- I_fake_plus1_phi[[z]][20:65]
-  
+}  
   # Seperate for-loop for phi-vector since it is a nested list
   for(vect in 1:length(I_phi_plus1_vect)){
    # I_phi_vect_60[[vect]][[z]] <- I_phi_vect[[vect]][[z]][20:65]
-    I_phi_plus1_vect_60[[vect]][[z]] <- I_phi_plus1_vect[[vect]][[z]][20:65]
+    I_phi_plus1_vect_60[[vect]] <- I_phi_plus1_vect[[vect]][, 20:65]
   }
-}
+
 
 
 rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
@@ -64,7 +64,7 @@ rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
 plot(I_incidence_60)
 # plot(I_fake_phi_60[[2]])
 # plot(I_fitted_phi_60[[2]])
-plot(I_phi_plus1_vect_60[[120]][[2]])
+plot(I_phi_plus1_vect_60[[120]][1,])
 
 ######################################################
 # FUL SIMULATION
@@ -198,12 +198,12 @@ sub_title <- paste("No. simulations = ", no_loops, sept = "")
 ll_plot <- ggplot(data = model_ll,
                   aes(x = phi, y = log(LL), label = phi)) +
   geom_point(size = 2) +
-  # Add labels: http://goo.gl/pE9JPI
-#  geom_vline(xintercept = 0.0689, linetype = 2) +
-#   geom_text(x = 0.0689, label = "fitted phi", angle = 90,
-#             y = max(log(model_ll$LL)),
-#             vjust = 1.2,
-#             size = 3) +
+  #Add labels: http://goo.gl/pE9JPI
+ geom_vline(xintercept = 0.0689, linetype = 2) +
+  geom_text(x = 0.0689, label = "fitted phi", angle = 90,
+            y = max(log(model_ll$LL)),
+            vjust = 1.2,
+            size = 3) +
   geom_text(aes(label = ifelse(LL==max(LL), paste("best phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
   theme_minimal() +
   ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
