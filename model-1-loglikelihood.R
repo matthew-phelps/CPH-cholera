@@ -62,8 +62,8 @@ rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
 
 # Check data
 plot(I_incidence_60)
-plot(I_fake_phi_60[[2]])
-plot(I_fitted_phi_60[[2]])
+# plot(I_fake_phi_60[[2]])
+# plot(I_fitted_phi_60[[2]])
 plot(I_phi_plus1_vect_60[[120]][[2]])
 
 ######################################################
@@ -184,7 +184,7 @@ for(vect in 1:length(I_phi_plus1_vect_60)){
 }
 
 model_ll_phi_plus1_vect <- rbind(model_ll_phi_plus1_vect, phi_pe)
-plot(model_ll_phi_plus1_vect[2,], model_ll_phi_plus1_vect[1,])
+# plot(model_ll_phi_plus1_vect[2,], model_ll_phi_plus1_vect[1,])
 
 
 #GGPLOTs 
@@ -196,10 +196,15 @@ ll_plot <- ggplot(data = model_ll,
                   aes(x = phi, y = log(LL), label = phi)) +
   geom_point(size = 2) +
   # Add labels: http://goo.gl/pE9JPI
+  geom_vline(xintercept = 0.0689, linetype = 2) +
+  geom_text(x = 0.0689, label = "fitted phi", angle = 90,
+            y = max(log(model_ll$LL)),
+            vjust = 1.2,
+            size = 3) +
   geom_text(aes(label = ifelse(LL==max(LL), paste("phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
   theme_minimal() +
-  ggtitle("Step-ahead LL") +
-  geom_vline(xintercept = 0.0689, linetype = 2)
+  ggtitle("Step-ahead LL")
+  
 ll_plot
 
 
