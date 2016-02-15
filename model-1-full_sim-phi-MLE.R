@@ -24,7 +24,7 @@ set.seed(13)
 loops <- 1000 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.0001, to = 0.07, length.out = 250)
+phi_pe <- seq(from = 0.005, to = 0.025, length.out = 250)
 
 
 
