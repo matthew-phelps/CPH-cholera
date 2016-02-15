@@ -26,7 +26,7 @@ loops <- 1000 # Has to be the same for both full sum and t+1 sim
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.01, to = 0.07, length.out = 120)
+phi_pe <- seq(from = 0.0001, to = 0.07, length.out = 150)
 
 
 # Initialize lists and matrices
@@ -71,7 +71,7 @@ save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 loops <- loops # See Intro to set loops - has to be same for t+1 & Full sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.01, to = 0.07, length.out = 120)
+phi_pe <- phi_pe
 container_tplus1_ls <- vector("list", length(phi_pe))
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
@@ -79,7 +79,8 @@ R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 
-for(phi_vect in 1:length(phi_pe)){
+system.time(
+  for(phi_vect in 1:length(phi_pe)){
   I_plus1_list <- vector("list", loops)
   S_plus1_list <- vector("list", loops)
   
@@ -99,7 +100,7 @@ for(phi_vect in 1:length(phi_pe)){
     S_plus1_list[[z]] <- S_plus1
   }
   container_tplus1_ls[[phi_vect]] <- I_plus1_list
-}
+})
 
 # SAVE for likelhood calculation
 I_phi_plus1_vect <- container_tplus1_ls
