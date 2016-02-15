@@ -176,11 +176,11 @@ ll_t <- vector("list", length(I_phi_plus1_vect_60[[1]]))
 ll_z <- vector(length = length(I_phi_plus1_vect_60[[1]]))
 model_ll_phi_plus1_vect <- matrix(data = NA, nrow = 1, ncol = length(I_phi_plus1_vect_60))
 for(vect in 1:length(I_phi_plus1_vect_60)){
-  for(z in 1:length(I_incidence_60)){
+  for(z in 1:length(I_phi_plus1_vect_60[[1]])){
     ll_t[[z]] <- dpois(I_incidence_60, I_phi_plus1_vect_60[[vect]][[z]], log = T)
     ll_z[z] <- exp(sum(ll_t[[z]]))
   }
-  model_ll_phi_plus1_vect[1, vect] <- sum(ll_z)
+  model_ll_phi_plus1_vect[1, vect] <- (mean(ll_z))
 }
 
 model_ll_phi_plus1_vect <- rbind(model_ll_phi_plus1_vect, phi_pe)
@@ -204,7 +204,7 @@ ll_plot <- ggplot(data = model_ll,
 #             y = max(log(model_ll$LL)),
 #             vjust = 1.2,
 #             size = 3) +
-  geom_text(aes(label = ifelse(LL==max(LL), paste("phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
+  geom_text(aes(label = ifelse(LL==max(LL), paste("best phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
   theme_minimal() +
   ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
   
@@ -212,7 +212,7 @@ ll_plot
 
 
 
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-6-seed13.png",
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-1-seed130.png",
        plot = ll_plot,
        width = 23,
        height = 15,
