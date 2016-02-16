@@ -21,7 +21,7 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(101)
 
-loops <- 5000 # Has to be the same for both full sum and t+1 sim
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
@@ -32,8 +32,8 @@ R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 # Pre-allocate Lists! http://goo.gl/9xO3HN
-I_est_pe_list <- vector("list", loops)
-S_it_est_pe_list <- vector("list", loops)
+I_est_pe_list <- matrix(nrow = loops, ncol = Nsteps)
+S_it_est_pe_list <- matrix(nrow = loops, ncol = Nsteps)
 
 system.time(for (z in 1:loops){
   for (t in 1:(Nsteps-1)){
@@ -46,8 +46,8 @@ system.time(for (z in 1:loops){
     S_it_est[t + 1] <- max(0, S_temp)
   }
   
-  I_est_pe_list[[z]] <- I_it_est
-  S_it_est_pe_list[[z]] <- S_it_est
+  I_est_pe_list[z, ] <- I_it_est
+  S_it_est_pe_list[z, ] <- S_it_est
 }
 )
 
@@ -55,17 +55,14 @@ system.time(for (z in 1:loops){
 I_fitted_phi <- I_est_pe_list
 save(I_fitted_phi, file = 'data\\Rdata\\I_fitted_phi.Rdata')
 
-plot(I_fitted_phi[[2]][1:112])
+plot(I_fitted_phi[2, 1:112])
 # PE RESHAPE DATA ---------------------------------------------------------
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
-model_1_full <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
+model_1_full <- t(I_est_pe_list)
+model_1_full <- as.data.frame(model_1_full)
 model_1_full$day_index <- 1:Nsteps
 
-
-for (z in 1:loops){
-  model_1_full[z] <- as.data.frame(colSums(I_est_pe_list[[z]]))
-}
 model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
 
 
@@ -112,8 +109,8 @@ ggsave(model_1_full_sim_plot,
 loops <- loops # See intro to set loops
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-I_plus1_list <- list()
-S_plus1_list <- list()
+I_plus1_list <- matrix(nrow = loops, ncol = Nsteps)
+S_plus1_list <- matrix(nrow = loops, ncol = Nsteps)
 for (z in 1:loops){
   
   Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
@@ -129,8 +126,8 @@ for (z in 1:loops){
     S_plus1[t + 1] <- max(0, S_temp)
   }
   
-  I_plus1_list[[z]] <- I_plus1
-  S_plus1_list[[z]] <- S_plus1
+  I_plus1_list[z, ] <- I_plus1
+  S_plus1_list[z, ] <- S_plus1
 }
 
 
@@ -141,12 +138,11 @@ save(I_fit_plus1_phi, file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
 
 
 # Reshape for Plotting ----------------------------------------------------
-model_1_tplus1 <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
+model_1_tplus1 <- t(I_plus1_list)
+model_1_tplus1 <- data.frame(model_1_tplus1)
 model_1_tplus1$day_index <- 1:Nsteps
 
-for (z in 1:loops){
-  model_1_tplus1[z] <- as.data.frame(colSums(I_plus1_list[[z]]))
-}
+
 model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
 
 
