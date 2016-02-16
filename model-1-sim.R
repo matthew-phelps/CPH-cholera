@@ -51,7 +51,8 @@ for (t in 1:Nsteps){
 # timesteps. These NAs will be overwritten with simulated data 
 I_it_est <- (cbind(I_i_t1, I_it))
 S_it_est <- (cbind(S_i_t1, S_it))
-
+I_it_est <- I_it_est[1, ]
+S_it_est <- S_it_est[1, ]
 I_plus1 <- I_it_est
 S_plus1 <- S_it_est
 
