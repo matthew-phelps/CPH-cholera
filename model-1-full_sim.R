@@ -19,7 +19,7 @@ require(grid)
 
 load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
-set.seed(13)
+set.seed(101)
 
 loops <- 5000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------

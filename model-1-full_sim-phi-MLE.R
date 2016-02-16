@@ -14,6 +14,8 @@ rm(list = ls())
 library(ggplot2)
 library(reshape)
 require(grid)
+library(doSNOW)
+library(parallel)
 
 # LOAD data ---------------------------------------------------------------
 
