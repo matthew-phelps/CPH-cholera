@@ -24,10 +24,10 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(130)
 
-loops <- 5000 # Has to be the same for both full sum and t+1 sim
+loops <- 3 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.01, to = 0.07, length.out = 250)
+phi_pe <- seq(from = 0.01, to = 0.14, length.out = 250)
 
 
 
@@ -68,7 +68,8 @@ phi_pe <- seq(from = 0.01, to = 0.07, length.out = 250)
 # I_phi_vect <- container_ls
 # save(I_phi_vect, file = 'data\\Rdata\\I_phi_vect.Rdata')
 # save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
-
+rm(I_it_est, S_it_est, step1, lower_sample, n_param,
+   upper_sample, sample_size)
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
 loops <- loops # See Intro to set loops - has to be same for t+1 & Full sim

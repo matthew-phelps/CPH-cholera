@@ -172,23 +172,33 @@ rm(list = setdiff(ls(), c("I_phi_vect_60",
 
 # MLE 1-STEP-AHEAD -------------------------------------------------------
 
-ll_t <- vector("list", length(I_phi_plus1_vect_60[[1]]))
-ll_z <- vector(length = length(I_phi_plus1_vect_60[[1]]))
+ll_t <- vector("list", length(I_phi_plus1_vect_60))
+ll_row_sums <- vector("list", length(I_phi_plus1_vect_60))
+ll_phi_avg <- vector(length = length(I_phi_plus1_vect_60))
 model_ll_phi_plus1_vect <- matrix(data = NA, nrow = 1, ncol = length(I_phi_plus1_vect_60))
 for(vect in 1:length(I_phi_plus1_vect_60)){
-  for(z in 1:length(I_phi_plus1_vect_60[[1]])){
-    ll_t[[z]] <- dpois(I_incidence_60, I_phi_plus1_vect_60[[vect]][[z]], log = T)
-    ll_z[z] <- exp(sum(ll_t[[z]]))
-  }
-  model_ll_phi_plus1_vect[1, vect] <- (mean(ll_z))
+  ll_t[[vect]] <- dpois(I_incidence_60, I_phi_plus1_vect_60[[vect]], log = T)
+  ll_row_sums[[vect]] <- rowSums(ll_t[[vect]])
+  ll_phi_avg[vect] <- mean(ll_row_sums[[250]])
 }
 
-model_ll_phi_plus1_vect <- rbind(model_ll_phi_plus1_vect, phi_pe)
+
+# 
+# for(vect in 1:length(I_phi_plus1_vect_60)){
+#   for(z in 1:length(I_phi_plus1_vect_60[[1]])){
+#     ll_t[[z]] <- dpois(I_incidence_60, I_phi_plus1_vect_60[[vect]][[z]], log = T)
+#     ll_z[z] <- exp(sum(ll_t[[z]]))
+#   }
+#   model_ll_phi_plus1_vect[1, vect] <- (mean(ll_z))
+# }
+
+model_ll_phi_plus1_vect <- rbind(ll_phi_avg, phi_pe)
+model_ll <- data.frame(t(model_ll_phi_plus1_vect))
 # plot(model_ll_phi_plus1_vect[2,], model_ll_phi_plus1_vect[1,])
 
 
 #GGPLOTs 
-model_ll <- data.frame(t(model_ll_phi_plus1_vect))
+
 colnames(model_ll) <- c("LL", "phi")
 
 # Dynamic subtitle to reflect number of loops
@@ -196,7 +206,7 @@ no_loops <- as.character(length(I_fit_plus1_phi_60))
 sub_title <- paste("No. simulations = ", no_loops, sept = "")
 
 ll_plot <- ggplot(data = model_ll,
-                  aes(x = phi, y = log(LL), label = phi)) +
+                  aes(x = phi, y = (LL), label = phi)) +
   geom_point(size = 2) +
   #Add labels: http://goo.gl/pE9JPI
  geom_vline(xintercept = 0.0689, linetype = 2) +
