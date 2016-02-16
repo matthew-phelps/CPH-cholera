@@ -145,29 +145,29 @@ rm(list = setdiff(ls(), c("I_phi_vect_60",
 # 1_STEP_AHEAD SIMULATION
 # ####################################################
 
-
-ll_t <- list()
-ll_z <- 0
-for(z in 1:length(I_fake_plus1_phi_60)){
-  ll_t[[z]] <- dpois(I_incidence_60, I_fake_plus1_phi_60[[z]], log = T)
-  ll_z[z] <- exp(sum(ll_t[[z]]))
-}
-
-model_ll_fake_phi <- sum(ll_z)
-
-# Sum log-likelihood across each timestep for FITTED phi:
-ll_t <- list()
-ll_z <- 0
-for(z in 1:length(I_fit_plus1_phi_60)){
-  ll_t[[z]] <- dpois(I_incidence_60, I_fit_plus1_phi_60[[z]], log = T)
-  ll_z[z] <- exp(sum(ll_t[[z]]))
-}
-
-model_ll_fitted_phi <- sum(ll_z)
-
-
-# Compare. If fitted is better 
-model_ll_fitted_phi > model_ll_fake_phi
+# 
+# ll_t <- list()
+# ll_z <- 0
+# for(z in 1:length(I_fake_plus1_phi_60)){
+#   ll_t[[z]] <- dpois(I_incidence_60, I_fake_plus1_phi_60[[z]], log = T)
+#   ll_z[z] <- exp(sum(ll_t[[z]]))
+# }
+# 
+# model_ll_fake_phi <- sum(ll_z)
+# 
+# # Sum log-likelihood across each timestep for FITTED phi:
+# ll_t <- list()
+# ll_z <- 0
+# for(z in 1:length(I_fit_plus1_phi_60)){
+#   ll_t[[z]] <- dpois(I_incidence_60, I_fit_plus1_phi_60[[z]], log = T)
+#   ll_z[z] <- exp(sum(ll_t[[z]]))
+# }
+# 
+# model_ll_fitted_phi <- sum(ll_z)
+# 
+# 
+# # Compare. If fitted is better 
+# model_ll_fitted_phi > model_ll_fake_phi
 
 
 # MLE 1-STEP-AHEAD -------------------------------------------------------
