@@ -1,5 +1,4 @@
-# Model 0.1 - Fitting 1 quarter with randomly sampled
-# I values between the weekly observed values.
+# Model 0.1 - Fit to entire epidemic .
 
 model {
   # Beta log hypreprior distributions
@@ -41,19 +40,12 @@ model {
   }	
   
   # Likelihood function
-  for (t in 1:(Nsteps-1)){
-    I_incidence[t+1] ~ dpois(lambdaI[t])
-    R_new[t+1] ~ dpois(lambdaR[t])
-  }
+  
+    I_incidence ~ dpois(lambdaI)
+    R_new ~ dpois(lambdaR)
+  
   
   #data# Nsteps
   #data# N_i_daily
   #data# I_incidence
-  
-  
-  
-  
-  
-  
-  
 }
