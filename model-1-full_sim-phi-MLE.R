@@ -23,7 +23,7 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 1000 # Has to be the same for both full sum and t+1 sim
+loops <- 2000 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- seq(from = 0.01, to = 0.04, length.out = 250)
