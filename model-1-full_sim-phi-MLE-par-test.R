@@ -24,7 +24,7 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(130)
 
-loops <- 3 # Has to be the same for both full sum and t+1 sim
+loops <- 2000 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- seq(from = 0.01, to = 0.14, length.out = 250)
@@ -73,42 +73,42 @@ rm(I_it_est, S_it_est, step1, lower_sample, n_param,
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
 loops <- loops # See Intro to set loops - has to be same for t+1 & Full sim
-duration <- 5000 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
+duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- phi_pe
 container_tplus1_ls <- vector("list", length(phi_pe))
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
 
 system.time (
-  for(phi_vect in 1:length(phi_pe)) {
-
-  I_plus1_list  <- foreach (z = 1:loops, .combine=rbind) %dopar% {
+  container_tplus1_ls <- foreach(phi_vect = 1:length(phi_pe) ) %dopar% {
     
-    for (t in 1:(Nsteps-1)){
-      Lambda_est_pe[t] <- S_plus1[t] / N_i_daily * (beta_pe[1] *(I_it_daily[t]))
-      LambdaR[t] <- I_it_daily[t] * gamma
-      R_new[t +1 ] <- rpois(1, LambdaR[t])
-      I_new <- rpois(1, (Lambda_est_pe[t] ) )
-      I_plus1[t + 1] <- max(0, (I_new + I_it_daily[t] - R_new[t + 1]))
-      S_temp <- (S_plus1[t]) -    (I_new) / (phi_pe[phi_vect])
-      S_plus1[t + 1] <- max(0, S_temp)
+    for (z in 1:loops){
+      
+      for (t in 1:(Nsteps-1)){
+        Lambda_est_pe[t] <- S_plus1[t] / N_i_daily * (beta_pe[1] *(I_it_daily[t]))
+        LambdaR[t] <- I_it_daily[t] * gamma
+        R_new[t +1 ] <- rpois(1, LambdaR[t])
+        I_new <- rpois(1, (Lambda_est_pe[t] ) )
+        I_plus1[t + 1] <- max(0, (I_new + I_it_daily[t] - R_new[t + 1]))
+        S_temp <- (S_plus1[t]) -    (I_new) / (phi_pe[phi_vect])
+        S_plus1[t + 1] <- max(0, S_temp)
+      }
+      
+      I_plus1_list[z, ] <- I_plus1
+      
     }
-    
-    I_plus1
-    
-  }
-  container_tplus1_ls[[phi_vect]] <- I_plus1_list
-})
+    I_plus1_list
+  })
 
-x <-  container_tplus1_ls[[phi_vect]]
+x <-  data.frame(t(container_tplus1_ls[[1]]))
 
 # SAVE for likelhood calculation
 I_phi_plus1_vect <- container_tplus1_ls
-save(I_phi_plus1_vect, file = 'data\\Rdata\\I_phi_plus1_vect.Rdata')
+save(I_phi_plus1_vect, file = 'data\\Rdata\\I_phi_plus1_vect_parallel.Rdata')
 save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 
 
