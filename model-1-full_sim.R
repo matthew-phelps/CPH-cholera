@@ -19,9 +19,7 @@ require(grid)
 
 load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
-set.seed(101)
-
-loops <- 1000 # Has to be the same for both full sum and t+1 sim
+loops <- 2000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
@@ -34,6 +32,7 @@ Lambda_est_pe <-  matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <-        matrix(data = NA, nrow = 1, ncol = Nsteps)
 I_est_pe_list <-  matrix(data = NA, nrow = loops, ncol = Nsteps)
 S_it_est_pe_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
+set.seed(13)
 system.time(
   for (z in 1:loops){
     
@@ -113,6 +112,7 @@ I_plus1_list <- matrix(nrow = loops, ncol = Nsteps)
 S_plus1_list <- matrix(nrow = loops, ncol = Nsteps)
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+set.seed(13)
 system.time(
   for (z in 1:loops){
     

@@ -14,8 +14,7 @@ rm(list = ls())
 library(ggplot2)
 library(reshape)
 require(grid)
-library(doSNOW)
-library(parallel)
+
 
 # LOAD data ---------------------------------------------------------------
 
@@ -39,7 +38,7 @@ phi_rez <- length(phi_pe)
 # 
 # Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 # LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-# 
+# set.seed(13)
 # system.time(
 #   for(phi_vect in 1:length(phi_pe)){
 #     I_est_pe_list <- vector("list", loops)
@@ -83,7 +82,7 @@ R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-
+set.seed(13)
 system.time(
   for(phi_vect in 1:length(phi_pe)){
     I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
@@ -109,6 +108,7 @@ system.time(
 
 # SAVE for likelhood calculation
 I_phi_plus1_vect <- container_tplus1_ls
+rm(container_tplus1_ls)
 save(I_phi_plus1_vect, file = 'data\\Rdata\\I_phi_plus1_vect.Rdata')
 save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 
