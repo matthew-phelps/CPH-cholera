@@ -24,7 +24,7 @@ set.seed(101)
 loops <- 1000 # Has to be the same for both full sum and t+1 sim
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
-duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
+duration <- 5 # doi:10.1371/journal.pmed.1001947
 gamma <- 1/duration
 
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
