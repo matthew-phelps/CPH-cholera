@@ -20,12 +20,14 @@ require(grid)
 # load(file = 'data\\Rdata\\I_fitted_phi.Rdata')
 # load(file = 'data\\Rdata\\I_fake_phi.Rdata')
 # load(file = 'data\\Rdata\\I_phi_vect.Rdata')
-# load(file = 'data\\Rdata\\I_fake_plus1_phi.Rdata')
+ load(file = 'data\\Rdata\\I_fake_plus1_phi.Rdata')
 load(file = 'data\\Rdata\\I_incidence.Rdata')
 load(file = 'data\\Rdata\\phi_vect.Rdata')
 load(file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
 load(file = 'data\\Rdata\\I_phi_plus1_vect.Rdata')
+load(file = 'data\\Rdata\\I_phi_plus1_vect_parallel.Rdata')
 
+# Set some global variables to make life easier later
 phi_rez <- length(I_phi_plus1_vect)
 num_loops <- nrow(I_fit_plus1_phi)
 
@@ -42,7 +44,7 @@ I_fit_plus1_phi_60 <- I_fit_plus1_phi[, 20:65]
 # I_fake_phi_60 <- list()
 # I_fitted_phi_60 <- list()
 # I_phi_vect_60 <- I_phi_vect
-# I_fake_plus1_phi_60 <- list()
+ I_fake_plus1_phi_60 <- list()
 # for(loops in 1:length(I_fit_plus1_phi)){
 #   #   I_fake_phi_60[[z]] <- I_fake_phi[[z]][20:65]
 #   #   I_fitted_phi_60[[z]] <- I_fitted_phi[[z]][1 ,20:65]
@@ -52,10 +54,12 @@ I_fit_plus1_phi_60 <- I_fit_plus1_phi[, 20:65]
 
 
 I_phi_plus1_vect_60 <- I_phi_plus1_vect
+I_phi_plus1_vect_par_60 <- I_phi_plus1_vect_parallel
 #Separate for-loop for phi-vector since it is a nested list
 for(vect in 1:length(I_phi_plus1_vect)){
   I_phi_plus1_vect_60[[vect]]<- I_phi_plus1_vect[[vect]][, 20:65]
-}
+  I_phi_plus1_vect_par_60[[vect]] <- I_phi_plus1_vect_parallel[[vect]][, 20:65]
+  }
 
 rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
    I_phi_plus1_vect, I_phi_vect, I_fit_plus1_phi)
@@ -64,7 +68,28 @@ rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
 plot(I_incidence_60)
 # plot(I_fake_phi_60[[2]])
 # plot(I_fitted_phi_60[[2]])
-plot(I_phi_plus1_vect_60[[120]][2,])
+seriel_1<-0
+par_1 <- 0
+for (i in 1:num_loops){
+seriel_1[i] <- max(I_phi_plus1_vect_60[[150]][i, ])
+par_1[i] <- max(I_phi_plus1_vect_par_60[[150]][i, ])
+}
+seriel_1 <- data.frame(seriel_1)
+par_1 <- data.frame(par_1)
+seriel_1$loop <- 1:num_loops
+par_1$loop <- 1:num_loops
+mean(seriel_1$seriel_1)
+mean(par_1$par_1)
+sd(seriel_1$seriel_1)
+sd(par_1$par_1)
+ggplot() +
+  geom_point(data = seriel_1, aes(x = loop, y = seriel_1),
+             color = "blue",
+             alpha = 0.7) +
+  geom_point(data = par_1, aes(x = loop, y = par_1),
+             color = "red3",
+             alpha = .7)
+
 
 ######################################################
 # FUL SIMULATION
