@@ -25,10 +25,10 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 2 # Has to be the same for both full sum and t+1 sim
+loops <- 2000 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.01, to = 0.14, length.out = 250)
+phi_pe <- seq(from = 0.01, to = 0.04, length.out = 250)
 
 
 
@@ -85,7 +85,7 @@ LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
 set.seed(13) # NOTE use of dorng to set seeds on parallel: https://goo.gl/UaFsfV
 system.time (
-  container_tplus1_ls2 <- foreach(phi_vect = 1:length(phi_pe) ) %dorng% {
+  container_tplus1_ls <- foreach(phi_vect = 1:length(phi_pe) ) %dorng% {
     # NOTE use of dorng to set seeds on parallel: https://goo.gl/UaFsfV
     for (z in 1:loops){
       
@@ -104,18 +104,15 @@ system.time (
     }
     I_plus1_list
   })
-identical(container_tplus1_ls, container_tplus1_ls2)
+
 
 
 # SAVE for likelhood calculation
 I_phi_plus1_vect_parallel <- container_tplus1_ls
-rm(container_tplus1_ls, x)
+rm(container_tplus1_ls)
 save(I_phi_plus1_vect_parallel, file = 'data\\Rdata\\I_phi_plus1_vect_parallel.Rdata')
 save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
 
-x <- foreach(a=1:3, b=rep(10, 3)) %do% {
-  a + b
-  }
 
 
 
