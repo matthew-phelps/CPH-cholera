@@ -16,15 +16,16 @@ library(reshape)
 require(grid)
 library(foreach)
 library(doSNOW)
+library(doRNG) # For setting seeds on parallel
 # LOAD data ---------------------------------------------------------------
 cl <- makeCluster(7, type = "SOCK")
 registerDoSNOW(cl)
 
 load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
-set.seed(130)
+set.seed(13)
 
-loops <- 2000 # Has to be the same for both full sum and t+1 sim
+loops <- 2 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- seq(from = 0.01, to = 0.14, length.out = 250)
@@ -82,10 +83,10 @@ R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
-
+set.seed(13) # NOTE use of dorng to set seeds on parallel: https://goo.gl/UaFsfV
 system.time (
-  container_tplus1_ls <- foreach(phi_vect = 1:length(phi_pe) ) %dopar% {
-    
+  container_tplus1_ls2 <- foreach(phi_vect = 1:length(phi_pe) ) %dorng% {
+    # NOTE use of dorng to set seeds on parallel: https://goo.gl/UaFsfV
     for (z in 1:loops){
       
       for (t in 1:(Nsteps-1)){
@@ -103,13 +104,18 @@ system.time (
     }
     I_plus1_list
   })
+identical(container_tplus1_ls, container_tplus1_ls2)
 
-x <-  data.frame(t(container_tplus1_ls[[1]]))
 
 # SAVE for likelhood calculation
-I_phi_plus1_vect <- container_tplus1_ls
-save(I_phi_plus1_vect, file = 'data\\Rdata\\I_phi_plus1_vect_parallel.Rdata')
+I_phi_plus1_vect_parallel <- container_tplus1_ls
+rm(container_tplus1_ls, x)
+save(I_phi_plus1_vect_parallel, file = 'data\\Rdata\\I_phi_plus1_vect_parallel.Rdata')
 save(phi_pe, file = 'data\\Rdata\\phi_vect.Rdata')
+
+x <- foreach(a=1:3, b=rep(10, 3)) %do% {
+  a + b
+  }
 
 
 
