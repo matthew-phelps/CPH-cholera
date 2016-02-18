@@ -28,16 +28,16 @@ loops <- 1000
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 phi_pe <- 0.025
-
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
-R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-I_est_pe_list <- list()
-S_it_est_pe_list <- list()
+R_new <-          matrix(data =  NA, nrow = 1, ncol = Nsteps)
+Lambda_est_pe <-  matrix(data = NA, nrow = 1, ncol = Nsteps)
+LambdaR <-        matrix(data = NA, nrow = 1, ncol = Nsteps)
+Lambda_est_pe <-  matrix(data = NA, nrow = 1, ncol = Nsteps)
+LambdaR <-        matrix(data = NA, nrow = 1, ncol = Nsteps)
+I_est_pe_list <-  matrix(data = NA, nrow = loops, ncol = Nsteps)
+S_it_est_pe_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
 for (z in 1:loops){
-  
-  Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  
+
   for (t in 1:(Nsteps-1)){
     Lambda_est_pe[t] <- S_it_est[t] / N_it[1] * (beta_pe[1] *(I_it_est[t]))
     LambdaR[t] <- I_it_est[t] * gamma
@@ -48,8 +48,8 @@ for (z in 1:loops){
     S_it_est[t + 1] <- max(0, S_temp)
   }
   
-  I_est_pe_list[[z]] <- I_it_est
-  S_it_est_pe_list[[z]] <- S_it_est
+  I_est_pe_list[z, ] <- I_it_est
+  S_it_est_pe_list[z, ] <- S_it_est
 }
 
 I_it_est
@@ -63,13 +63,9 @@ save(I_fake_phi, file = 'data\\Rdata\\I_fake_phi.Rdata')
 # PE RESHAPE DATA ---------------------------------------------------------
 
 # Infectious Data for all quarters (city_pe level). Flatten each matrix
-model_1_full <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
+model_1_full <- as.data.frame(t(I_est_pe_list))
 model_1_full$day_index <- 1:Nsteps
 
-
-for (z in 1:loops){
-  model_1_full[z] <- as.data.frame(colSums(I_est_pe_list[[z]]))
-}
 model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
 
 
@@ -116,12 +112,12 @@ ggsave(model_1_full_sim_plot,
 loops <- loops
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-I_plus1_list <- list()
-S_plus1_list <- list()
+Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
+I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
+S_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
+
 for (z in 1:loops){
-  
-  Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-  LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
   
   for (t in 1:(Nsteps-1)){
     Lambda_est_pe[t] <- S_plus1[t] / N_i_daily * (beta_pe[1] *(I_it_daily[t]))
@@ -133,8 +129,8 @@ for (z in 1:loops){
     S_plus1[t + 1] <- max(0, S_temp)
   }
   
-  I_plus1_list[[z]] <- I_plus1
-  S_plus1_list[[z]] <- S_plus1
+  I_plus1_list[z, ] <- I_plus1
+  S_plus1_list[z, ] <- S_plus1
 }
 
 # SAVE for likelhood calculation
@@ -143,12 +139,8 @@ save(I_fake_plus1_phi, file = 'data\\Rdata\\I_fake_plus1_phi.Rdata')
 
 
 # PLOTTING ----------------------------------------------------------------
-model_1_tplus1 <- as.data.frame(matrix(data = 0, nrow = Nsteps, ncol = loops))
+model_1_tplus1 <- as.data.frame(t(I_plus1_list))
 model_1_tplus1$day_index <- 1:Nsteps
-
-for (z in 1:loops){
-  model_1_tplus1[z] <- as.data.frame(colSums(I_plus1_list[[z]]))
-}
 model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
 
 
@@ -172,7 +164,7 @@ model_1_tplus1_plot <- ggplot() +
 model_1_tplus1_plot
 
 system.time(ggsave(model_1_tplus1_plot, 
-                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model_1_tplus1-I.pdf',
+                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model_1_tplus1-faek-phi.pdf',
                    width=15, height=9,
                    units = 'in')
 )
