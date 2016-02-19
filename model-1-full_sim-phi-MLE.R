@@ -22,10 +22,10 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 2000 # Has to be the same for both full sum and t+1 sim
+loops <- 5000 # Has to be the same for both full sum and t+1 sim
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- seq(from = 0.01, to = 0.04, length.out = 250)
+phi_pe <- seq(from = 0.01, to = 0.07, length.out = 350)
 phi_rez <- length(phi_pe)
 
 
@@ -82,7 +82,7 @@ R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
 
 Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-set.seed(13)
+set.seed(123)
 system.time(
   for(phi_vect in 1:length(phi_pe)){
     I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)

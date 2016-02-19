@@ -20,7 +20,7 @@ require(grid)
 # load(file = 'data\\Rdata\\I_fitted_phi.Rdata')
 # load(file = 'data\\Rdata\\I_fake_phi.Rdata')
 # load(file = 'data\\Rdata\\I_phi_vect.Rdata')
- load(file = 'data\\Rdata\\I_fake_plus1_phi.Rdata')
+load(file = 'data\\Rdata\\I_fake_plus1_phi.Rdata')
 load(file = 'data\\Rdata\\I_incidence.Rdata')
 load(file = 'data\\Rdata\\phi_vect.Rdata')
 load(file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
@@ -28,7 +28,7 @@ load(file = 'data\\Rdata\\I_phi_plus1_vect.Rdata')
 load(file = 'data\\Rdata\\I_phi_plus1_vect_parallel.Rdata')
 
 # Set some global variables to make life easier later
-phi_rez <- length(I_phi_plus1_vect)
+phi_rez <- length(I_phi_plus1_vect_parallel)
 num_loops <- nrow(I_fit_plus1_phi)
 
 # Just check to make sure we're dealing with the correct data set
@@ -44,7 +44,7 @@ I_fit_plus1_phi_60 <- I_fit_plus1_phi[, 20:65]
 # I_fake_phi_60 <- list()
 # I_fitted_phi_60 <- list()
 # I_phi_vect_60 <- I_phi_vect
- I_fake_plus1_phi_60 <- list()
+I_fake_plus1_phi_60 <- list()
 # for(loops in 1:length(I_fit_plus1_phi)){
 #   #   I_fake_phi_60[[z]] <- I_fake_phi[[z]][20:65]
 #   #   I_fitted_phi_60[[z]] <- I_fitted_phi[[z]][1 ,20:65]
@@ -59,7 +59,7 @@ I_phi_plus1_vect_par_60 <- I_phi_plus1_vect_parallel
 for(phi_value in 1:length(I_phi_plus1_vect_parallel)){
   # I_phi_plus1_vect_60[[phi_value]]<- I_phi_plus1_vect[[phi_value]][, 20:65]
   I_phi_plus1_vect_par_60[[phi_value]] <- I_phi_plus1_vect_parallel[[phi_value]][, 20:65]
-  }
+}
 
 rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
    I_phi_plus1_vect, I_phi_vect, I_fit_plus1_phi)
@@ -75,8 +75,8 @@ plot(I_incidence_60)
 serial_1<-0
 par_1 <- 0
 for (i in 1:num_loops){
-serial_1[i] <- max(I_phi_plus1_vect_60[[150]][i, ])
-par_1[i] <- max(I_phi_plus1_vect_par_60[[150]][i, ])
+  serial_1[i] <- max(I_phi_plus1_vect_60[[150]][i, ])
+  par_1[i] <- max(I_phi_plus1_vect_par_60[[150]][i, ])
 }
 serial_1 <- data.frame(serial_1)
 par_1 <- data.frame(par_1)
@@ -230,7 +230,8 @@ rm(list = setdiff(ls(), c("I_incidence_60",
 # 
 # # Dynamic subtitle to reflect number of loops
 # no_loops <- as.character(nrow(I_fit_plus1_phi_60))
-# sub_title <- paste("No. simulations = ", no_loops, sept = "")
+# sub_title <- paste("No. simulations (parallel) = ", no_loops,", ",
+#                    "phi resolution = ", phi_rez, sept = "")
 # 
 # ll_plot <- ggplot(data = model_ll,
 #                   aes(x = phi, y = log(LL), label = phi)) +
@@ -265,10 +266,13 @@ ll_row_sums <- matrix(data = NA, nrow = num_loops, ncol = phi_rez)
 ll_phi_avg <- vector(length = length(I_phi_plus1_vect_par_60))
 
 for(phi_value in 1:phi_rez){
-  # For each phi value, test likelihood of each day on each loop
+  # Returns list where each element is matrix for 1 phi value.
+  # each row of matrix is 1 simulation, each colum is 1 day
   ll_t[[phi_value]] <- dpois(I_incidence_60, I_phi_plus1_vect_par_60[[phi_value]], log = T)
   
-  ll_row_sums[, phi_value] <- exp(rowSums(ll_t[[phi_value]]))
+  # Returns matrix, each column is a phi value, each row is simulation,
+  # so each element is the sum of ll over all days of 1 simulation for 1 phi value
+  ll_row_sums[, phi_value] <- exp(rowSums((ll_t[[phi_value]])))
   ll_phi_avg[phi_value] <- mean(ll_row_sums[, phi_value])
 }
 
@@ -283,7 +287,9 @@ colnames(model_ll) <- c("LL", "phi")
 
 # Dynamic subtitle to reflect number of loops
 no_loops <- as.character(nrow(I_fit_plus1_phi_60))
-sub_title <- paste("No. simulations (parallel) = ", no_loops, sept = "")
+
+sub_title <- paste("No. simulations (parallel) = ", no_loops,", ",
+                   "phi resolution = ", phi_rez, sept = "")
 
 ll_plot <- ggplot(data = model_ll,
                   aes(x = phi, y = log(LL), label = phi)) +
@@ -293,13 +299,16 @@ ll_plot <- ggplot(data = model_ll,
   geom_text(x = 0.0689, label = "fitted phi", angle = 90,
             y = max(log(model_ll$LL)),
             vjust = 1.2,
+            hjust = 2,
             size = 3) +
   geom_text(aes(label = ifelse(LL==max(LL), paste("best phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
   theme_minimal() +
   ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
 
 ll_plot
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-1-seed1.png",
+
+
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-seed123.png",
        plot = ll_plot,
        width = 23,
        height = 15,
