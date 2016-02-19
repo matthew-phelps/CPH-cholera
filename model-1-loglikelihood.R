@@ -56,9 +56,9 @@ I_fit_plus1_phi_60 <- I_fit_plus1_phi[, 20:65]
 I_phi_plus1_vect_60 <- I_phi_plus1_vect
 I_phi_plus1_vect_par_60 <- I_phi_plus1_vect_parallel
 #Separate for-loop for phi-vector since it is a nested list
-for(vect in 1:length(I_phi_plus1_vect_parallel)){
-  # I_phi_plus1_vect_60[[vect]]<- I_phi_plus1_vect[[vect]][, 20:65]
-  I_phi_plus1_vect_par_60[[vect]] <- I_phi_plus1_vect_parallel[[vect]][, 20:65]
+for(phi_value in 1:length(I_phi_plus1_vect_parallel)){
+  # I_phi_plus1_vect_60[[phi_value]]<- I_phi_plus1_vect[[phi_value]][, 20:65]
+  I_phi_plus1_vect_par_60[[phi_value]] <- I_phi_plus1_vect_parallel[[phi_value]][, 20:65]
   }
 
 rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
@@ -139,12 +139,12 @@ rm(serial_1, par_1)
 # ll_t <- vector("list", length(I_phi_vect_60[[1]]))
 # ll_z <- vector(length = length(I_phi_vect_60[[1]]))
 # model_ll_phi_vect <- matrix(data = NA, nrow = 1, ncol = length(I_phi_vect_60))
-# for(vect in 1:length(I_phi_vect_60)){
+# for(phi_value in 1:length(I_phi_vect_60)){
 #   for(z in 1:length(I_incidence_60)){
-#     ll_t[[z]] <- dpois(I_incidence_60, I_phi_vect_60[[vect]][[z]], log = T)
+#     ll_t[[z]] <- dpois(I_incidence_60, I_phi_vect_60[[phi_value]][[z]], log = T)
 #     ll_z[z] <- exp(sum(ll_t[[z]]))
 #   }
-#   model_ll_phi_vect[1, vect] <- sum(ll_z)
+#   model_ll_phi_vect[1, phi_value] <- sum(ll_z)
 #   }
 # 
 # model_ll_phi_vect <- rbind(model_ll_phi_vect, phi_pe)
@@ -207,53 +207,53 @@ rm(list = setdiff(ls(), c("I_incidence_60",
 
 # MLE 1-STEP-AHEAD SERIAL-------------------------------------------------------
 
-ll_t <- vector("list", length(I_phi_plus1_vect_60))
-ll_row_sums <- matrix(data = NA, nrow = num_loops, ncol = phi_rez)
-
-ll_phi_avg <- vector(length = length(I_phi_plus1_vect_60))
-
-for(vect in 1:phi_rez){
-  # For each phi value, test likelihood of each day on each loop
-  ll_t[[vect]] <- dpois(I_incidence_60, I_phi_plus1_vect_60[[vect]], log = T)
-  ll_row_sums[, vect] <- exp(rowSums(ll_t[[vect]]))
-  ll_phi_avg[vect] <- mean(ll_row_sums[, vect])
-}
-
-model_ll_phi_plus1_vect <- matrix(data = NA, nrow = 1, ncol = phi_rez)
-model_ll_phi_plus1_vect <- rbind(ll_phi_avg, phi_pe)
-model_ll <- data.frame(t(model_ll_phi_plus1_vect))
-# plot(model_ll_phi_plus1_vect[2,], model_ll_phi_plus1_vect[1,])
-
-
-#GGPLOTs 
-colnames(model_ll) <- c("LL", "phi")
-
-# Dynamic subtitle to reflect number of loops
-no_loops <- as.character(nrow(I_fit_plus1_phi_60))
-sub_title <- paste("No. simulations = ", no_loops, sept = "")
-
-ll_plot <- ggplot(data = model_ll,
-                  aes(x = phi, y = log(LL), label = phi)) +
-  geom_point(size = 2) +
-  #Add labels: http://goo.gl/pE9JPI
-  geom_vline(xintercept = 0.0689, linetype = 2) +
-  geom_text(x = 0.0689, label = "fitted phi", angle = 90,
-            y = max(log(model_ll$LL)),
-            vjust = 1.2,
-            size = 3) +
-  geom_text(aes(label = ifelse(LL==max(LL), paste("best phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
-  theme_minimal() +
-  ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
-
-ll_plot
-
-
-
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-1-seed130.png",
-       plot = ll_plot,
-       width = 23,
-       height = 15,
-       units = 'cm')
+# ll_t <- vector("list", length(I_phi_plus1_vect_60))
+# ll_row_sums <- matrix(data = NA, nrow = num_loops, ncol = phi_rez)
+# 
+# ll_phi_avg <- vector(length = length(I_phi_plus1_vect_60))
+# 
+# for(phi_value in 1:phi_rez){
+#   # For each phi value, test likelihood of each day on each loop
+#   ll_t[[phi_value]] <- dpois(I_incidence_60, I_phi_plus1_vect_60[[phi_value]], log = T)
+#   ll_row_sums[, phi_value] <- exp(rowSums(ll_t[[phi_value]]))
+#   ll_phi_avg[phi_value] <- mean(ll_row_sums[, phi_value])
+# }
+# 
+# model_ll_phi_plus1_vect <- matrix(data = NA, nrow = 1, ncol = phi_rez)
+# model_ll_phi_plus1_vect <- rbind(ll_phi_avg, phi_pe)
+# model_ll <- data.frame(t(model_ll_phi_plus1_vect))
+# # plot(model_ll_phi_plus1_vect[2,], model_ll_phi_plus1_vect[1,])
+# 
+# 
+# #GGPLOTs 
+# colnames(model_ll) <- c("LL", "phi")
+# 
+# # Dynamic subtitle to reflect number of loops
+# no_loops <- as.character(nrow(I_fit_plus1_phi_60))
+# sub_title <- paste("No. simulations = ", no_loops, sept = "")
+# 
+# ll_plot <- ggplot(data = model_ll,
+#                   aes(x = phi, y = log(LL), label = phi)) +
+#   geom_point(size = 2) +
+#   #Add labels: http://goo.gl/pE9JPI
+#   geom_vline(xintercept = 0.0689, linetype = 2) +
+#   geom_text(x = 0.0689, label = "fitted phi", angle = 90,
+#             y = max(log(model_ll$LL)),
+#             vjust = 1.2,
+#             size = 3) +
+#   geom_text(aes(label = ifelse(LL==max(LL), paste("best phi=", as.character(signif(phi, digits = 3)),sep=""), '')), hjust = -0.1, vjust = 0) +
+#   theme_minimal() +
+#   ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
+# 
+# ll_plot
+# 
+# 
+# 
+# ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-1-seed130.png",
+#        plot = ll_plot,
+#        width = 23,
+#        height = 15,
+#        units = 'cm')
 
 
 
@@ -264,12 +264,12 @@ ll_row_sums <- matrix(data = NA, nrow = num_loops, ncol = phi_rez)
 
 ll_phi_avg <- vector(length = length(I_phi_plus1_vect_par_60))
 
-for(vect in 1:phi_rez){
+for(phi_value in 1:phi_rez){
   # For each phi value, test likelihood of each day on each loop
-  ll_t[[vect]] <- dpois(I_incidence_60, I_phi_plus1_vect_par_60[[vect]], log = T)
+  ll_t[[phi_value]] <- dpois(I_incidence_60, I_phi_plus1_vect_par_60[[phi_value]], log = T)
   
-  ll_row_sums[, vect] <- exp(rowSums(ll_t[[vect]]))
-  ll_phi_avg[vect] <- mean(ll_row_sums[, vect])
+  ll_row_sums[, phi_value] <- exp(rowSums(ll_t[[phi_value]]))
+  ll_phi_avg[phi_value] <- mean(ll_row_sums[, phi_value])
 }
 
 model_ll_phi_plus1_vect <- matrix(data = NA, nrow = 1, ncol = phi_rez)
@@ -283,7 +283,7 @@ colnames(model_ll) <- c("LL", "phi")
 
 # Dynamic subtitle to reflect number of loops
 no_loops <- as.character(nrow(I_fit_plus1_phi_60))
-sub_title <- paste("No. simulations = ", no_loops, sept = "")
+sub_title <- paste("No. simulations (parallel) = ", no_loops, sept = "")
 
 ll_plot <- ggplot(data = model_ll,
                   aes(x = phi, y = log(LL), label = phi)) +
@@ -299,7 +299,7 @@ ll_plot <- ggplot(data = model_ll,
   ggtitle(bquote(atop("Step-ahead LL", atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
 
 ll_plot
-ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-1-seed123.png",
+ggsave(filename = "Output\\Simulations\\LL-phi-plus1-log-1-seed1.png",
        plot = ll_plot,
        width = 23,
        height = 15,
