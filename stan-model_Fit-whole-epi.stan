@@ -40,10 +40,10 @@ model {
   }	
   
   # Likelihood function
-  
-    I_incidence ~ dpois(lambdaI)
-    R_new ~ dpois(lambdaR)
-  
+  for (t in 1:(Nsteps-1)){
+    I_incidence[t+1] ~ dpois(lambdaI[t])
+    R_new[t+1] ~ dpois(lambdaR[t])
+  }
   
   #data# Nsteps
   #data# N_i_daily
