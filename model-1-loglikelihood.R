@@ -64,7 +64,7 @@ for(phi_value in 1:length(I_phi_plus1_vect_parallel)){
 rm(I_incidence, I_fake_phi, I_fitted_phi, I_fake_plus1_phi,
    I_phi_plus1_vect, I_phi_vect, I_fit_plus1_phi)
 
-
+x <-I_phi_plus1_vect_par_60[[1]]
 
 
 # COMPARE PARALLEL w SERIAL -----------------------------------------------
@@ -272,8 +272,9 @@ for(phi_value in 1:phi_rez){
   
   # Returns matrix, each column is a phi value, each row is simulation,
   # so each element is the sum of ll over all days of 1 simulation for 1 phi value
-  ll_row_sums[, phi_value] <- exp(rowSums((ll_t[[phi_value]])))
-  ll_phi_avg[phi_value] <- mean(ll_row_sums[, phi_value])
+  ll_row_sums[, phi_value] <- (rowSums(exp(ll_t[[phi_value]])))
+  # Returen vector, each element is mean ll for that phi over all simulations
+  ll_phi_avg[phi_value] <- (mean((ll_row_sums[, phi_value])))
 }
 
 model_ll_phi_plus1_vect <- matrix(data = NA, nrow = 1, ncol = phi_rez)
@@ -284,7 +285,7 @@ model_ll <- data.frame(t(model_ll_phi_plus1_vect))
 
 #GGPLOTs 
 colnames(model_ll) <- c("LL", "phi")
-
+model_ll$logLL <- log(model_ll$LL)
 # Dynamic subtitle to reflect number of loops
 no_loops <- as.character(nrow(I_fit_plus1_phi_60))
 
@@ -292,10 +293,10 @@ sub_title <- paste("No. simulations (parallel) = ", no_loops,", ",
                    "phi resolution = ", phi_rez, sept = "")
 
 ll_plot <- ggplot(data = model_ll,
-                  aes(x = phi, y = log(LL), label = phi)) +
+                  aes(x = phi, y = (logLL), label = phi)) +
   geom_point(size = 2) +
   #Add labels: http://goo.gl/pE9JPI
-  geom_vline(xintercept = 0.0689, linetype = 2) +
+  #geom_vline(xintercept = 0.0689, linetype = 2) +
   geom_text(x = 0.0689, label = "fitted phi", angle = 90,
             y = max(log(model_ll$LL)),
             vjust = 1.2,
