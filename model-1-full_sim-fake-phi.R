@@ -22,12 +22,14 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 5000
-#  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
-
+loops <- 200
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- 0.025
+phi_pe <- 0.06
+model_1_obs <- as.data.frame(I_it_daily)
+model_1_obs$day_index <- 1:Nsteps
+
+#  Point Eestimate MODEL FROM INITIAL STATE -------------------------------------
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
 R_new <-          matrix(data =  NA, nrow = 1, ncol = Nsteps)
 Lambda_est_pe <-  matrix(data = NA, nrow = 1, ncol = Nsteps)
@@ -58,22 +60,21 @@ save(I_fake_phi, file = 'data\\Rdata\\I_fake_phi.Rdata')
 
 
 # PE RESHAPE DATA ---------------------------------------------------------
-# 
-# # Infectious Data for all quarters (city_pe level). Flatten each matrix
+
+# Infectious Data for all quarters (city_pe level). Flatten each matrix
 # model_1_full <- as.data.frame(t(I_est_pe_list))
 # model_1_full$day_index <- 1:Nsteps
 # 
 # model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
-
+# 
 
 
 
 
 # # Prepare observed data aggregated to the week ----------------------------------------
-# 
-# 
-# model_1_obs <- as.data.frame(I_it_daily)
-# model_1_obs$day_index <- 1:Nsteps
+#
+#
+
 # 
 # 
 # # # city_pe level Infectious
@@ -108,35 +109,41 @@ save(I_fake_phi, file = 'data\\Rdata\\I_fake_phi.Rdata')
 
 loops <- loops
 R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
-R_new <- matrix(data =  NA, nrow = 1, ncol = Nsteps)
-Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
-I_plus1_mat <- matrix(data = NA, nrow = loops, ncol = Nsteps)
-S_plus1_mat <- matrix(data = NA, nrow = loops, ncol = Nsteps)
+R_new <- data.frame(matrix(data =  NA, nrow = loops, ncol = Nsteps))
+Lambda_est_pe <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+LambdaR <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+I_new <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+S_temp <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+I_plus1_mat <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+S_plus1_mat <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
 S_plus1_mat[, 1] <- N_i_daily
+I_plus1_mat[, 1] <- 0
+R_new[, 1] <- 0
+I_new[, 1] <- 0
 set.seed(13)
 for (z in 1:loops){
 
   for (t in 1:(Nsteps-1)){
-    if(z == 566 && t == 20)
-      browser()
-    Lambda_est_pe[t] <- S_plus1_mat[z, t] / N_i_daily * (beta_pe[1] *(I_it_daily[t]))
-    LambdaR[t] <- I_it_daily[t] * gamma
-    R_new[t +1 ] <- rpois(1, LambdaR[t])
-    I_new <- rpois(1, (Lambda_est_pe[t] ) )
-    I_plus1_mat[z, t + 1] <- max(0, (I_new + I_it_daily[t] - R_new[t + 1]))
-    S_temp <- (S_plus1_mat[z, t]) -    (I_new) / (phi_pe[1])
-    S_plus1_mat[z, t + 1] <- max(0, S_temp)
+    # if(z == 106 && t == 64)
+
+    Lambda_est_pe[z, t] <- S_plus1_mat[z, t] / N_i_daily * (beta_pe[1] *(I_plus1_mat[z, t]))
+    LambdaR[z, t] <- I_plus1_mat[z, t] * gamma
+    R_new[z, t +1 ] <- rpois(1, LambdaR[z, t])
+    I_new[z, t] <- rpois(1, (Lambda_est_pe[z, t] ) )
+    I_plus1_mat[z, t + 1] <- max(0, (I_it_daily[t] + I_plus1_mat[z, t] - R_new[z, t + 1]))
+    S_temp[z, t] <- (S_plus1_mat[z, t]) -    (I_new[z, t]) / (phi_pe[1])
+    S_plus1_mat[z, t + 1] <- max(0, S_temp[z, t])
   }
 }
-
+I_plus1_mat[106,]
+I_new[106,]
 # SAVE for likelhood calculation
-I_fake_plus1_phi <- I_plus1_list
+I_fake_plus1_phi <- I_new
 save(I_fake_plus1_phi, file = 'data\\Rdata\\I_fake_plus1_phi.Rdata')
 
 
 # PLOTTING ----------------------------------------------------------------
-model_1_tplus1 <- as.data.frame(t(I_plus1_list))
+model_1_tplus1 <- as.data.frame(t(I_new))
 model_1_tplus1$day_index <- 1:Nsteps
 model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
 
