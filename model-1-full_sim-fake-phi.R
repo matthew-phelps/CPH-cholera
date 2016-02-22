@@ -22,7 +22,7 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 1000
+loops <- 5000
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
@@ -116,7 +116,7 @@ Lambda_est_pe <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 LambdaR <- matrix(data = NA, nrow = 1, ncol = Nsteps)
 I_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
 S_plus1_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
-
+set.seed(13)
 for (z in 1:loops){
   
   for (t in 1:(Nsteps-1)){
