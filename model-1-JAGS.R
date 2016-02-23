@@ -108,8 +108,8 @@ save(I_incidence, file = "data\\Rdata\\I_incidence.Rdata")
 save(model_1_coda, file = "data\\Rdata\\model-1-mcmc-output.Rdata")
 save(model_1_jags, file = 'data\\Rdata\\model-1-jags.Rdata')
 
-save(beta_summary_1_, file = 'data\\Rdata\\beta-summary-1.Rdata')
-save(phi_summary_1_, file = 'data\\Rdata\\phi-summary-1.Rdata')
+save(beta_summary_1, file = 'data\\Rdata\\beta-summary-1.Rdata')
+save(phi_summary_1, file = 'data\\Rdata\\phi-summary-1.Rdata')
 save(dataList, file = 'data\\Rdata\\model-1-dataList.Rdata')
 
 ggsave(trace_beta, filename = "Output\\MCMC\\trace-beta-model-1.jpg")
