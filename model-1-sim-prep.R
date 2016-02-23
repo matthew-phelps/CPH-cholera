@@ -1,6 +1,6 @@
 # Author: Matthew Phelps
-#Desc: Model 1 Sim
-# Dependicies: Data 1, Data 2, 5_GLM_data_reshape, 8c_JAGS
+#Desc: Prepare data from JAGS for simulations
+# Dependicies: model-1-JAGS
 
 
 # Intro -------------------------------------------------------------------

@@ -2,7 +2,7 @@
 #Desc: Getting data into correct shape for JAGS run. 
 #       Multiple relpicates of random allocation over days of
 #       week
-# Dependicies: Data 4
+
 
 
 # Intro -------------------------------------------------------------------
