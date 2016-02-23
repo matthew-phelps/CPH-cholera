@@ -103,11 +103,11 @@ rm(step1)
 # POINT ESTIMATES ---------------------------------------------------------
 
 # Beta: extact mean from jags file
-step1 <- as.matrix(beta_summary_1_['Mean'])
+step1 <- as.matrix(beta_summary_1['Mean'])
 beta_pe <- matrix(step1, nrow = 1, ncol = 1, byrow = F)
 
 # Phi
-phi_pe <- as.matrix(phi_summary_1_['Mean'])
+phi_pe <- as.matrix(phi_summary_1['Mean'])
 
 
 
