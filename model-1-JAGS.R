@@ -15,7 +15,7 @@ library(runjags)
 library(rjags)
 library(mcmcplots)
 library(ggmcmc)
-options(mc.cores = (parallel::detectCores()-2 ))
+options(mc.cores = (parallel::detectCores()-1 ))
 
 
 # LOAD -------------------------------------------------------
@@ -29,6 +29,15 @@ I_incidence <- (I_incidence[, 1])
 I_prev <- matrix(data = NA, nrow = Nsteps, ncol = 1)
 I_prev[1] <- 0
 S_it_daily <- (S_it_daily[, 1])
+
+
+# Restict time period:
+splice <- 15:85
+Nsteps <- length(splice)
+I_incidence <- (I_incidence[splice])
+I_prev <- matrix(data = NA, nrow = Nsteps, ncol = 1)
+I_prev[1] <- 0
+S_it_daily <- (S_it_daily[splice])
 
 # Save in list form to pass to JAGS
 dataList <- list(N_i_daily = N_i_daily,
