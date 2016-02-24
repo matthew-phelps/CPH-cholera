@@ -61,6 +61,7 @@ dayCount_fn <- function(x) {
   # Creates vector with a length = # of cases observed that week.
   # Each element of vector is a number (1-7) that represents the
   # day of the week to assign a single case
+  set.seed(13)
   z <- sample(1:7, x, replace = T)
   z
 }
