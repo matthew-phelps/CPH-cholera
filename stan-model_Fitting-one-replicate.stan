@@ -27,23 +27,20 @@ model {
   
   
   
-  # Lambda I & R
+  # Lambda, I, S, & R
   for (t in 1:(Nsteps-1)){
     lambdaI[t] <-  (S_it_daily[t]  / N_i_daily) * (beta * (I_prev[t]))
     lambdaR[t] <- I_prev[t] * gamma
-  }
-  
-  # S updates
-  for (t in 1:(Nsteps-1)){
+    I_prev[t+1] <- (I_prev[t] + I_incidence[t] - R_new[t])
     S_it_daily[t+1] <- S_it_daily[t] - (I_incidence[t] / phi)
-    I_prev[t+1] <- (I_prev[t] + I_incidence[t] - R_new[t + 1])
     
-  }	
+  }
+
   
   # Likelihood function
   for (t in 1:(Nsteps-1)){
     I_incidence[t+1] ~ dpois(lambdaI[t])
-    R_new[t+1] ~ dpois(lambdaR[t])
+    R_new[t] ~ dpois(lambdaR[t])
   }
   
   #data# Nsteps
