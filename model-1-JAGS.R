@@ -23,12 +23,7 @@ rm(list = ls())
 load(file = "data\\Rdata\\model-1-data-prep.Rdata")
 
 
-# DATA SHAPE --------------------------------------------------------------
-# Restrict to only one replicate
-I_incidence <- (I_incidence[, 1])
-I_prev <- matrix(data = NA, nrow = Nsteps, ncol = 1)
-I_prev[1] <- 0
-S_it_daily <- (S_it_daily[, 1])
+
 
 
 # Restict time period:
