@@ -22,80 +22,75 @@ load(file = 'Data/Rdata/model-1-sim_data.Rdata')
 
 set.seed(13)
 
-loops <- 200
+loops <- 1000
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-phi_pe <- 0.06
 model_1_obs <- as.data.frame(I_it_daily)
 model_1_obs$day_index <- 1:Nsteps
 
 #  Point Eestimate MODEL FROM INITIAL STATE -------------------------------------
-R_i <- seq(from = 0, to = 0, length.out = length(I_it_daily))
-R_new <-          matrix(data =  NA, nrow = 1, ncol = Nsteps)
-Lambda_est_pe <-  matrix(data = NA, nrow = 1, ncol = Nsteps)
-LambdaR <-        matrix(data = NA, nrow = 1, ncol = Nsteps)
-Lambda_est_pe <-  matrix(data = NA, nrow = 1, ncol = Nsteps)
-LambdaR <-        matrix(data = NA, nrow = 1, ncol = Nsteps)
-I_est_pe_list <-  matrix(data = NA, nrow = loops, ncol = Nsteps)
-S_it_est_pe_list <- matrix(data = NA, nrow = loops, ncol = Nsteps)
-for (z in 1:loops){
 
+loops <- loops
+R_new <- data.frame(matrix(data =  NA, nrow = loops, ncol = Nsteps))
+Lambda_sim <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+LambdaR <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+I_new_full <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+S_temp <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+I_sim_mat <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+S_sim_mat <- data.frame(matrix(data = NA, nrow = loops, ncol = Nsteps))
+
+# Starting (t = 0) values:
+S_sim_mat[, 1] <- S_it_est[1]
+I_sim_mat[, 1] <- I_it_daily[1]
+
+# Simluate:
+ptm <- proc.time()
+set.seed(13)
+for (z in 1:loops){
   for (t in 1:(Nsteps-1)){
-    Lambda_est_pe[t] <- S_it_est[t] / N_it[1] * (beta_pe[1] *(I_it_est[t]))
-    LambdaR[t] <- I_it_est[t] * gamma
-    R_new[t +1 ] <- rpois(1, LambdaR[t])
-    I_new <- rpois(1, (Lambda_est_pe[t] ) )
-    I_it_est[t + 1] <- max(0, (I_new + I_it_est[t] - R_new[t + 1]))
-    S_temp <- (S_it_est[t]) -    (I_new) / (phi_pe[1])
-    S_it_est[t + 1] <- max(0, S_temp)
+    Lambda_sim[z, t] <- S_sim_mat[z, t] / N_i_daily * (beta_pe[1] *(I_sim_mat[z, t]))
+    LambdaR[z, t] <- I_sim_mat[z, t] * gamma
+    R_new[z, t] <- rpois(1, LambdaR[z, t])
+    I_new_full[z, t] <- rpois(1, (Lambda_sim[z, t] ) )
+    I_sim_mat[z, t + 1] <- max(0, (I_new_full[z, t] + I_sim_mat[z, t] - R_new[z, t]))
+    S_temp[z, t] <- (S_sim_mat[z, t]) -    (I_new_full[z, t]) / (phi_pe[1])
+    S_sim_mat[z, t + 1] <- max(0, S_temp[z, t])
   }
-  
-  I_est_pe_list[z, ] <- I_it_est
-  S_it_est_pe_list[z, ] <- S_it_est
 }
+proc.time()- ptm
 
 # SAVE for likelhood calculation
 I_fake_phi <- I_est_pe_list
 save(I_fake_phi, file = 'data\\Rdata\\I_fake_phi.Rdata')
 
 
-# PE RESHAPE DATA ---------------------------------------------------------
-
-# Infectious Data for all quarters (city_pe level). Flatten each matrix
-# model_1_full <- as.data.frame(t(I_est_pe_list))
-# model_1_full$day_index <- 1:Nsteps
-# 
-# model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
-# 
+# PLOT FULL ---------------------------------------------------------------
+model_1_full <- as.data.frame(t(I_new_full))
+model_1_full$day_index <- 1:Nsteps
+model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
 
 
+no_loops <- as.character(loops)
+sub_title <- paste("No. simulations = ", no_loops, "")
 
-
-# # Prepare observed data aggregated to the week ----------------------------------------
+model_1_full_sim_plot <- ggplot() +
+  geom_line(data = model_1_full_melt,
+            aes(x = day_index, y = value, group = variable),
+            color = 'darkgreen', alpha = 0.02) +
+  geom_line (data = model_1_obs,
+             aes(x = day_index, y = I_it_daily),
+             color = 'darkred', alpha = 0.5, size = 1.2) +
+  theme_minimal()+
+  ylab("People") +
+  xlab("Day index") +
+  theme(plot.title = element_text(size = 22, face="bold"),
+        axis.text.y = element_text(size = 15),
+        axis.text.x = element_text(size = 15),
+        axis.title.x = element_text(size = 21, face = "bold"),
+        axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
+  ggtitle(bquote(atop("St.Annae V. Incidence", atop(italic(.(sub_title)), "")))) #http://go
+model_1_full_sim_plot
 #
-#
-
-# 
-# 
-# # # city_pe level Infectious
-# model_1_full_sim_plot <- ggplot() +
-#   geom_line(data = model_1_full_melt,
-#             aes(x = day_index, y = value, group = variable),
-#             color = 'darkgreen', alpha = 0.02) +
-#   geom_line (data = model_1_obs,
-#              aes(x = day_index, y = I_it_daily),
-#              color = 'darkred', alpha = 0.5, size = 1.2) +
-#   theme_minimal()+
-#   ylab("People") +
-#   xlab("Day index") + 
-#   theme(plot.title = element_text(size = 22, face="bold"),
-#         axis.text.y = element_text(size = 15),
-#         axis.text.x = element_text(size = 15),
-#         axis.title.x = element_text(size = 21, face = "bold"),
-#         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
-#   ggtitle('St. Annae Vester infectious\n simulated from t = 0; n = 2000')
-# model_1_full_sim_plot
-# 
 # system.time(
 # ggsave(model_1_full_sim_plot, 
 #        file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model-1-full-sim-fake-phi.pdf',
@@ -128,10 +123,10 @@ for (z in 1:loops){
 
     Lambda_est_pe[z, t] <- S_plus1_mat[z, t] / N_i_daily * (beta_pe[1] *(I_plus1_mat[z, t]))
     LambdaR[z, t] <- I_plus1_mat[z, t] * gamma
-    R_new[z, t +1 ] <- rpois(1, LambdaR[z, t])
+    R_new[z, t] <- rpois(1, LambdaR[z, t])
     I_new[z, t] <- rpois(1, (Lambda_est_pe[z, t] ) )
-    I_plus1_mat[z, t + 1] <- max(0, (I_it_daily[t] + I_plus1_mat[z, t] - R_new[z, t + 1]))
-    S_temp[z, t] <- (S_plus1_mat[z, t]) -    (I_new[z, t]) / (phi_pe[1])
+    I_plus1_mat[z, t + 1] <- max(0, (I_it_daily[15] + I_plus1_mat[z, t] - R_new[z, t]))
+    S_temp[z, t] <- (S_plus1_mat[z, t]) -    (I_it_daily[t]) / (phi_pe[1])
     S_plus1_mat[z, t + 1] <- max(0, S_temp[z, t])
   }
 }
@@ -148,7 +143,10 @@ model_1_tplus1$day_index <- 1:Nsteps
 model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
 
 
-# Plot output
+
+no_loops <- as.character(loops)
+sub_title <- paste("No. simulations = ", no_loops, "")
+
 model_1_tplus1_plot <- ggplot() +
   geom_line(data = model_1_tplus1_melt,
             aes(x = day_index, y = value, group = variable),
@@ -164,11 +162,11 @@ model_1_tplus1_plot <- ggplot() +
         axis.text.x = element_text(size = 15),
         axis.title.x = element_text(size = 21, face = "bold"),
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
-  ggtitle('St. Annae Vester daily infected\n 1-step-ahead simulated n = 2000')
+  ggtitle(bquote(atop("St.Annae V. t + 1", atop(italic(.(sub_title)), "")))) #http://go
 model_1_tplus1_plot
 
 system.time(ggsave(model_1_tplus1_plot, 
-                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model_1_tplus1-faek-phi.pdf',
+                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\model_1_tplus1-fake-phi.pdf',
                    width=15, height=9,
                    units = 'in')
 )
