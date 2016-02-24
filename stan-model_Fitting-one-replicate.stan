@@ -22,7 +22,6 @@ model {
   
   # First time-step
   S_it_daily[1] <- N_i_daily;
-  R_new[1] <- 0
   I_prev[1] <- 1
   
   
