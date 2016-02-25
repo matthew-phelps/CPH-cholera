@@ -35,7 +35,7 @@ n0
 load(file = "Rdata\\Data_3.Rdata")
 m1 <- nPlot(sick.total.week~week.id, group ='quarter', type='lineChart',  data = combined)
 m1$yAxis(axisLabel = "Number infected", width = 40)
-m1$xAxis(axisLabel = "Day Index", width = 90)
+m1$xAxis(axisLabel = "Week Index", width = 90)
 m1$templates$script <- "http://timelyportfolio.github.io/rCharts_nvd3_templates/chartWithTitle.html"
 m1$set(title = "Un-normalized weekly incidence")
 m1$set(width = 1000, height = 600)
