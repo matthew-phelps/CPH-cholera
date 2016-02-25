@@ -81,7 +81,7 @@ I_rep9 <- I_incidence[, 9]
 
 
 
-
+ 
 S_rep1 <- S_it_daily[, 1]
 S_rep2 <- S_it_daily[, 2]
 S_rep3 <- S_it_daily[, 3]
