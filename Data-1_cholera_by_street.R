@@ -1,6 +1,7 @@
 # Author: Matthew Phelps
 # Desc: Prepare data - get & clean data at street level
-# Output datasets: Clean street-level data
+# Output datasets: Clean street-level data to be used to create quarter
+# level data in next step
 
 ## intro
 rm(list = ls())
