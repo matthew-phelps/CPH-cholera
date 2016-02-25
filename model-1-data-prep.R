@@ -57,14 +57,43 @@ for (rep in 1:Nrep){
   }
 }
 
-# DATA SHAPE --------------------------------------------------------------
-# Restrict to only one replicate
-I_incidence <- (I_incidence[, 1])
-I_prev <- matrix(data = NA, nrow = Nsteps, ncol = 1)
-I_prev[1] <- 0
-S_it_daily <- (S_it_daily[, 1])
 
+# Restict time period for St. Annaes Vester outbreak:
+splice <- 15:85
+Nsteps <- length(splice)
+I_incidence <- (I_incidence[splice, ])
+S_it_daily <- (S_it_daily[splice, ])
+
+rm(list = setdiff(ls(), c("I_incidence", "N_i_daily", "Nsteps",
+                          "S_it_daily"))) #http://goo.gl/88L5C2
+# DATA SHAPE --------------------------------------------------------------
+# Create separate vectors for several replicates
+# These will be fit separately in JAGS
+I_rep1 <- I_incidence[, 1]
+I_rep2 <- I_incidence[, 2]
+I_rep3 <- I_incidence[, 3]
+I_rep4 <- I_incidence[, 4]
+I_rep5 <- I_incidence[, 5]
+I_rep6 <- I_incidence[, 6]
+I_rep7 <- I_incidence[, 7]
+I_rep8 <- I_incidence[, 8]
+I_rep9 <- I_incidence[, 9]
+
+
+
+
+S_rep1 <- S_it_daily[, 1]
+S_rep2 <- S_it_daily[, 2]
+S_rep3 <- S_it_daily[, 3]
+S_rep4 <- S_it_daily[, 4]
+S_rep5 <- S_it_daily[, 5]
+S_rep6 <- S_it_daily[, 6]
+S_rep7 <- S_it_daily[, 7]
+S_rep8 <- S_it_daily[, 8]
+S_rep9 <- S_it_daily[, 9]
 
 # SAVE --------------------------------------------------------------------
+
+rm(I_incidence, S_it_daily)
 
 save(list = ls(), file = "model-1-data-prep.Rdata")
