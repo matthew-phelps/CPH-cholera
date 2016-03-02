@@ -24,39 +24,38 @@ rm(list = ls())
 load(file = "data\\Rdata\\model-1-data-prep_CHRIST.Rdata")
 
 
-# DATA SHAPE --------------------------------------------------------------
-# Restrict to only one replicate
-I_incidence <- (I_incidence[, 1])
-I_prev <- matrix(data = NA, nrow = Nsteps, ncol = 1)
-I_prev[1] <- 0
-S_it_daily <- (S_it_daily[, 1])
 
+
+# REPLICATE 1 -------------------------------------------------------------
 # Save in list form to pass to JAGS
-dataList <- list(N_i_daily = N_i_daily,
-                 I_incidence=I_incidence,
-                 Nsteps=Nsteps)
+dataList <- list()
+for (i in 1:num_replicates) {
+  dataList[[i]] <- list(N_i_daily = N_i_daily,
+                   I_incidence=as.vector(I_rep[, i]),
+                   Nsteps=Nsteps)
+}
 
 
-# JAGS 1 ------------------------------------------------------------------
+# JAGS 1 
 # jags <- jags.model('Rcodes\\stan-model_Fitting-one-replicate.stan',
 #                    data = dataList,
 #                    n.chains = 1,
 #                    n.adapt = 1000)
-# 
 
-# JAGS 2 ------------------------------------------------------------------
+# JAGS 2 
+set.seed(13) # Not sure if this does anything in current set-up
+model_1_jags_rep1 <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
+                              method = 'parallel',
+                              monitor = c('beta', 'phi'),
+                              data = dataList[[1]],
+                              n.chains = 5,
+                              adapt = 100,
+                              burnin = 10,
+                              sample = 10,
+                              thin = 3,
+                              plots = T)
 
-set.seed(13)
-model_1_jags <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
-                         method = 'parallel',
-                         monitor = c('beta', 'phi'),
-                         data = dataList,
-                         n.chains = 5,
-                         adapt = 1000,
-                         burnin = 100000,
-                         sample = 100000,
-                         thin = 3,
-                         plots = T)
+
 
 model_1_coda = as.mcmc.list( model_1_jags )
 model_1_coda <- model_1_coda
@@ -100,3 +99,9 @@ save(model_1_jags, file = 'data\\Rdata\\model-1-jags-CHRIST.Rdata')
 save(beta_summary_1, file = 'data\\Rdata\\beta-summary-1-CHRIST.Rdata')
 save(phi_summary_1, file = 'data\\Rdata\\phi-summary-1-CHRIST.Rdata')
 save(dataList, file = 'data\\Rdata\\model-1-dataList-CHRIST.Rdata')
+
+ggsave(trace_beta, filename = "Output\\MCMC\\trace-beta-model-1-rep1.jpg")
+ggsave(density_beta, filename = 'Output\\MCMC\\density-beta-model-1-rep1.jpg')
+
+ggsave(trace_phi, filename = "Output\\MCMC\\trace-phi-1-rep1.jpg")
+ggsave(density_phi, filename = 'Output\\MCMC\\density-phi-1-rep1.jpg')
