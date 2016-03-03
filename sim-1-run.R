@@ -24,8 +24,8 @@ model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 loops <- 1000 # Has to be the same for both full sum and t+1 sim
-# beta_pe <- beta_mean
-# phi_pe <- phi_mean
+beta_pe <- 0.411
+phi_pe <- .074
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 Lambda_est_pe <-  vector(length = Nsteps)
@@ -57,10 +57,10 @@ for (z in 1:loops){
 }
 proc.time() - ptm
 
-# SAVE for likelhood calculation
-I_fitted_phi <- I_new_mat
-save(I_fitted_phi, file = 'data\\Rdata\\I_fitted_phi.Rdata')
-
+# # SAVE for likelhood calculation
+# I_fitted_phi <- I_new_mat
+# save(I_fitted_phi, file = 'data\\Rdata\\I_fitted_phi.Rdata')
+# 
 
 
 
@@ -100,13 +100,13 @@ model_1_full_sim_plot <- ggplot() +
                       atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
 model_1_full_sim_plot
 
-system.time(
-  ggsave(model_1_full_sim_plot, 
-         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-1-model-1-full-sim.pdf',
-         width=15, height=9,
-         units = 'in')
-)
-
+# system.time(
+#   ggsave(model_1_full_sim_plot, 
+#          file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-1-model-1-full-sim.pdf',
+#          width=15, height=9,
+#          units = 'in')
+# )
+# 
 
 
 # STEP AHEAD SIMULATION ---------------------------------------------------
@@ -143,9 +143,9 @@ for (z in 1:loops){
   I_new_plus1_mat[z, ] <- I_new
 }
 proc.time() - ptm
-# SAVE for likelhood calculation
-I_fit_plus1_phi <- I_new_plus1_mat
-save(I_fit_plus1_phi, file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
+# # SAVE for likelhood calculation
+# I_fit_plus1_phi <- I_new_plus1_mat
+# save(I_fit_plus1_phi, file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
 
 
 
