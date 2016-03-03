@@ -16,7 +16,7 @@ library(rjags)
 library(mcmcplots)
 library(ggmcmc)
 library(ggplot2)
-options(mc.cores = (parallel::detectCores()-1 ))
+options(mc.cores = (parallel::detectCores() ))
 
 
 # LOAD -------------------------------------------------------
@@ -24,11 +24,12 @@ rm(list = ls())
 load(file = "data\\Rdata\\model-1-data-prep.Rdata")
 
 
-# REPLICATE 1 -------------------------------------------------------------
+# JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
 model_1_jags_list <- list()
 dataList <- list()
 num_reps <- length(I_reps)
+ptm <- proc.time()
 for (reps in 1:num_reps){
 dataList[[reps]] <- list(N_i_daily = N_i_daily,
                  I_incidence=I_reps[[reps]],
@@ -43,12 +44,16 @@ model_1_jags_list[[reps]] <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-re
                            data = dataList[[reps]],
                            n.chains = 5,
                            adapt = 1000,
-                           burnin = 5000,
-                           sample = 5000,
+                           burnin = 100000,
+                           sample = 150000,
                            thin = 3,
                            plots = T)
 
 }
+proc.time() - ptm
+
+# SAVE --------------------------------------------------------------------
+save(model_1_jags_list, file = "Data\\Rdata\\model-1-jags-list")
 
 # # JAGS DIAGNOSTICS -
 # print(model_1_jags_list)

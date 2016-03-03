@@ -78,9 +78,10 @@ I_rep6 <- I_incidence[, 6]
 I_rep7 <- I_incidence[, 7]
 I_rep8 <- I_incidence[, 8]
 I_rep9 <- I_incidence[, 9]
+I_rep10 <- I_incidence[, 10]
 I_reps <- list(I_rep1, I_rep2, I_rep3, I_rep4,
                I_rep5, I_rep6, I_rep7, I_rep8,
-               I_rep9)
+               I_rep9, I_rep10)
 # Sanity check:
 plot(I_rep2)
 plot(I_rep1)
@@ -94,9 +95,10 @@ S_rep6 <- S_it_daily[, 6]
 S_rep7 <- S_it_daily[, 7]
 S_rep8 <- S_it_daily[, 8]
 S_rep9 <- S_it_daily[, 9]
+S_rep10 <- S_it_daily[, 10]
 S_reps <- list(S_rep1, S_rep2, S_rep3, S_rep4,
                    S_rep5, S_rep6, S_rep7, S_rep8,
-                   S_rep9)
+                   S_rep9, S_rep10)
 
 # SAVE --------------------------------------------------------------------
 
