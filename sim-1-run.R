@@ -17,12 +17,15 @@ require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = 'Data/Rdata/model-1-sim_data.Rdata')
+load(file = 'data/Rdata/model-1-sim_data.Rdata')
+load(file = "data/Rdata/model-1-pooling-posteriors.Rdata")
 model_1_obs <- as.data.frame(I_it_daily) # for plotting "observed" data
 model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
 loops <- 1000 # Has to be the same for both full sum and t+1 sim
+# beta_pe <- beta_mean
+# phi_pe <- phi_mean
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 Lambda_est_pe <-  vector(length = Nsteps)
