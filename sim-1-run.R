@@ -17,15 +17,36 @@ require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = 'data/Rdata/model-1-sim_data.Rdata')
-load(file = "data/Rdata/model-1-pooling-posteriors.Rdata")
-model_1_obs <- as.data.frame(I_it_daily) # for plotting "observed" data
-model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data
+load(file = "data\\Rdata\\model-1-sim_data.Rdata")
+load(file = "data/Rdata/mcmc_total.Rdata")
+load(file = "data\\Rdata\\model-1-data-prep.Rdata")
+# rm(betas_matrix, beta_summary_1, phi_matrix, phi_summary_1, dataList, step1,
+#    lower_sample, sample_size, t, upper_sample)
+
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-loops <- 1000 # Has to be the same for both full sum and t+1 sim
-beta_pe <- 0.411
-phi_pe <- .074
+loops <- 10000 # Has to be the same for both full sum and t+1 sim
+
+
+
+# 95% CI for BETA AND PHI -------------------------------------------------
+beta_qts <- quantile(mcmc_total$beta, probs = c(0.05, 0.975))
+phi_qts <-  quantile(mcmc_total$phi, probs = c(0.05, 0.975))
+mcmc_total95 <- mcmc_total[which(mcmc_total$beta > beta_qts[1] &
+                                   mcmc_total$beta < beta_qts[2] &
+                                   mcmc_total$phi > phi_qts[1] &
+                                   mcmc_total$phi < phi_qts[2]) , ]
+
+
+set.seed(13)
+mcmc_sample <- dplyr::sample_n(mcmc_total95, loops)
+beta_pe <- mcmc_sample$beta
+phi_pe <- mcmc_sample$phi
+beta_pe <- median(mcmc_total95$beta)
+phi_pe <- median(mcmc_total95$phi)
+ggplot(data = mcmc_sample) +
+  geom_density2d(aes(x = beta, y = phi))
+
 #  Point Eestimate MODEL FROM INITIAL STATE ------------------------------------------------------------
 
 Lambda_est_pe <-  vector(length = Nsteps)
@@ -39,6 +60,7 @@ I_new_mat <- matrix(data = NA, nrow = loops, ncol = Nsteps)
 # Starting values
 I_sim_vect[1] <- I_it_daily[1]
 S_it_est[1] <- N_i_daily
+N_it <- N_i_daily
 
 # Simulate:
 ptm <- proc.time()
@@ -72,8 +94,15 @@ proc.time() - ptm
 model_1_full <- t(I_new_mat)
 model_1_full <- as.data.frame(model_1_full)
 model_1_full$day_index <- 1:Nsteps
-
 model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
+
+model_1_obs <- (as.data.frame(I_reps)) # for plotting "observed" data
+colnames(model_1_obs ) <- c(1:10)
+model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data
+model_1_obs <- melt(model_1_obs, id.vars = "day_index")
+
+
+
 phi <- as.character(round(phi_pe, digits = 3))
 beta <- as.character(round(beta_pe, digits = 3))
 no_loops <- as.character(loops)
@@ -84,13 +113,14 @@ sub_title <- paste("No. sims = ", no_loops,
 model_1_full_sim_plot <- ggplot() +
   geom_line(data = model_1_full_melt,
             aes(x = day_index, y = value, group = variable),
-            color = 'darkgreen', alpha = 0.02) +
+            color = 'darkgreen', alpha = 0.006) +
   geom_line (data = model_1_obs,
-             aes(x = day_index, y = I_it_daily),
+             aes(x = day_index, y = value, group = variable),
              color = 'darkred', alpha = 0.5, size = 1.2) +
   theme_minimal()+
   ylab("People") +
   xlab("Day index") + 
+  ylim(0, 150) +
   theme(plot.title = element_text(size = 22, face="bold"),
         axis.text.y = element_text(size = 15),
         axis.text.x = element_text(size = 15),
@@ -100,12 +130,12 @@ model_1_full_sim_plot <- ggplot() +
                       atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
 model_1_full_sim_plot
 
-# system.time(
-#   ggsave(model_1_full_sim_plot, 
-#          file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-1-model-1-full-sim.pdf',
-#          width=15, height=9,
-#          units = 'in')
-# )
+system.time(
+  ggsave(model_1_full_sim_plot,
+         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-1-model-1-full-sim.png',
+         width=15, height=9,
+         units = 'in')
+)
 # 
 
 

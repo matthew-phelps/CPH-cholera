@@ -35,7 +35,7 @@ for (i in 1:1) {
                         I_incidence=as.vector(I_rep[, i]),
                         Nsteps=Nsteps)
   
-  
+}
   
   # JAGS 1 
   # jags <- jags.model('Rcodes\\stan-model_Fitting-one-replicate.stan',
@@ -44,6 +44,17 @@ for (i in 1:1) {
   #                    n.adapt = 1000)
   
   # JAGS 2 
+x <-   autorun.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
+               method = 'parallel',
+               monitor = c('beta', 'phi'),
+               data = dataList[[i]],
+               n.chains = 5,
+               adapt = 1000,
+               startburnin = 1000,
+               startsample = 10000,
+               thin = 3,
+               max.time = "30m",
+               plots = T)
   set.seed(13) # Not sure if this does anything in current set-up
   model_1_jags_ls[[i]] <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
                                 method = 'parallel',
@@ -58,6 +69,7 @@ for (i in 1:1) {
   
 }
 
+model_1_coda = as.mcmc.list(x)
 model_1_coda = as.mcmc.list( model_1_jags_ls[[i]] )
 
 
@@ -71,15 +83,13 @@ trace_beta <- ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
   theme(legend.position = 'none')
 density_beta <- ggs_density(model_1_ggs, family = 'beta') +
   theme(legend.position = 'none')
-running_beta <- ggs_running(model_1_ggs, family = 'beta') +
-  theme(legend.position = 'none')
+
 
 trace_phi <- ggs_traceplot(model_1_ggs, family = 'phi', simplify = .3) +
   theme(legend.position = 'none')
 density_phi <- ggs_density(model_1_ggs, family = 'phi') +
   theme(legend.position = 'none')
-running_phi <- ggs_running(model_1_ggs, family = 'phi') +
-  theme(legend.position = 'none')
+
 
 
 

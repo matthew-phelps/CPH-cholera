@@ -80,13 +80,20 @@ beta_posterior <- ggplot(data = mcmc_total, aes(x = beta)) +
   ggtitle(bquote(atop("Beta pooled posterior",
                       atop(italic(.(sub_title)), ""))))
 
-ggsave(beta_posterior, file = "Output\\MCMC\\beta_posteriors.png")
+
 
 phi_posteriors <- ggplot(data = mcmc_total, aes(x = phi)) +
   geom_density(fill = "darkblue", alpha = 0.55) +
   theme_minimal() +
   ggtitle(bquote(atop("Phi pooled posterior",
                       atop(italic(.(sub_title)), ""))))
+
+
+# SAVE --------------------------------------------------------------------
+
+save(mcmc_total, file = "Data\\Rdata\\mcmc_total.Rdata")
+ggsave(beta_posterior, file = "Output\\MCMC\\beta_posteriors.png")
 ggsave(phi_posteriors, file = "Output\\MCMC\\phi_posteriors.png")
+
 
 
