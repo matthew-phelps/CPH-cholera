@@ -74,17 +74,19 @@ rep_num <- length(model_1_jags_list)
 sub_title <- paste("MCMC length = ", mcmc_length,
                    " / Num. realizations =", rep_num)
 
-ggplot(data = mcmc_total, aes(x = beta)) +
+beta_posterior <- ggplot(data = mcmc_total, aes(x = beta)) +
   geom_density(fill = "darkred", alpha = 0.7) +
   theme_minimal() +
   ggtitle(bquote(atop("Beta pooled posterior",
                       atop(italic(.(sub_title)), ""))))
 
-ggplot(data = mcmc_total, aes(x = phi)) +
+ggsave(beta_posterior, file = "Output\\MCMC\\beta_posteriors.png")
+
+phi_posteriors <- ggplot(data = mcmc_total, aes(x = phi)) +
   geom_density(fill = "darkblue", alpha = 0.55) +
   theme_minimal() +
   ggtitle(bquote(atop("Phi pooled posterior",
                       atop(italic(.(sub_title)), ""))))
-
+ggsave(phi_posteriors, file = "Output\\MCMC\\phi_posteriors.png")
 
 
