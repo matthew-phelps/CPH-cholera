@@ -101,26 +101,18 @@ ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epi
 load("Rdata\\quarter_eng.Rdata")
 quarter.sheet <- reshape::rename(quarter, replace = c("sick.total.week" = "I"))
 
-# shapefile
-quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters2", stringsAsFactors = F)
+# Load shapefile - check projections in QGIS if neccessary!
+quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters3-4326", stringsAsFactors = F)
 plot(quarter.shp)
 quarter.shp@data$id <- as.numeric(quarter.shp@data$id)
 quarter.shp@data
 
-
-
-
-# Get spatial data into a form that ggplot2 can handle
-# mapdf is what ggplot will use
+# Get spatial data into a form that ggplot2 can handle - mapdf is what ggplot
+# will use
 quarter.df <- as.data.frame(quarter.shp)
 quarter.fortified <-fortify(quarter.shp, region = "Quarter")
-# quarter.lines <- join (quarter.fortified, quarter.df, by = "id")
-
-#quarter.fortified$id <- as.numeric(quarter.fortified$id)
-
 mapdf <- left_join(quarter.fortified, quarter.sheet, by = c("id" = "quarter"))
 mapdf <- mapdf[ order(mapdf$order),]
-
 
 
 ################
@@ -160,8 +152,8 @@ sbar <- data.frame(lon.start = c(bb$ll.lon + 0.1*(bb$ur.lon - bb$ll.lon)),
 
 sbar$distance = distHaversine(long = c(sbar$lon.start,sbar$lon.end),
                               lat = c(sbar$lat.start,sbar$lat.end))
-
-ptspermm <- 2.83464567  # need this because geom_text uses mm, and themes use pts. Urgh.
+# need this because geom_text uses mm, and themes use pts. Urgh.
+ptspermm <- 2.83464567  
 
 
 # Normalized total infections
@@ -171,7 +163,8 @@ map <- cph +
                aes(x = long, y = lat, group = id,
                    fill = (cum.sick/est.pop.1853)*100)) +
   #coord_equal(ratio = 0) +
-  scale_fill_gradientn(name = "Cumulative infections \nper 100 people", colours = brewer.pal(9, "Reds")) +
+  scale_fill_gradientn(name = "Cumulative infections \nper 100 people",
+                       colours = brewer.pal(9, "Reds")) +
   geom_segment(data = sbar,
                size = 1.3,
                aes(x = lon.start,
@@ -193,32 +186,19 @@ map <- cph +
         axis.line = element_blank(),
         axis.ticks = element_blank(), # remove tick marks
         axis.text = element_blank(), # no axis labels
-        
         panel.grid.minor = element_blank(), # no gridlines
         panel.grid.major = element_blank(),
         panel.background = element_blank(),
-        plot.margin = unit(c(0,0,0,0), 'lines')
-<<<<<<< HEAD
-  )
-=======
-  ) +
-  ggtitle("Cumulative infection \n at end of outbreak\n ") +
-  theme(plot.title = element_text(size = 24, face="bold"),
-        legend.title = element_text(size = 19),
-        legend.position = 'bottom')
->>>>>>> parent of 6ea704d... Remove legend
+        plot.margin = unit(c(0,0,0,0), 'lines'))
+  # + ggtitle("Cumulative infection \n at end of outbreak\n ")
+  # + theme(plot.title = element_text(size = 20, face="bold"),
+  #       legend.title = element_text(size = 19),
+  #       legend.position = 'bottom')
+
 map
 
-
-
-
-
-
-
-
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.tiff',
+ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Fig 6 - Map of Cumulative infections.pdf',
        plot = map,
-       type = 'cairo',
        width = 24,
        height = 31,
        units = 'cm',
