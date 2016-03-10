@@ -23,8 +23,10 @@ load(file = "quarter_combined.Rdata")
 
 # SUBSET to 1 QUARTER ---------------------------------------------------
 pop <- combined[, c("quarter", "est.pop.1853")]
-I_qrt <- I_multi_replicate[which(I_multi_replicate$quarter == "Christianshavn"), ]
-N_St_annae_v <- 15836
+quarter_subset <- "Kjoebmager"
+
+I_qrt <- I_multi_replicate[which(I_multi_replicate$quarter == quarter_subset), ]
+N_St_annae_v <- pop[pop$quarter == quarter_subset, "est.pop.1853"][1]
 # Selecton only columns with "rep" in name. See: http://goo.gl/s9xRKr
 X_qrt <- I_qrt[, grepl("rep", names(I_qrt))]
 
@@ -60,7 +62,7 @@ for (rep in 1:Nrep){
 plot(I_incidence$rep1, type = "l")
 lines(I_incidence$rep2, col = "red")
 # Restict time period for St. Annaes Vester outbreak:
-splice <- 25:70
+splice <- 25:75
 Nsteps <- length(splice)
 I_incidence <- (I_incidence[splice, ])
 S_it_daily <- (S_it_daily[splice, ])
@@ -109,4 +111,4 @@ lines(S_rep2, col = "red")
 rm(list = setdiff(ls(), c("I_reps", "N_i_daily", "Nsteps",
                           "S_reps"))) #http://goo.gl/88L5C2
 
-save(list = ls(), file = "CHRIST-model-1-data-prep.Rdata")
+save(list = ls(), file = "Kj-model-1-data-prep.Rdata")

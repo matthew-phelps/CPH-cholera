@@ -17,9 +17,9 @@ require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = "data\\Rdata\\CHRIST-model-1-sim_data.Rdata")
-load(file = "data/Rdata/CHRIST-mcmc_total.Rdata")
-load(file = "data\\Rdata\\CHRIST-model-1-data-prep.Rdata")
+load(file = "data\\Rdata\\Kj-model-1-sim_data.Rdata")
+load(file = "data/Rdata/Kj-mcmc_total.Rdata")
+load(file = "data\\Rdata\\Kj-model-1-data-prep.Rdata")
 # rm(betas_matrix, beta_summary_1, phi_matrix, phi_summary_1, dataList, step1,
 #    lower_sample, sample_size, t, upper_sample)
 
@@ -120,19 +120,19 @@ model_1_full_sim_plot <- ggplot() +
   theme_minimal()+
   ylab("People") +
   xlab("Day index") + 
-  ylim(0, 150) +
+  ylim(0, 50) +
   theme(plot.title = element_text(size = 22, face="bold"),
         axis.text.y = element_text(size = 15),
         axis.text.x = element_text(size = 15),
         axis.title.x = element_text(size = 21, face = "bold"),
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
-  ggtitle(bquote(atop("Christianshavn. Incidence",
+  ggtitle(bquote(atop("Kjoebmager. Incidence",
                       atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
 model_1_full_sim_plot
 
 system.time(
   ggsave(model_1_full_sim_plot,
-         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\CHRIST-short-Fig-1-model-1-full-sim.pdf',
+         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Kj-short-Fig-1-model-1-full-sim.pdf',
          width=15, height=9,
          units = 'in')
 )
@@ -214,7 +214,7 @@ model_1_tplus1_plot <- ggplot() +
         axis.text.x = element_text(size = 15),
         axis.title.x = element_text(size = 21, face = "bold"),
         axis.title.y = element_text(size = 21, face = "bold", vjust = 1.4))+
-  ggtitle(bquote(atop("Christianshavn t + 1",
+  ggtitle(bquote(atop("Kjoebmager t + 1",
                       atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0)
 model_1_tplus1_plot
 
