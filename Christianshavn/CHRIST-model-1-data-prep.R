@@ -57,13 +57,16 @@ for (rep in 1:Nrep){
   }
 }
 
-
+plot(I_incidence$rep1, type = "l")
+lines(I_incidence$rep2, col = "red")
 # Restict time period for St. Annaes Vester outbreak:
-splice <- 15:85
+splice <- 25:70
 Nsteps <- length(splice)
 I_incidence <- (I_incidence[splice, ])
 S_it_daily <- (S_it_daily[splice, ])
 
+plot(I_incidence$rep1, type = "l")
+lines(I_incidence$rep2, col ="red")
 rm(list = setdiff(ls(), c("I_incidence", "N_i_daily", "Nsteps",
                           "S_it_daily"))) #http://goo.gl/88L5C2
 # DATA SHAPE --------------------------------------------------------------

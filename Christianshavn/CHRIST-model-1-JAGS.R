@@ -21,7 +21,7 @@ options(mc.cores = (parallel::detectCores() ))
 
 # LOAD -------------------------------------------------------
 rm(list = ls())
-load(file = "data\\Rdata\\model-1-data-prep.Rdata")
+load(file = "data\\Rdata\\CHRIST-model-1-data-prep.Rdata")
 
 
 # JAGS -------------------------------------------------------------
@@ -29,6 +29,7 @@ load(file = "data\\Rdata\\model-1-data-prep.Rdata")
 model_1_jags_list <- list()
 dataList <- list()
 num_reps <- length(I_reps)
+
 ptm <- proc.time()
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_i_daily,
@@ -44,8 +45,8 @@ for (reps in 1:num_reps){
                                         data = dataList[[reps]],
                                         n.chains = 5,
                                         adapt = 1000,
-                                        burnin = 100000,
-                                        sample = 150000,
+                                        burnin = 10000,
+                                        sample = 65000,
                                         thin = 3,
                                         plots = T)
   
@@ -53,8 +54,8 @@ for (reps in 1:num_reps){
 proc.time() - ptm
 
 # SAVE --------------------------------------------------------------------
-save(model_1_jags_list, file = "Data\\Rdata\\model-1-jags-list")
-
+save(model_1_jags_list, file = "Data\\Rdata\\CHRIST-model-1-jags-list.Rdata")
+save(dataList, file = "Data\\Rdata\\CHRIST-model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
 # print(model_1_jags_list)
 
@@ -91,9 +92,9 @@ phi_posteriors <- ggplot(data = mcmc_total, aes(x = phi)) +
 
 # SAVE --------------------------------------------------------------------
 
-save(mcmc_total, file = "Data\\Rdata\\mcmc_total.Rdata")
-ggsave(beta_posterior, file = "Output\\MCMC\\beta_posteriors.png")
-ggsave(phi_posteriors, file = "Output\\MCMC\\phi_posteriors.png")
+save(mcmc_total, file = "Data\\Rdata\\CHRIST-mcmc_total.Rdata")
+ggsave(beta_posterior, file = "Output\\MCMC\\CHRIST-short-beta_posteriors.png")
+ggsave(phi_posteriors, file = "Output\\MCMC\\CHRIST--short-phi_posteriors.png")
 
 
 
