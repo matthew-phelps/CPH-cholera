@@ -124,6 +124,31 @@ mapdf <- mapdf[ order(mapdf$order),]
 
 
 
+# TEST --------------------------------------------------------------------
+
+# shapefile
+quarter_2_shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters2", stringsAsFactors = F)
+plot(quarter_2_shp)
+quarter_2_shp@data$id <- as.numeric(quarter_2_shp@data$id)
+quarter_2_shp@data$area <- NULL
+quarter_2_shp@data
+
+proj4string(quarter_2_shp)
+quarter_2_shp <- spTransform(quarter_2_shp, CRS("+proj=longlat +datum=WGS84 +no_defs"))
+
+# Get spatial data into a form that ggplot2 can handle
+# map_2_df is what ggplot will use
+quarter.df <- as.data.frame(quarter_2_shp)
+quarter.fortified <-fortify(quarter_2_shp, region = "Quarter")
+# quarter.lines <- join (quarter.fortified, quarter.df, by = "id")
+
+#quarter.fortified$id <- as.numeric(quarter.fortified$id)
+
+map_2_df <- left_join(quarter.fortified, quarter.sheet, by = c("id" = "quarter"))
+map_2_df <- map_2_df[ order(map_2_df$order),]
+map_2_df$lat[which(map_2_df$id=="Christianshavn")] == mapdf$lat[which(mapdf$id=="Christianshavn")]
+
+map_2_df
 ################
 ### Plotting ###----------------------------------------------------------------
 ################
@@ -142,9 +167,10 @@ cph <- ggmap(cph_map, darken = c(0.0))
 
 # Normalized total infections
 map <- cph +
-  geom_polygon(data = mapdf[which(mapdf$week.id == 15),], aes(x = long, y = lat, group = id, 
-                                                              fill = (cum.sick/est.pop.1853)*100),
-               color = "black") +
+  geom_polygon(data = mapdf[which(mapdf$week.id == 15),],
+               color = "black",
+               aes(x = long, y = lat, group = id,
+                   fill = (cum.sick/est.pop.1853)*100)) +
   #coord_equal(ratio = 0) +
   scale_fill_gradientn(name = "Cumulative infections \nper 100 people", colours = brewer.pal(9, "Reds")) +
  
@@ -158,12 +184,15 @@ map <- cph +
         panel.grid.major = element_blank(),
         panel.background = element_blank(),
         plot.margin = unit(c(0,0,0,0), 'lines')
-  ) +
-  ggtitle("Cumulative infection \n at end of outbreak\n ") +
-  theme(plot.title = element_text(size = 20, face="bold"),
-        legend.title = element_text(size = 19),
-        legend.position = 'bottom')
+  )
 map
+
+
+
+
+
+
+
 
 ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\Conferences\\Epidemics 2015\\map.tiff',
        plot = map,
