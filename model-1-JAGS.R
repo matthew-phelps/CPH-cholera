@@ -53,8 +53,8 @@ model_1_jags_list[[reps]] <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-re
 proc.time() - ptm
 
 # SAVE --------------------------------------------------------------------
-save(model_1_jags_list, file = "Data\\Rdata\\model-1-jags-list")
-
+save(model_1_jags_list, file = "Data\\Rdata\\model-1-jags-list.Rdata")
+save(dataList, file = "Data\\Rdata\\model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
 # print(model_1_jags_list)
 

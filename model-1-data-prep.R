@@ -19,10 +19,10 @@ library(ggplot2)
 
 
 load("Data_4.Rdata")
-
+load(file = "quarter_combined.Rdata")
 
 # SUBSET to 1 QUARTER ---------------------------------------------------
-
+pop <- combined[, c("quarter", "est.pop.1853")]
 I_qrt <- I_multi_replicate[which(I_multi_replicate$quarter == "St. Annae Vester"), ]
 
 # Selecton only columns with "rep" in name. See: http://goo.gl/s9xRKr
@@ -57,7 +57,8 @@ for (rep in 1:Nrep){
   }
 }
 
-
+plot(I_incidence$rep1, type = "l")
+lines(I_incidence$rep2, col = "red")
 # Restict time period for St. Annaes Vester outbreak:
 splice <- 15:85
 Nsteps <- length(splice)

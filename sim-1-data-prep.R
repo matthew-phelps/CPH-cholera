@@ -19,17 +19,12 @@ rm(list = ls())
 
 
 load(file = "Data/Rdata/quarter_combined.Rdata")
-load(file = 'Data/Rdata/beta-summary-1.Rdata')
-load(file = 'Data/Rdata/phi-summary-1.Rdata')
-load(file = 'Data/Rdata/model-1-jags.Rdata')
-load("Data/Rdata/model-1-dataList.Rdata")
+load(file = "Data\\Rdata\\model-1-dataList.Rdata")
 
 N_i_daily <- dataList[[1]]
 I_it_daily <- dataList[[2]]
 Nsteps <- dataList[[3]]
-JagsOutput <- model_1_jags
-rm(model_1_jags)
-summary(JagsOutput)
+
 # INITIALIZE EMPTY DF -----------------------------------------------------
 
 I_it <- matrix(NA, 1, Nsteps-1)
