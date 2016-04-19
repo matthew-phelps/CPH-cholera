@@ -19,7 +19,7 @@ rm(list = ls())
 
 
 load(file = "Data/Rdata/quarter_combined.Rdata")
-load(file = "Data\\Rdata\\CHRIST-model-1-dataList.Rdata")
+load(file = "Data/Rdata/CHRIST-model-1-dataList.Rdata")
 
 N_i_daily <- dataList[[1]]$N_i_daily
 I_it_daily <- dataList[[4]]$I_incidence

@@ -17,9 +17,9 @@ require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = "data\\Rdata\\model-1-sim_data.Rdata")
+load(file = "data/Rdata/model-1-sim_data.Rdata")
 load(file = "data/Rdata/mcmc_total.Rdata")
-load(file = "data\\Rdata\\model-1-data-prep.Rdata")
+load(file = "data/Rdata/model-1-data-prep.Rdata")
 # rm(betas_matrix, beta_summary_1, phi_matrix, phi_summary_1, dataList, step1,
 #    lower_sample, sample_size, t, upper_sample)
 
@@ -94,7 +94,9 @@ proc.time() - ptm
 model_1_full <- t(I_new_mat)
 model_1_full <- as.data.frame(model_1_full)
 model_1_full$day_index <- 1:Nsteps
-model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
+# model_1_full_melt <- melt(model_1_full, id.vars = 'day_index') # use gather() instead of melt()
+model_1_full_melt <- tidyr::gather(model_1_full, day_index, value)
+colnames(model_1_full_melt) <- c("day_index", "variable", "value")
 
 model_1_obs <- (as.data.frame(I_reps)) # for plotting "observed" data
 colnames(model_1_obs ) <- c(1:10)
@@ -132,8 +134,8 @@ model_1_full_sim_plot
 
 system.time(
   ggsave(model_1_full_sim_plot,
-         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-1-model-1-full-sim.png',
-         width=15, height=9,
+         file = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/Fig-1-model-1-full-sim.png',
+         width=9, height=9,
          units = 'in')
 )
 # 
@@ -185,7 +187,10 @@ proc.time() - ptm
 model_1_tplus1 <- t(I_new_plus1_mat)
 model_1_tplus1 <- data.frame(model_1_tplus1)
 model_1_tplus1$day_index <- 1:Nsteps
-model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
+# model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index') # use gather() instead of melt()
+model_1_tplus1_melt <- tidyr::gather(model_1_tplus1, day_index, value)
+colnames(model_1_tplus1_melt) <- c("day_index", "variable", "value")
+
 no_loops <- as.character(loops)
 sub_title <- paste("No. sims = ", no_loops,
                    "/ phi =", phi,
@@ -198,7 +203,7 @@ model_1_tplus1_plot <- ggplot() +
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.05) +
   geom_line(data = model_1_obs,
-            aes(x = day_index, y = I_it_daily),
+            aes(x = day_index, y = value, group = variable),
             color = 'darkred', alpha = 0.5, size = 1.3) +
   theme_minimal()+
   ylab("People") +
@@ -213,8 +218,9 @@ model_1_tplus1_plot <- ggplot() +
 model_1_tplus1_plot
 
 system.time(ggsave(model_1_tplus1_plot, 
-                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-2-model_1_tplus1-I.pdf',
-                   width=15, height=9,
+                   file = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/Fig-2 model1 - tplus1-I.png',
+                   width=9, height=9,
                    units = 'in')
 )
 
+mu <- multiplot(model_1_full_sim_plot, model_1_tplus1_plot, cols = 2)

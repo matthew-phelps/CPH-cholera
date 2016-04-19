@@ -17,9 +17,9 @@ require(grid)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = "data\\Rdata\\Kj-model-1-sim_data.Rdata")
+load(file = "data/Rdata/Kj-model-1-sim_data.Rdata")
 load(file = "data/Rdata/Kj-mcmc_total.Rdata")
-load(file = "data\\Rdata\\Kj-model-1-data-prep.Rdata")
+load(file = "data/Rdata/Kj-model-1-data-prep.Rdata")
 # rm(betas_matrix, beta_summary_1, phi_matrix, phi_summary_1, dataList, step1,
 #    lower_sample, sample_size, t, upper_sample)
 
@@ -95,7 +95,9 @@ proc.time() - ptm
 model_1_full <- t(I_new_mat)
 model_1_full <- as.data.frame(model_1_full)
 model_1_full$day_index <- 1:Nsteps
-model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
+# model_1_full_melt <- melt(model_1_full, id.vars = 'day_index')
+model_1_full_melt <- tidyr::gather(model_1_full, day_index, value)
+colnames(model_1_full_melt) <- c("day_index", "variable", "value")
 
 model_1_obs <- (as.data.frame(I_reps)) # for plotting "observed" data
 colnames(model_1_obs ) <- c(1:10)
@@ -130,12 +132,19 @@ model_1_full_sim_plot <- ggplot() +
                       atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0
 model_1_full_sim_plot
 
-system.time(
-  ggsave(model_1_full_sim_plot,
-         file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Kj-short-Fig-1-model-1-full-sim.pdf',
-         width=15, height=9,
-         units = 'in')
-)
+# system.time(
+#   ggsave(model_1_full_sim_plot,
+#          file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Kj-short-Fig-1-model-1-full-sim.pdf',
+#          width=15, height=9,
+#          units = 'in')
+# )
+
+ggsave(model_1_full_sim_plot,
+       file = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/Kj-1-full-sim.jpg',
+       width=9, height=9,
+       units = 'in')
+
+
 # 
 
 
@@ -186,8 +195,9 @@ proc.time() - ptm
 model_1_tplus1 <- t(I_new_plus1_mat)
 model_1_tplus1 <- as.data.frame(model_1_tplus1)
 model_1_tplus1$day_index <- 1:Nsteps
-model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
-
+# model_1_tplus1_melt <- melt(model_1_tplus1, id.vars = 'day_index')
+model_1_tplus1_melt <- tidyr::gather(model_1_tplus1, day_index, value)
+colnames(model_1_tplus1_melt) <- c("day_index", "variable", "value")
 model_1_obs <- (as.data.frame(I_reps)) # for plotting "observed" data
 colnames(model_1_obs ) <- c(1:10)
 model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data
@@ -202,7 +212,7 @@ sub_title <- paste("phi =", phi,
 model_1_tplus1_plot <- ggplot() +
   geom_line(data = model_1_tplus1_melt,
             aes(x = day_index, y = value, group = variable),
-            color = 'darkgreen', alpha = 0.05) +
+            color = 'darkgreen', alpha = 0.02) +
   geom_line(data = model_1_obs,
             aes(x = day_index, y = value, group = variable),
             color = 'darkred', alpha = 0.5, size = 1.3) +
@@ -218,9 +228,13 @@ model_1_tplus1_plot <- ggplot() +
                       atop(italic(.(sub_title)), "")))) #http://goo.gl/QfFEI0)
 model_1_tplus1_plot
 
-system.time(ggsave(model_1_tplus1_plot, 
-                   file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-2-model_1_tplus1-I.pdf',
-                   width=15, height=9,
-                   units = 'in')
-)
+# system.time(ggsave(model_1_tplus1_plot, 
+#                    file = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Simulations\\Fig-2-model_1_tplus1-I.pdf',
+#                    width=15, height=9,
+#                    units = 'in')
+# )
 
+ggsave(model_1_tplus1_plot, 
+       file = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/Kj-1-tplus1-sim.jpg',
+       width=9, height=9,
+       units = 'in')
