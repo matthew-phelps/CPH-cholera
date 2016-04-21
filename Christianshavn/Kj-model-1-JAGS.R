@@ -38,17 +38,18 @@ for (reps in 1:1){
   
   
   # JAGS
-  set.seed(13) # Not sure if this does anything in current set-up
-  model_1_jags_list[[reps]] <- autorun.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
+  # Run the JAGS models 10 times in each neighborhood
+  # Each [[reps]] is one JAGS model with 5 chains
+  set.seed(13) # Not sure if set.seed() does anything in current set-up
+  model_1_jags_list[[reps]] <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
                                         method = 'parallel',
                                         monitor = c('beta', 'phi'),
                                         data = dataList[[reps]],
                                         n.chains = 5,
                                         adapt = 1000,
-                                        startburnin = 10000,
-                                        startsample = 60000,
+                                        burnin = 100000,
+                                        sample = 150000,
                                         thin = 3,
-                                        max.time = "35m",
                                         plots = T)
   
 }

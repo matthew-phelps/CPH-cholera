@@ -85,7 +85,12 @@ proc.time() - ptm
 # save(I_fitted_phi, file = 'data\\Rdata\\I_fitted_phi.Rdata')
 # 
 
-
+weekly_avg <- combined[combined$quarter == "Christianshavn", ]
+weekly_avg$week.id <- 1:16
+weekly_avg <- weekly_avg[4:10, ]
+weekly_avg$avg <- weekly_avg$sick.total.week/7
+weekly_avg$week_num <- 1:nrow(weekly_avg)
+weekly_avg$x_pos <- weekly_avg$week_num * 7 - 7
 
 
 
@@ -98,6 +103,7 @@ model_1_full$day_index <- 1:Nsteps
 # model_1_full_melt <- melt(model_1_full, id.vars = 'day_index') # use gather() instead
 model_1_full_melt <- tidyr::gather(model_1_full, day_index, value)
 colnames(model_1_full_melt) <- c("day_index", "variable", "value")
+
 model_1_obs <- (as.data.frame(I_reps)) # for plotting "observed" data
 colnames(model_1_obs ) <- c(1:10)
 model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data
@@ -115,8 +121,8 @@ model_1_full_sim_plot <- ggplot() +
   geom_line(data = model_1_full_melt,
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.006) +
-  geom_line (data = model_1_obs,
-             aes(x = day_index, y = value, group = variable),
+  geom_line (data = weekly_avg,
+             aes(x = x_pos, y = avg),
              color = 'darkred', alpha = 0.5, size = 1.2) +
   theme_minimal()+
   ylab("People") +
@@ -139,7 +145,7 @@ system.time(
 )
  # Mac save:
 ggsave(model_1_full_sim_plot,
-       file = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/CHRIST-Fig-1-model-1-full-sim.jpg',
+       file = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/CHRIST-Fig-1-model-1-full-sim-week.jpg',
        width=9, height=9,
        units = 'in')
 
@@ -186,6 +192,14 @@ proc.time() - ptm
 # save(I_fit_plus1_phi, file = 'data\\Rdata\\I_fit_plus1_phi.Rdata')
 
 
+weekly_avg <- combined[combined$quarter == "Christianshavn", ]
+weekly_avg$week.id <- 1:16
+weekly_avg <- weekly_avg[4:10, ]
+weekly_avg$avg <- weekly_avg$sick.total.week/7
+weekly_avg$week_num <- 1:nrow(weekly_avg)
+weekly_avg$x_pos <- weekly_avg$week_num * 7 - 7
+
+
 
 
 
@@ -212,8 +226,8 @@ model_1_tplus1_plot <- ggplot() +
   geom_line(data = model_1_tplus1_melt,
             aes(x = day_index, y = value, group = variable),
             color = 'darkgreen', alpha = 0.05) +
-  geom_line(data = model_1_obs,
-            aes(x = day_index, y = value, group = variable),
+  geom_line(data = weekly_avg,
+            aes(x = x_pos, y = avg),
             color = 'darkred', alpha = 0.5, size = 1.3) +
   theme_minimal()+
   ylab("People") +

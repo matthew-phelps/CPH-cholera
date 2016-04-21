@@ -99,6 +99,8 @@ model_1_full$day_index <- 1:Nsteps
 model_1_full_melt <- tidyr::gather(model_1_full, day_index, value)
 colnames(model_1_full_melt) <- c("day_index", "variable", "value")
 
+
+
 model_1_obs <- (as.data.frame(I_reps)) # for plotting "observed" data
 colnames(model_1_obs ) <- c(1:10)
 model_1_obs$day_index <- 1:Nsteps # for plotting "observed" data

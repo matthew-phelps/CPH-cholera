@@ -59,6 +59,7 @@ for (rep in 1:Nrep){
 
 plot(I_incidence$rep1, type = "l")
 lines(I_incidence$rep2, col = "red")
+
 # Restict time period for St. Annaes Vester outbreak:
 splice <- 15:85
 Nsteps <- length(splice)
