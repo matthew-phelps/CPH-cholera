@@ -25,7 +25,7 @@ load(file = "data/Rdata/CHRIST-model-1-data-prep.Rdata")
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-loops <- 10000 # Has to be the same for both full sum and t+1 sim
+loops <- 2000 # Has to be the same for both full sum and t+1 sim
 
 
 
