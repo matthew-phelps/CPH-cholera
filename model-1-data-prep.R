@@ -26,7 +26,7 @@ pop <- combined[, c("quarter", "est.pop.1853")]
 I_qrt <- I_multi_replicate[which(I_multi_replicate$quarter == "St. Annae Vester"), ]
 
 # Selecton only columns with "rep" in name. See: http://goo.gl/s9xRKr
-X_qrt <- I_qrt[, grepl("rep", names(I_qrt))]
+X_qrt <- select(I_qrt, contains("rep"))
 
 
 
@@ -34,14 +34,8 @@ X_qrt <- I_qrt[, grepl("rep", names(I_qrt))]
 # Once method is tested, repeat for all quarters
 
 # Count cumilative infections:
-cum_qrt <- data.frame(matrix(NA, dim(X_qrt)[1], dim(X_qrt)[2]))
-colnames(cum_qrt) <- colnames(X_qrt)
-cum_qrt[1, ] <- X_qrt[1, ]
-for (t in 2:nrow(X_qrt)){
-  for (rep in 1:ncol(X_qrt)){
-    cum_qrt[t, rep] <- cum_qrt[t - 1, rep] + X_qrt[t, rep]
-  }
-}
+cum_qrt <- cumsum(X_qrt)
+
 
 Nsteps <- nrow(cum_qrt)
 Nrep <- ncol(X_qrt)
@@ -85,8 +79,8 @@ I_reps <- list(I_rep1, I_rep2, I_rep3, I_rep4,
                I_rep5, I_rep6, I_rep7, I_rep8,
                I_rep9, I_rep10)
 # Sanity check:
-plot(I_rep2)
-plot(I_rep1)
+plot(I_rep2, type = "l")
+lines(I_rep1, col = "red")
  
 S_rep1 <- S_it_daily[, 1]
 S_rep2 <- S_it_daily[, 2]
