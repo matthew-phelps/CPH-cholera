@@ -1,0 +1,108 @@
+# Author: Matthew Phelps
+#Desc: Getting data into correct shape for JAGS run. 
+#       Multiple relpicates of random allocation over days of
+#       week
+
+
+
+# Intro -------------------------------------------------------------------
+
+graphics.off()
+ifelse(grepl("wrz741", getwd()),
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
+
+setwd(wd.path)
+rm(list = ls())
+library(dplyr)
+library(ggplot2)
+
+
+load("Data_4.Rdata")
+load(file = "quarter_combined.Rdata")
+
+# Separate population and incidence data - will use pop data later for S calculation
+pop <- combined[, c("quarter", "est.pop.1853")]
+# X_qrt <- select(I_multi_replicate, contains("rep"))
+
+
+# DATA PREP FOR STAN ------------------------------------------------------
+# Once method is tested, repeat for all quarters
+
+# Count cumilative infections:
+cum_qrt <- data.frame(matrix(NA, dim(X_qrt)[1], dim(X_qrt)[2]))
+colnames(cum_qrt) <- colnames(X_qrt)
+cum_qrt[1, ] <- X_qrt[1, ]
+for (t in 2:nrow(X_qrt)){
+  for (rep in 1:ncol(X_qrt)){
+    cum_qrt[t, rep] <- cum_qrt[t - 1, rep] + X_qrt[t, rep]
+  }
+}
+cum_2 <- cumsum(X_qrt)
+rownames(cum_2) <- NULL
+identical(cum_2, cum_qrt)
+Nsteps <- nrow(cum_qrt)
+Nrep <- ncol(X_qrt)
+N_St_annae_v <- 24655
+S_it_daily <- matrix(0, Nsteps, Nrep)
+I_incidence <- X_qrt
+N_i_daily  <- matrix(0, Nsteps, Nrep)
+N_i_daily <- N_St_annae_v
+
+for (rep in 1:Nrep){
+  for( t in 1:Nsteps){
+    S_it_daily[t, rep] <- N_St_annae_v - cum_qrt[t, rep]
+  }
+}
+
+plot(I_incidence$rep1, type = "l")
+lines(I_incidence$rep2, col = "red")
+
+# Restict time period for St. Annaes Vester outbreak:
+splice <- 15:85
+Nsteps <- length(splice)
+I_incidence <- (I_incidence[splice, ])
+S_it_daily <- (S_it_daily[splice, ])
+
+rm(list = setdiff(ls(), c("I_incidence", "N_i_daily", "Nsteps",
+                          "S_it_daily"))) #http://goo.gl/88L5C2
+# DATA SHAPE --------------------------------------------------------------
+# Create separate vectors for several replicates
+# These will be fit separately in JAGS
+I_rep1 <- I_incidence[, 1]
+I_rep2 <- I_incidence[, 2]
+I_rep3 <- I_incidence[, 3]
+I_rep4 <- I_incidence[, 4]
+I_rep5 <- I_incidence[, 5]
+I_rep6 <- I_incidence[, 6]
+I_rep7 <- I_incidence[, 7]
+I_rep8 <- I_incidence[, 8]
+I_rep9 <- I_incidence[, 9]
+I_rep10 <- I_incidence[, 10]
+I_reps <- list(I_rep1, I_rep2, I_rep3, I_rep4,
+               I_rep5, I_rep6, I_rep7, I_rep8,
+               I_rep9, I_rep10)
+# Sanity check:
+plot(I_rep2)
+plot(I_rep1)
+
+S_rep1 <- S_it_daily[, 1]
+S_rep2 <- S_it_daily[, 2]
+S_rep3 <- S_it_daily[, 3]
+S_rep4 <- S_it_daily[, 4]
+S_rep5 <- S_it_daily[, 5]
+S_rep6 <- S_it_daily[, 6]
+S_rep7 <- S_it_daily[, 7]
+S_rep8 <- S_it_daily[, 8]
+S_rep9 <- S_it_daily[, 9]
+S_rep10 <- S_it_daily[, 10]
+S_reps <- list(S_rep1, S_rep2, S_rep3, S_rep4,
+               S_rep5, S_rep6, S_rep7, S_rep8,
+               S_rep9, S_rep10)
+
+# SAVE --------------------------------------------------------------------
+
+rm(list = setdiff(ls(), c("I_reps", "N_i_daily", "Nsteps",
+                          "S_reps"))) #http://goo.gl/88L5C2
+
+save(list = ls(), file = "model-1-data-prep.Rdata")
