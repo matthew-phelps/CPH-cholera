@@ -15,94 +15,80 @@ ifelse(grepl("wrz741", getwd()),
 setwd(wd.path)
 rm(list = ls())
 library(dplyr)
+library(plyr)
 library(ggplot2)
 
 
 load("Data_4.Rdata")
 load(file = "quarter_combined.Rdata")
+rm(day_sum)
+# Only using 10 replicates for now, so restrict data for easier handling:
+I_multi_replicate <- I_multi_replicate[1:12]
 
 # Separate population and incidence data - will use pop data later for S calculation
 pop <- combined[, c("quarter", "est.pop.1853")]
+pop <- unique(pop)
+rownames(pop) <- NULL
 # X_qrt <- select(I_multi_replicate, contains("rep"))
 
 
 # DATA PREP FOR STAN ------------------------------------------------------
-# Once method is tested, repeat for all quarters
+# Find cumsum for each rep for each quarter using ddply() function
+cum_qrt <- ddply(I_multi_replicate[, 3:12], .(I_multi_replicate$quarter), cumsum)
+cum_qrt$day_index <- I_multi_replicate$day_index
+colnames(cum_qrt)[1] <- "quarter"
 
-# Count cumilative infections:
-cum_qrt <- data.frame(matrix(NA, dim(X_qrt)[1], dim(X_qrt)[2]))
-colnames(cum_qrt) <- colnames(X_qrt)
-cum_qrt[1, ] <- X_qrt[1, ]
-for (t in 2:nrow(X_qrt)){
-  for (rep in 1:ncol(X_qrt)){
-    cum_qrt[t, rep] <- cum_qrt[t - 1, rep] + X_qrt[t, rep]
+# Reshape I data:
+long_I <- tidyr::gather(I_multi_replicate, rep_num, I, 3:12)
+wide_I <- tidyr::spread(long_I, quarter, I)
+wide_I <- arrange(wide_I, rep_num)
+
+long_sum <- tidyr::gather(cum_qrt, rep_num, cumsumS, 2:11)
+wide_sum <- tidyr::spread(long_sum, quarter, cumsumS)
+wide_sum <- arrange(wide_sum, rep_num)
+
+
+# Calculate S
+Nsteps <- max(wide_I$day_index)
+N_pop <- pop
+
+S_it_daily <- wide_sum
+# I_incidence <- X_qrt
+# N_i_daily  <- matrix(0, Nsteps, Nrep)
+# N_i_daily <- N_St_annae_v
+
+for (qrt in 3:(Nquarter + 2)){
+  for( t in 1:nrow(S_it_daily)){
+    S_it_daily[t, qrt] <- N_pop[qrt-2, 2] - wide_sum[t, qrt]
   }
 }
-cum_2 <- cumsum(X_qrt)
-rownames(cum_2) <- NULL
-identical(cum_2, cum_qrt)
-Nsteps <- nrow(cum_qrt)
-Nrep <- ncol(X_qrt)
-N_St_annae_v <- 24655
-S_it_daily <- matrix(0, Nsteps, Nrep)
-I_incidence <- X_qrt
-N_i_daily  <- matrix(0, Nsteps, Nrep)
-N_i_daily <- N_St_annae_v
 
-for (rep in 1:Nrep){
-  for( t in 1:Nsteps){
-    S_it_daily[t, rep] <- N_St_annae_v - cum_qrt[t, rep]
+I_rep <- wide_I[, 3:11]
+I_rep <- matrix(I_rep, nrow = nrow(wide_I), ncol = Nquarter)
+I_reps <- split(wide_I, f = wide_I$rep_num)
+for (i in 1:length(I_reps)) {
+  I_reps[[i]] <- I_reps[[i]][, 3:11]
+  I_reps[[i]] <- data.matrix(I_reps[[i]])
   }
-}
+S_reps <- split(S_it_daily, f = S_it_daily$rep_num)
 
-plot(I_incidence$rep1, type = "l")
-lines(I_incidence$rep2, col = "red")
 
-# Restict time period for St. Annaes Vester outbreak:
-splice <- 15:85
-Nsteps <- length(splice)
-I_incidence <- (I_incidence[splice, ])
-S_it_daily <- (S_it_daily[splice, ])
+# CLEAN DATASPACE ---------------------------------------------------------
 
-rm(list = setdiff(ls(), c("I_incidence", "N_i_daily", "Nsteps",
-                          "S_it_daily"))) #http://goo.gl/88L5C2
-# DATA SHAPE --------------------------------------------------------------
-# Create separate vectors for several replicates
-# These will be fit separately in JAGS
-I_rep1 <- I_incidence[, 1]
-I_rep2 <- I_incidence[, 2]
-I_rep3 <- I_incidence[, 3]
-I_rep4 <- I_incidence[, 4]
-I_rep5 <- I_incidence[, 5]
-I_rep6 <- I_incidence[, 6]
-I_rep7 <- I_incidence[, 7]
-I_rep8 <- I_incidence[, 8]
-I_rep9 <- I_incidence[, 9]
-I_rep10 <- I_incidence[, 10]
-I_reps <- list(I_rep1, I_rep2, I_rep3, I_rep4,
-               I_rep5, I_rep6, I_rep7, I_rep8,
-               I_rep9, I_rep10)
-# Sanity check:
-plot(I_rep2)
-plot(I_rep1)
 
-S_rep1 <- S_it_daily[, 1]
-S_rep2 <- S_it_daily[, 2]
-S_rep3 <- S_it_daily[, 3]
-S_rep4 <- S_it_daily[, 4]
-S_rep5 <- S_it_daily[, 5]
-S_rep6 <- S_it_daily[, 6]
-S_rep7 <- S_it_daily[, 7]
-S_rep8 <- S_it_daily[, 8]
-S_rep9 <- S_it_daily[, 9]
-S_rep10 <- S_it_daily[, 10]
-S_reps <- list(S_rep1, S_rep2, S_rep3, S_rep4,
-               S_rep5, S_rep6, S_rep7, S_rep8,
-               S_rep9, S_rep10)
+rm(list = setdiff(ls(), c("I_reps", 
+                          "S_reps",
+                          "Nsteps",
+                          "N_pop",
+                          "Nquarter"))) #http://goo.gl/88L5C2
 
-# SAVE --------------------------------------------------------------------
+# Plot to check output
+plot(I_reps[[1]][, 3], type = "l")
+lines(I_reps[[1]][, 4], col = "red")
 
-rm(list = setdiff(ls(), c("I_reps", "N_i_daily", "Nsteps",
-                          "S_reps"))) #http://goo.gl/88L5C2
 
-save(list = ls(), file = "model-1-data-prep.Rdata")
+# Save --------------------------------------------------------------------
+
+
+
+save(list = ls(), file = "multi-model1-data-prep.Rdata")

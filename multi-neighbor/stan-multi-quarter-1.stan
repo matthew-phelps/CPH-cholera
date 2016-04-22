@@ -26,7 +26,6 @@ model {
     I_prev[1, i] <- 1
   }
   
-  
   # Lambda, I, S, & R
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
@@ -36,7 +35,6 @@ model {
       S_it_daily[t+1, i] <- S_it_daily[t, i] - (I_incidence[t, i] / phi[i])
     }
   }
-  
   
   # Likelihood function
   for (t in 1:(Nsteps-1)){
@@ -48,6 +46,5 @@ model {
   #data# Nsteps
   #data# N_i_daily
   #data# I_incidence
-  
-  
+  #data# Nquarter
 }

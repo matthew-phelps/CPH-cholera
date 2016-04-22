@@ -134,8 +134,8 @@ sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Oester") ]) == co
 sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Rosenborg") ]) == combined$cum.sick[which(combined$quarter == "Rosenborg" & combined$week.id == 15)]
 sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "St. Annae Oester") ]) == combined$cum.sick[which(combined$quarter == "St. Annae Oester" & combined$week.id == 15)]
 sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "St. Annae Vester") ]) == combined$cum.sick[which(combined$quarter == "St. Annae Vester" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Combined") ]) == combined$cum.sick[which(combined$quarter == "Combined" & combined$week.id == 15)]
-
+sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Combined_upper") ]) == combined$cum.sick[which(combined$quarter == "Combined_upper" & combined$week.id == 15)]
+sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Combined_lower") ]) == combined$cum.sick[which(combined$quarter == "Combined_lower" & combined$week.id == 15)]
 
 
 # PLOT REPLICATE --------------------------------------------------------------------

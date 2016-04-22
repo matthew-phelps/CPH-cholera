@@ -16,7 +16,7 @@ library (stats)
 library (reshape) # for renaming variables
 library(plyr)
 
-load("Rdata\\cholera_by_street.Rdata")
+load("Rdata/cholera_by_street.Rdata")
 
 
 # Summarize each quarter -------------------------------------------------------
@@ -93,7 +93,7 @@ row.names(quarter) <- NULL
 quarter$S <- quarter$est.pop.1853 - quarter$cum.sick # no. of susceptibles at each timestep
 quarter$R <- quarter$est.pop.1853 - (quarter$S + quarter$sick.total.week)
 
-save(quarter, file = "Rdata\\quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
+save(quarter, file = "Rdata/quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
 write.csv(quarter,
           file = "quarter_eng.csv",
           row.names = F)
@@ -156,5 +156,5 @@ combined <- rbind(combined_upper,
 x1 <- with(combined, paste(quarterID))
 combined <- within(combined, quarterID <- match(x1, unique(x1)))
 rm(x1, combined_lower, temp_names, x2, quarter.split, i)
-save(combined, file = "Rdata\\quarter_combined.Rdata")
+save(combined, file = "Rdata/quarter_combined.Rdata")
 

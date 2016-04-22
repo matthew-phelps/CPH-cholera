@@ -1,6 +1,6 @@
 # Author: Matthew Phelps
-#Desc: JAGS model of CPH 1853. Using interpolated incidence
-# Dependicies: Data 1, Data 2, 5_GLM_data_reshape, Data-3
+#Desc: JAGS model of CPH 1853 - multineighborhood.
+
 # Intro -------------------------------------------------------------------
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
@@ -21,7 +21,7 @@ options(mc.cores = (parallel::detectCores() ))
 
 # LOAD -------------------------------------------------------
 rm(list = ls())
-load(file = "data/Rdata/model-1-data-prep.Rdata")
+load(file = "data/Rdata/multi-model1-data-prep.Rdata")
 
 
 # JAGS -------------------------------------------------------------
@@ -31,26 +31,27 @@ dataList <- list()
 num_reps <- length(I_reps)
 ptm <- proc.time()
 for (reps in 1:num_reps){
-dataList[[reps]] <- list(N_i_daily = N_i_daily,
-                 I_incidence=I_reps[[reps]],
-                 Nsteps=Nsteps)
-
-
-# JAGS
-# Run the JAGS models 10 times in each neighborhood
-# Each [[reps]] is one JAGS model with 5 chains
-set.seed(13) # Not sure if this does anything in current set-up
-model_1_jags_list[[reps]] <- run.jags(model = 'Rcodes\\stan-model_Fitting-one-replicate.stan',
-                           method = 'parallel',
-                           monitor = c('beta', 'phi'),
-                           data = dataList[[reps]],
-                           n.chains = 5,
-                           adapt = 1000,
-                           burnin = 100000,
-                           sample = 150000,
-                           thin = 3,
-                           plots = T)
-
+  dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
+                           I_incidence=I_reps[[reps]],
+                           Nsteps=Nsteps,
+                           Nquarter = Nquarter)
+  
+  
+  # JAGS
+  # Run the JAGS models 10 times. Each run fits all quarters together
+  # Each [[reps]] is one JAGS model with 5 chains
+  set.seed(13) # Not sure if this does anything in current set-up
+  model_1_jags_list[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/stan-multi-quarter-1.stan',
+                                        method = 'parallel',
+                                        monitor = c('beta', 'phi'),
+                                        data = dataList[[reps]],
+                                        n.chains = 1,
+                                        adapt = 10,
+                                        burnin = 100,
+                                        sample = 100,
+                                        thin = 3,
+                                        plots = T)
+  
 }
 proc.time() - ptm
 
