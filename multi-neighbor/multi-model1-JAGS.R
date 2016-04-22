@@ -16,7 +16,7 @@ library(rjags)
 library(mcmcplots)
 library(ggmcmc)
 library(ggplot2)
-options(mc.cores = (parallel::detectCores() ))
+options(mc.cores = (parallel::detectCores() - 1))
 
 
 # LOAD -------------------------------------------------------
@@ -29,6 +29,7 @@ load(file = "data/Rdata/multi-model1-data-prep.Rdata")
 model_1_jags_list <- list()
 dataList <- list()
 num_reps <- length(I_reps)
+num_reps <- 1
 ptm <- proc.time()
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
@@ -45,10 +46,10 @@ for (reps in 1:num_reps){
                                         method = 'parallel',
                                         monitor = c('beta', 'phi'),
                                         data = dataList[[reps]],
-                                        n.chains = 1,
-                                        adapt = 10,
-                                        burnin = 100,
-                                        sample = 100,
+                                        n.chains = 4,
+                                        adapt = 1000,
+                                        burnin = 1000,
+                                        sample = 10000,
                                         thin = 3,
                                         plots = T)
   
@@ -56,10 +57,10 @@ for (reps in 1:num_reps){
 proc.time() - ptm
 
 # SAVE --------------------------------------------------------------------
-save(model_1_jags_list, file = "Data\\Rdata\\model-1-jags-list.Rdata")
-save(dataList, file = "Data\\Rdata\\model-1-dataList.Rdata")
+save(model_1_jags_list, file = "Data/Rdata/multi-model1-jags-list.Rdata")
+save(dataList, file = "Data/Rdata/model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
-# print(model_1_jags_list)
+ print(model_1_jags_list)
 
 # POOL POSTERIORS ---------------------------------------------------------
 # Pool all 5 chains in each JAGS run:
@@ -68,16 +69,17 @@ for (reps in 1:num_reps){
   mcmc_comb_chains[[reps]] <- combine.mcmc(model_1_jags_list[[reps]])
 }
 
+
 # Combine all JAGS run into one huge mcmc chain:
 
 mcmc_total <- data.frame(combine.mcmc(mcmc_comb_chains))
-
+plot(mcmc_total$beta.1.)
 mcmc_length <- as.character(nrow(mcmc_total))
 rep_num <- length(model_1_jags_list)
 sub_title <- paste("MCMC length = ", mcmc_length,
                    " / Num. realizations =", rep_num)
 
-beta_posterior <- ggplot(data = mcmc_total, aes(x = beta)) +
+beta_posterior <- ggplot(data = mcmc_total, aes(x = beta.2.)) +
   geom_density(fill = "darkred", alpha = 0.7) +
   theme_minimal() +
   ggtitle(bquote(atop("Beta pooled posterior",
@@ -85,7 +87,7 @@ beta_posterior <- ggplot(data = mcmc_total, aes(x = beta)) +
 
 
 
-phi_posteriors <- ggplot(data = mcmc_total, aes(x = phi)) +
+phi_posteriors <- ggplot(data = mcmc_total, aes(x = phi.1.)) +
   geom_density(fill = "darkblue", alpha = 0.55) +
   theme_minimal() +
   ggtitle(bquote(atop("Phi pooled posterior",
