@@ -49,7 +49,7 @@ for (reps in 1:num_reps){
                                         n.chains = 4,
                                         adapt = 100,
                                         burnin = 100,
-                                        sample = 1000,
+                                        sample = 100,
                                         thin = 3,
                                         plots = T)
   

@@ -5,6 +5,11 @@ model {
   # Gamma
   gamma ~ dexp(5)
   
+  # One hyperprior for entire city
+  mu ~ dnorm(0, 0.001)
+  tau ~ dgamma(0.001, 0.001)
+  sigma <- pow(tau, -0.5)
+  
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
   phi<- exp(logit_phi) / (1 + exp(logit_phi))
@@ -12,15 +17,12 @@ model {
   for (i in 1:Nquarter){
     # First time-step
     S_it_daily[1, i] <- N_i_daily[i];
-    I_prev[1, i] <- 1
+    
+    I_prev[1, i] <- ifelse(i==5,1,0)
     
     for (j in 1:Nquarter){
       # Beta log hypreprior distributions
-      log_beta[i, j] ~ dnorm(mu[i, j], tau[i, j]);
-      mu[i, j] ~ dnorm(0, 0.0001)
-      tau[i, j] <- pow(sigma[i, j], -2)
-      sigma[i, j] ~ dunif(0, 1.5)
-      
+      log_beta[i, j] ~ dnorm(mu, tau);
       # Beta
       beta[i, j] <- exp(log_beta[i, j]);
     } 
