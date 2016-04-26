@@ -47,20 +47,20 @@ for (reps in 1:num_reps){
                                         monitor = c('beta', 'phi'),
                                         data = dataList[[reps]],
                                         n.chains = 4,
-                                        adapt = 1000,
-                                        burnin = 1000,
-                                        sample = 10000,
+                                        adapt = 100,
+                                        burnin = 100,
+                                        sample = 1000,
                                         thin = 3,
                                         plots = T)
   
 }
-proc.time() - ptm
+proc.time() - ptmaci
 
 # SAVE --------------------------------------------------------------------
 save(model_1_jags_list, file = "Data/Rdata/multi-model1-jags-list.Rdata")
 save(dataList, file = "Data/Rdata/model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
- print(model_1_jags_list)
+ print(model_1_jags_list[[1]])
 
 # POOL POSTERIORS ---------------------------------------------------------
 # Pool all 5 chains in each JAGS run:
@@ -73,7 +73,7 @@ for (reps in 1:num_reps){
 # Combine all JAGS run into one huge mcmc chain:
 
 mcmc_total <- data.frame(combine.mcmc(mcmc_comb_chains))
-plot(mcmc_total$beta.1.)
+plot(mcmc_total$phi)
 mcmc_length <- as.character(nrow(mcmc_total))
 rep_num <- length(model_1_jags_list)
 sub_title <- paste("MCMC length = ", mcmc_length,
