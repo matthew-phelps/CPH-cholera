@@ -16,7 +16,7 @@ library(rjags)
 library(mcmcplots)
 library(ggmcmc)
 library(ggplot2)
-options(mc.cores = (parallel::detectCores() - 1))
+options(mc.cores = (parallel::detectCores() -1))
 
 
 # LOAD -------------------------------------------------------
@@ -42,26 +42,25 @@ for (reps in 1:num_reps){
   # Run the JAGS models 10 times. Each run fits all quarters together
   # Each [[reps]] is one JAGS model with 5 chains
   set.seed(13) # Not sure if this does anything in current set-up
-  model_1_jags_list[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/stan-multi-quarter-1.stan',
+  model_1_jags_list[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-1.stan',
                                         method = 'parallel',
                                         monitor = c('beta', 'phi'),
                                         data = dataList[[reps]],
                                         n.chains = 4,
-                                        adapt = 100,
-                                        burnin = 100,
-                                        sample = 100,
+                                        adapt = 500,
+                                        burnin = 150,
+                                        sample = 500,
                                         thin = 3,
                                         plots = T)
   
 }
-proc.time() - ptmaci
+proc.time() - ptm
 
 # SAVE --------------------------------------------------------------------
 save(model_1_jags_list, file = "Data/Rdata/multi-model1-jags-list.Rdata")
 save(dataList, file = "Data/Rdata/model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
- print(model_1_jags_list[[1]])
-
+add.summary(model_1_jags_list[[1]])
 # POOL POSTERIORS ---------------------------------------------------------
 # Pool all 5 chains in each JAGS run:
 mcmc_comb_chains <- list()
@@ -79,7 +78,7 @@ rep_num <- length(model_1_jags_list)
 sub_title <- paste("MCMC length = ", mcmc_length,
                    " / Num. realizations =", rep_num)
 
-beta_posterior <- ggplot(data = mcmc_total, aes(x = beta.2.)) +
+beta_posterior <- ggplot(data = mcmc_total, aes(x = beta.2.1.)) +
   geom_density(fill = "darkred", alpha = 0.7) +
   theme_minimal() +
   ggtitle(bquote(atop("Beta pooled posterior",

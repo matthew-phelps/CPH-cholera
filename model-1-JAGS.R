@@ -41,7 +41,7 @@ dataList[[reps]] <- list(N_i_daily = N_i_daily,
 # Run the JAGS models 10 times in each neighborhood
 # Each [[reps]] is one JAGS model with 5 chains
 set.seed(13) # Not sure if this does anything in current set-up
-model_1_jags_list[[reps]] <- run.jags(model = 'Rcodes/stan-model_Fitting-one-replicate.stan',
+model_1_jags_list[[reps]] <- run.jags(model = 'Rcodes/JAGS-model_Fitting-one-replicate.stan',
                            method = 'parallel',
                            monitor = c('beta', 'phi'),
                            data = dataList[[reps]],
