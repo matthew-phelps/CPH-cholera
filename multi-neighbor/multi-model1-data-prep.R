@@ -25,13 +25,22 @@ rm(day_sum)
 # Only using 10 replicates for now, so restrict data for easier handling:
 I_multi_replicate <- I_multi_replicate[1:12]
 
+
+######
+###### SELECT ONLY 3 NEIGHBORHOODS FOR TEST PURPOSES
+sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester"
+I_multi_replicate <- I_multi_replicate[sel,]
+rm(sel)
+###### 
+
+
 # Separate population and incidence data - will use pop data later for S calculation
 pop <- combined[, c("quarter", "est.pop.1853")]
 pop <- unique(pop)
 rownames(pop) <- NULL
 # X_qrt <- select(I_multi_replicate, contains("rep"))
 
-
+#
 # DATA PREP FOR STAN ------------------------------------------------------
 # Find cumsum for each rep for each quarter using ddply() function
 cum_qrt <- ddply(I_multi_replicate[, 3:12], .(I_multi_replicate$quarter), cumsum)

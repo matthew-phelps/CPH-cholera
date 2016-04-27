@@ -33,23 +33,25 @@ num_reps <- 1
 ptm <- proc.time()
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
-                           I_incidence=I_reps[[reps]],
+                           I_incidence=I_reps[[2]],
                            Nsteps=Nsteps,
                            Nquarter = Nquarter)
   
-  
+}
+
+for (reps in 1:num_reps){
   # JAGS
   # Run the JAGS models 10 times. Each run fits all quarters together
   # Each [[reps]] is one JAGS model with 5 chains
   set.seed(13) # Not sure if this does anything in current set-up
-  model_1_jags_list[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-1.stan',
-                                        method = 'parallel',
+  model_1_jags_list[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-2.stan',
+                                        method = 'rjparallel',
                                         monitor = c('beta', 'phi'),
                                         data = dataList[[reps]],
                                         n.chains = 4,
-                                        adapt = 500,
+                                        adapt = 100,
                                         burnin = 150,
-                                        sample = 500,
+                                        sample = 100,
                                         thin = 3,
                                         plots = T)
   
