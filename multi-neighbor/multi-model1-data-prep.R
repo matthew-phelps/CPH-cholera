@@ -33,6 +33,8 @@ I_multi_replicate <- I_multi_replicate[sel,]
 rm(sel)
 Nquarter <- length(unique(I_multi_replicate$quarter))
 
+
+
 ###### 
 
 

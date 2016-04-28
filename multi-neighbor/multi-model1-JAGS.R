@@ -37,7 +37,9 @@ for (reps in 1:num_reps){
                            Nquarter = Nquarter)
 }
 
-
+param_names <- data.frame(
+  parameter = c()
+)
 # Model 1 -----------------------------------------------------------------
 
 for (reps in 1:num_reps){
@@ -68,7 +70,17 @@ mcmcplot(model_jags_list_1[[1]])
 
 # View each chain individually
 model_1_mcmc <- as.mcmc.list(model_jags_list_1[[1]])
-model_1_ggs <- ggs(model_1_mcmc)
+
+# Label parameters for ggs object
+param_names <- data.frame(
+  Parameter = names((model_1_mcmc[[1]][1,])),
+  Label = c("Nyb", "S.An.Oe->Nyb", "S.An.V->Nyb",
+            "Nyb->S.An.Oe", "S.An.Oe", "S.An.V->S.An.Oe",
+            "Nyb->S.An.V", "S.An.Oe->S.An.V", "S.An.V",
+            "phi")
+  )
+model_1_betas <- ggs(model_1_mcmc, par_labels = param_names, family = "beta")
+
 
 ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
     theme(legend.position = 'none')
@@ -79,6 +91,10 @@ ggs_density(model_1_ggs, family = 'beta') +
 ggs_autocorrelation(model_1_ggs, family = "beta") +
   theme_minimal() +
   theme(legend.position = "none")
+
+ggs_caterpillar(model_1_ggs) +
+  theme_minimal() +
+  theme(legend.position = 'none')
 
 # POOL POSTERIORS -------------------
 # Pool all 5 chains in each JAGS run:
