@@ -28,9 +28,11 @@ I_multi_replicate <- I_multi_replicate[1:12]
 
 ######
 ###### SELECT ONLY 3 NEIGHBORHOODS FOR TEST PURPOSES
-sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester"
+sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester" | I_multi_replicate$quarter == "Nyboder" 
 I_multi_replicate <- I_multi_replicate[sel,]
 rm(sel)
+Nquarter <- length(unique(I_multi_replicate$quarter))
+
 ###### 
 
 
@@ -72,11 +74,11 @@ for (qrt in 3:(Nquarter + 2)){
   }
 }
 
-I_rep <- wide_I[, 3:11]
+I_rep <- wide_I[, 3:(Nquarter + 2)]
 I_rep <- matrix(I_rep, nrow = nrow(wide_I), ncol = Nquarter)
 I_reps <- split(wide_I, f = wide_I$rep_num)
 for (i in 1:length(I_reps)) {
-  I_reps[[i]] <- I_reps[[i]][, 3:11]
+  I_reps[[i]] <- I_reps[[i]][, 3:(Nquarter + 2)]
   I_reps[[i]] <- data.matrix(I_reps[[i]])
   }
 S_reps <- split(S_it_daily, f = S_it_daily$rep_num)
@@ -92,9 +94,9 @@ rm(list = setdiff(ls(), c("I_reps",
                           "Nquarter"))) #http://goo.gl/88L5C2
 
 # Plot to check output
-plot(I_reps[[1]][, 3], type = "l")
-lines(I_reps[[1]][, 4], col = "red")
-
+plot(I_reps[[1]][, 1], type = "l")
+lines(I_reps[[1]][, 2], col = "red")
+lines(I_reps[[1]][, 3], col = "green")
 
 # Save --------------------------------------------------------------------
 

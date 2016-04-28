@@ -18,7 +18,7 @@ model {
     # First time-step
     S_it_daily[1, i] <- N_i_daily[i];
     
-    I_prev[1, i] <- ifelse(i==5,1,0)
+    I_prev[1, i] <- ifelse(i==1,1,0)
     
     for (j in 1:Nquarter){
       # Beta log hypreprior distributions

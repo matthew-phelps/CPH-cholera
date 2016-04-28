@@ -9,9 +9,7 @@ model {
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
   sigma <- pow(tau, -0.5) # Do I need this?
-  log_beta_1 ~ dnorm(mu, tau)
   log_beta_2 ~ dnorm(mu, tau)
-  beta_1 <- exp(log_beta_1)
   beta_2 <- exp(log_beta_2)
   
   # Phi - under reporting fraction
@@ -26,10 +24,12 @@ model {
     I_prev[1, i] <- 1
     #I_prev[1, i] <- ifelse(i==5,1,0)
     
+    # An independent internal transmission coefficient
+    log_beta_1[i] ~ dnorm(mu, tau)
+    beta_1[i] <- exp(log_beta_1[i])
     for (j in 1:Nquarter){
-      # Assign one beta value for diagnols (internal transmission)
-      # and another beta value for all off diags (exsternal transmission)
-      beta[i, j] <- ifelse(i==j, beta_1, beta_2)
+      # All external transmission coefficients are the same
+      beta[i, j] <- ifelse(i==j, beta_1[i], beta_2)
     } 
   }
   
