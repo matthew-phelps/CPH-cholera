@@ -16,7 +16,7 @@ library(rjags)
 library(mcmcplots)
 library(ggmcmc)
 library(ggplot2)
-options(mc.cores = (parallel::detectCores()))
+options(mc.cores = (parallel::detectCores()-1))
 
 
 # LOAD -------------------------------------------------------
@@ -50,17 +50,25 @@ for (reps in 1:num_reps){
   model_jags_list_1[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-1.stan',
                                         method = 'parallel',
                                         monitor = c('beta', 'phi'),
+                                        modules = "glm",
                                         data = dataList[[reps]],
                                         n.chains = 4,
                                         adapt = 1000,
                                         burnin = 1000,
-                                        sample = 2000,
-                                        thin = 4,
+                                        sample = 3000,
+                                        thin = 10,
                                         plots = T)
   
 }
 
 
+z <- extend.jags(y,
+            method = "parallel",
+            adapt = 500,
+            sample = 2000,
+            thin = 20)
+add.summary(y)
+mcmcplot(y)
 # SAVE --------------------------------------------------------------------
 save(model_jags_list_1, file = "Data/Rdata/multi-model-1-jags-list.Rdata")
 save(dataList, file = "Data/Rdata/model-1-dataList.Rdata")
@@ -70,7 +78,7 @@ mcmcplot(model_jags_list_1[[1]])
 
 # View each chain individually
 model_1_mcmc <- as.mcmc.list(model_jags_list_1[[1]])
-
+model_1_mcmc <- as.mcmc.list(x)
 # Label parameters for ggs object
 param_names <- data.frame(
   Parameter = names((model_1_mcmc[[1]][1,])),
@@ -92,7 +100,7 @@ ggs_autocorrelation(model_1_ggs, family = "beta") +
   theme_minimal() +
   theme(legend.position = "none")
 
-ggs_caterpillar(model_1_ggs) +
+ggs_caterpillar(model_1_betas) +
   theme_minimal() +
   theme(legend.position = 'none')
 
