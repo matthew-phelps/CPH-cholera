@@ -34,7 +34,7 @@ model {
     for (i in 1:Nquarter){
       lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(beta[, i] * (I_prev[t, ])))
       lambdaR[t, i] <- I_prev[t, i] * gamma
-      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] - R_new[t, i])
+      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] /phi - R_new[t, i])
       S_it_daily[t+1, i] <- S_it_daily[t, i] - (I_incidence[t, i] / phi)
     }
   }
@@ -42,8 +42,8 @@ model {
   # Likelihood function
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
-      I_incidence[t+1, i] ~ dpois(lambdaI[t, i])
-      R_new[t, i] ~ dpois(lambdaR[t, i])
+      I_incidence[t+1, i] ~ dpois(lambdaI[t, i] * phi)
+      R_new[t, i] ~ dpois(lambdaR[t, i] * phi )
     }
   }
   #data# Nsteps
