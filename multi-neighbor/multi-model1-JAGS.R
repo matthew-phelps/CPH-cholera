@@ -37,9 +37,6 @@ for (reps in 1:num_reps){
                            Nquarter = Nquarter)
 }
 
-param_names <- data.frame(
-  parameter = c()
-)
 # Model 1 -----------------------------------------------------------------
 
 for (reps in 1:num_reps){

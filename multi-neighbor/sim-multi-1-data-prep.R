@@ -12,6 +12,8 @@ ifelse(grepl("wrz741", getwd()),
 setwd(wd.path)
 rm(list = ls())
 
+library(coda)
+library(runjags)
 
 
 
@@ -20,12 +22,13 @@ rm(list = ls())
 
 load(file = "Data/Rdata/quarter_combined.Rdata")
 load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
+load(file = "/Users/Matthew/Dropbox (Personal)/AWS-Rstudio/multi-model-1-jags-list-large.Rdata")
 
 N_i_daily <- dataList[[1]]$N_i_daily
 I_it_daily <- dataList[[1]]$I_incidence
 Nsteps <- dataList[[1]]$Nsteps
 Nquarter <- dataList[[1]]$Nquarter
-
+q_names <- colnames(dataList[[1]]$I_incidence)
 
 
 
@@ -39,27 +42,48 @@ weekly_avg$week.id <- 1:16
 weekly_avg$avg <- weekly_avg$sick.total.week/7
 weekly_avg <- select(weekly_avg, c(quarter, week.id, avg))
 
-# # INITIALIZE EMPTY DF -----------------------------------------------------
-# 
+
+
+# MCMC PREP ---------------------------------------------------------------
+
+# Combine chains into 1
+mcmc_1 <- combine.mcmc(y)
+mcmc_median <- apply(mcmc_1, MARGIN = 2, FUN = median)
+# Get median values for each parameter
+mcmc_names <- names(mcmc_1[1, ]) # name the rows
+
+
+# Convert to matrix format for easier reading
+betas_temp <- mcmc_median[1:81]
+betas <- data.frame(matrix(betas_temp, nrow = 9, ncol = 9))
+rm(betas_temp)
+rownames(betas) <- q_names
+colnames(betas) <- q_names
+
+phi <- mcmc_median[82]
+
+
+
+# INITIALIZE EMPTY DF -----------------------------------------------------
+
 # I_sim <- matrix(NA, Nquarter, Nsteps-1)
 # S_sim <- matrix(NA, Nquarter, Nsteps-1)
-# 
-# N_it <- matrix(NA, 1, Nsteps)
-# 
+N_it <- matrix(NA, Nquarter, 1)
+
 # I_i_t1 <- matrix(0, nrow = 1, ncol = 1)
 # S_i_t1 <- matrix(0, nrow = 1, ncol = 1)
 # N_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-# I_i_t1[1, 1] <- (combined$sick.total.week[which(combined$quarter== "St. Annae Vester")])[1]
-# S_i_t1[1, 1] <- (combined$S[which(combined$quarter== "St. Annae Vester")])[1]
+
+N_it[, 1] <- unique(combined$est.pop.1853)
 # 
 # for (t in 1:Nsteps){
 #   N_it[1, t] <- (combined$est.pop.1853[which(combined$quarter== "St. Annae Vester")])[t]
 # }
-# 
+
 # # Bind first time-step of infection data to block of NAs the size of the remaining
-# # timesteps. These NAs will be overwritten with simulated data 
-# I_it_est <- (cbind(I_i_t1, I_it))
-# S_it_est <- (cbind(S_i_t1, S_it))
+# # timesteps. These NAs will be overwritten with simulated data
+# I_it_est <- (cbind(I_i_t1, I_sim))
+# S_it_est <- (cbind(S_i_t1, S_sim))
 # I_it_est <- I_it_est[1, ]
 # S_it_est <- S_it_est[1, ]
 # I_plus1 <- I_it_est
@@ -121,7 +145,7 @@ weekly_avg <- select(weekly_avg, c(quarter, week.id, avg))
 # 
 
 # SAVE --------------------------------------------------------------------
-rm(combined, I_it_daily, dataList, N_i_daily)
+rm(combined, dataList, N_i_daily, mcmc_median, mcmc_1, mcmc_names, y)
 
 save(list = ls(), file = 'data/Rdata/sim-multi-1-data.Rdata' )
 
