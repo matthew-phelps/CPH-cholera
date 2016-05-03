@@ -61,15 +61,14 @@ dayCount_fn <- function(x) {
   # Creates vector with a length = # of cases observed that week.
   # Each element of vector is a number (1-7) that represents the
   # day of the week to assign a single case
-  set.seed(13)
   z <- sample(1:7, x, replace = T)
   z
 }
 
 # Sampling:
-n <- 100 # number of replicated datasets
+n <- 10 # number of replicated datasets
 replicate_list <- list() # to store the replicates lists
-
+set.seed(13)
 for (k in 1:n){
   days_list_1 <- list()
   for (i in 1:nrow(I_it_long)){
