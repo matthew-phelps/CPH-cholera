@@ -26,33 +26,46 @@ I_it_daily <- dataList[[1]]$I_incidence
 Nsteps <- dataList[[1]]$Nsteps
 Nquarter <- dataList[[1]]$Nquarter
 
-# INITIALIZE EMPTY DF -----------------------------------------------------
 
-I_sim <- matrix(NA, Nquarter, Nsteps-1)
-S_sim <- matrix(NA, Nquarter, Nsteps-1)
 
-N_it <- matrix(NA, 1, Nsteps)
 
-I_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-S_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-N_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-I_i_t1[1, 1] <- (combined$sick.total.week[which(combined$quarter== "St. Annae Vester")])[1]
-S_i_t1[1, 1] <- (combined$S[which(combined$quarter== "St. Annae Vester")])[1]
+# WEEKLY AVG --------------------------------------------------------------
 
-for (t in 1:Nsteps){
-  N_it[1, t] <- (combined$est.pop.1853[which(combined$quarter== "St. Annae Vester")])[t]
-}
+# Find daily avg incidence each week. Plot daily avg incidence at weekly
+# time-steps to use as our "observed" data.
 
-# Bind first time-step of infection data to block of NAs the size of the remaining
-# timesteps. These NAs will be overwritten with simulated data 
-I_it_est <- (cbind(I_i_t1, I_it))
-S_it_est <- (cbind(S_i_t1, S_it))
-I_it_est <- I_it_est[1, ]
-S_it_est <- S_it_est[1, ]
-I_plus1 <- I_it_est
-S_plus1 <- S_it_est
+weekly_avg <- combined
+weekly_avg$week.id <- 1:16
+weekly_avg$avg <- weekly_avg$sick.total.week/7
+weekly_avg <- select(weekly_avg, c(quarter, week.id, avg))
 
-rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
+# # INITIALIZE EMPTY DF -----------------------------------------------------
+# 
+# I_sim <- matrix(NA, Nquarter, Nsteps-1)
+# S_sim <- matrix(NA, Nquarter, Nsteps-1)
+# 
+# N_it <- matrix(NA, 1, Nsteps)
+# 
+# I_i_t1 <- matrix(0, nrow = 1, ncol = 1)
+# S_i_t1 <- matrix(0, nrow = 1, ncol = 1)
+# N_i_t1 <- matrix(0, nrow = 1, ncol = 1)
+# I_i_t1[1, 1] <- (combined$sick.total.week[which(combined$quarter== "St. Annae Vester")])[1]
+# S_i_t1[1, 1] <- (combined$S[which(combined$quarter== "St. Annae Vester")])[1]
+# 
+# for (t in 1:Nsteps){
+#   N_it[1, t] <- (combined$est.pop.1853[which(combined$quarter== "St. Annae Vester")])[t]
+# }
+# 
+# # Bind first time-step of infection data to block of NAs the size of the remaining
+# # timesteps. These NAs will be overwritten with simulated data 
+# I_it_est <- (cbind(I_i_t1, I_it))
+# S_it_est <- (cbind(S_i_t1, S_it))
+# I_it_est <- I_it_est[1, ]
+# S_it_est <- S_it_est[1, ]
+# I_plus1 <- I_it_est
+# S_plus1 <- S_it_est
+# 
+# rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
 
 # # PREPARE MCMC DRAWS ------------------------------------------------------
 # 
@@ -108,6 +121,7 @@ rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
 # 
 
 # SAVE --------------------------------------------------------------------
+rm(combined, I_it_daily, dataList, N_i_daily)
 
-save(list = ls(), file = 'data/Rdata/model-1-sim_data.Rdata' )
+save(list = ls(), file = 'data/Rdata/sim-multi-1-data.Rdata' )
 

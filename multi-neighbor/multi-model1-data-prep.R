@@ -100,10 +100,10 @@ rm(list = setdiff(ls(), c("I_reps",
                           "Nquarter"))) #http://goo.gl/88L5C2
 
 # Plot to check output
-plot(I_reps[[1]][, 1], type = "l")
-lines(I_reps[[1]][, 2], col = "red")
+plot(I_reps[[2]][, 1], type = "l")
+lines(I_reps[[2]][, 2], col = "red")
 lines(I_reps[[1]][, 3], col = "green")
-lines(I_reps[[1]][, 4], col = "blue")
+lines(I_reps[[2]][, 4], col = "blue")
 # Save --------------------------------------------------------------------
 
 

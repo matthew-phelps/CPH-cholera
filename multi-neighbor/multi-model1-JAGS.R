@@ -71,7 +71,7 @@ add.summary(y)
 mcmcplot(y)
 # SAVE --------------------------------------------------------------------
 save(x, file = "Data/Rdata/multi-model-1-jags-list.Rdata")
-save(dataList, file = "Data/Rdata/model-1-dataList.Rdata")
+save(dataList, file = "Data/Rdata/multi-model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
 add.summary(model_jags_list_1[[1]])
 mcmcplot(model_jags_list_1[[1]])
