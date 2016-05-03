@@ -16,7 +16,7 @@ library(rjags)
 library(mcmcplots)
 library(ggmcmc)
 library(ggplot2)
-options(mc.cores = (parallel::detectCores()-1))
+options(mc.cores = (parallel::detectCores() - 1))
 
 
 # LOAD -------------------------------------------------------
@@ -55,22 +55,22 @@ for (reps in 1:num_reps){
                                         n.chains = 4,
                                         adapt = 1000,
                                         burnin = 1000,
-                                        sample = 3000,
-                                        thin = 10,
+                                        sample = 10,
+                                        thin = 35,
                                         plots = T)
   
 }
+x <-  model_jags_list_1[[1]]
 
-
-z <- extend.jags(y,
+y <- extend.jags(model_jags_list_1[[reps]],
             method = "parallel",
             adapt = 500,
-            sample = 2000,
-            thin = 20)
+            sample = 100,
+            thin = 35)
 add.summary(y)
 mcmcplot(y)
 # SAVE --------------------------------------------------------------------
-save(model_jags_list_1, file = "Data/Rdata/multi-model-1-jags-list.Rdata")
+save(x, file = "Data/Rdata/multi-model-1-jags-list.Rdata")
 save(dataList, file = "Data/Rdata/model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
 add.summary(model_jags_list_1[[1]])
@@ -78,7 +78,7 @@ mcmcplot(model_jags_list_1[[1]])
 
 # View each chain individually
 model_1_mcmc <- as.mcmc.list(model_jags_list_1[[1]])
-model_1_mcmc <- as.mcmc.list(x)
+model_1_mcmc <- as.mcmc.list(y)
 # Label parameters for ggs object
 param_names <- data.frame(
   Parameter = names((model_1_mcmc[[1]][1,])),
@@ -87,8 +87,8 @@ param_names <- data.frame(
             "Nyb->S.An.V", "S.An.Oe->S.An.V", "S.An.V",
             "phi")
   )
-model_1_betas <- ggs(model_1_mcmc, par_labels = param_names, family = "beta")
-
+model_1_ggs <- ggs(model_1_mcmc)
+model_1_betas <- ggs(model_1_mcmc, family = "beta")
 
 ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
     theme(legend.position = 'none')
@@ -96,11 +96,15 @@ ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
 ggs_density(model_1_ggs, family = 'beta') +
   theme(legend.position = 'none')
 
-ggs_autocorrelation(model_1_ggs, family = "beta") +
+ggs_autocorrelation(model_1_ggs, family = "phi") +
   theme_minimal() +
   theme(legend.position = "none")
 
 ggs_caterpillar(model_1_betas) +
+  theme_minimal() +
+  theme(legend.position = 'none')
+
+ggs_caterpillar(model_1_ggs, family = "phi") +
   theme_minimal() +
   theme(legend.position = 'none')
 

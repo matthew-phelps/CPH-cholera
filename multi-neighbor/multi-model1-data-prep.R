@@ -28,7 +28,11 @@ I_multi_replicate <- I_multi_replicate[1:12]
 
 ######
 ###### SELECT ONLY 3 NEIGHBORHOODS FOR TEST PURPOSES
-sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester" | I_multi_replicate$quarter == "Nyboder" 
+levels(I_multi_replicate$quarter)
+sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester" | I_multi_replicate$quarter == "Nyboder" | I_multi_replicate$quarter == "Kjoebmager" |
+  I_multi_replicate$quarter == "Rosenborg" | I_multi_replicate$quarter == "Combined_upper" |
+I_multi_replicate$quarter == "Combined_lower" | I_multi_replicate$quarter == "Oester" | 
+  I_multi_replicate$quarter == "Christianshavn"
 I_multi_replicate <- I_multi_replicate[sel,]
 rm(sel)
 Nquarter <- length(unique(I_multi_replicate$quarter))
@@ -99,7 +103,7 @@ rm(list = setdiff(ls(), c("I_reps",
 plot(I_reps[[1]][, 1], type = "l")
 lines(I_reps[[1]][, 2], col = "red")
 lines(I_reps[[1]][, 3], col = "green")
-
+lines(I_reps[[1]][, 4], col = "blue")
 # Save --------------------------------------------------------------------
 
 
