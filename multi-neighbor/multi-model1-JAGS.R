@@ -65,8 +65,10 @@ y <- extend.jags(model_jags_list_1[[reps]],
             sample = 100,
             thin = 35)
 add.summary(y)
-mcmcplot(y)
+mcmcplot(x)
 # SAVE --------------------------------------------------------------------
+load("/Users/Matthew/Dropbox (Personal)/AWS-Rstudio/multi-model-1-jags-list-large.Rdata")
+
 save(x, file = "Data/Rdata/multi-model-1-jags-list.Rdata")
 save(dataList, file = "Data/Rdata/multi-model-1-dataList.Rdata")
 # # JAGS DIAGNOSTICS -
@@ -75,7 +77,7 @@ mcmcplot(model_jags_list_1[[1]])
 
 # View each chain individually
 model_1_mcmc <- as.mcmc.list(model_jags_list_1[[1]])
-model_1_mcmc <- as.mcmc.list(y)
+model_1_mcmc <- as.mcmc.list(x)
 # Label parameters for ggs object
 param_names <- data.frame(
   Parameter = names((model_1_mcmc[[1]][1,])),
@@ -87,11 +89,36 @@ param_names <- data.frame(
 model_1_ggs <- ggs(model_1_mcmc)
 model_1_betas <- ggs(model_1_mcmc, family = "beta")
 
-ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
+beta_trace <- ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
     theme(legend.position = 'none')
+ggsave(beta_trace, file = "/Users/Matthew/Desktop/beta_trace.png",
+       width = 126,
+       height = 286,
+       units = 'cm',
+       dpi = 150,
+       limitsize = F)
+getwd()
 
-ggs_density(model_1_ggs, family = 'beta') +
+x$density
+
+
+den <- ggs_density(model_1_ggs, family = 'beta') +
   theme(legend.position = 'none')
+ggsave(den, file = "/Users/Matthew/Desktop/beta_den.png",
+       width = 26,
+       height = 300,
+       units = 'cm',
+       dpi = 150,
+       limitsize = F)
+
+rhat <- ggs_Rhat(model_1_ggs) + xlab("R_hat")
+ggsave(rhat, file = "/Users/Matthew/Desktop/rhat.png",
+       width = 26,
+       height = 300,
+       units = 'cm',
+       dpi = 150,
+       limitsize = F)
+
 
 ggs_autocorrelation(model_1_ggs, family = "phi") +
   theme_minimal() +
