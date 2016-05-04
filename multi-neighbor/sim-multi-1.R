@@ -6,8 +6,8 @@
 # Intro -------------------------------------------------------------------
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\Rdata",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
 setwd(wd.path)
 rm(list = ls())
 
@@ -18,14 +18,27 @@ library(coda)
 library(CholeraDataDK)
 
 # LOAD data ---------------------------------------------------------------
-load(file = "data/Rdata/sim-multi-1-data.Rdata")
+load(file = "Data_3.Rdata")
+Nweeks <- Nsteps
+load(file = "sim-multi-1-data.Rdata")
+
+
+
+# CITY LEVEL DATA ---------------------------------------------------------
 city_obs <- cholera_daily_data[cholera_daily_data$city == "copenhagen", ] # city-wide data
 city_obs <- select(city_obs, c(day_index, cases)) # remove un-needed columns
 
+city_obs_2 <- data.frame(t(I_it))
+colnames(city_obs_2) <- q_names
+city_obs_2$day_index <- seq(from = 7, to = (Nweeks )* 7, length.out = Nweeks)
+city_obs_2$I <- rowSums(city_obs_2[, 1:9]) / 7
 
 duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
 gamma <- 1/duration
-loops <- 10 # Has to be the same for both full sum and t+1 sim
+
+# LOOPS -------------------------------------------------------------------
+
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 
 
 
@@ -75,16 +88,16 @@ x <- do.call(rbind.data.frame, I_new_mat) # merge all sims to 1 df
 colnames(x) <- c(q_names, "sim_num")
 x$day <- 1:112
 I_simulated <- gather(x, quarter, I_simulated, 1:9) # wide to long
-I_it_daily <- data.frame(I_it_daily)
-colnames(I_it_daily) <- q_names
-I_it_daily$day <- 1:112
-I_obs_lng <- gather(I_it_daily, quarter, I_obs, 1:9)
+I_obs_df <- data.frame(I_it_daily)
+colnames(I_obs_df) <- q_names
+I_obs_df$day <- 1:112
+I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
 
 
 # T = 0: PLOT PANEL QUARTERS-------------------------------------------------------------
 
-sim1_plot <- ggplot() + 
-  geom_line(data = I_simulated, 
+sim1_plot <- ggplot() +
+  geom_line(data = I_simulated,
             alpha = 0.01,
             aes(x = day, y = I_simulated,
                                     group = interaction(quarter, sim_num),
@@ -114,14 +127,14 @@ city_sim$sim_num <- x$sim_num
 city1_plot <- ggplot() +
   geom_line(data = city_sim,
             aes(x = day, y = I_simulated, group = sim_num),
-            color = "green",
-            alpha = 0.01) +
-  geom_line(data = city_obs,
-            aes(x = day_index, y = cases)) +
+            color = "orange",
+            alpha = 0.02) +
+  geom_line(data = city_obs_2,
+            aes(x = day_index, y = I)) +
   ylab("Daily incidence") +
   theme_minimal() +
   ggtitle("Simulated from t = 0 \naggregated to city level")
-
+city1_plot
 
 ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-1-citywide.png',
        plot = city1_plot,
@@ -143,13 +156,13 @@ LambdaR <-        matrix(nrow = Nsteps, ncol = Nquarter)
 R_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
 I_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
 I_sim_vect <-     matrix(nrow = Nsteps, ncol = Nquarter)
-S_plus1_mat <-       matrix(nrow = Nsteps, ncol = Nquarter)
+S_plus1_mat <-    matrix(nrow = Nsteps, ncol = Nquarter)
 I_new_plus1 <- list(data.frame(matrix(data = NA, nrow = Nsteps, ncol = Nquarter)))
 
 # Starting values
 I_sim_vect[1, ] <- I_it_daily[1]
 I_sim_vect[1, c(5, 8, 9)] <- 1 # Init St.A.V & Ø + Nyb with cases
-S_it_est[1, ] <- N_it[, 1] # init all S
+S_plus1_mat[1, ] <- N_it[, 1] # init all S
 
 # Simulate:
 # "I_it_daily" is the daily "observed" incidence.
@@ -158,7 +171,7 @@ set.seed(13)
 for (z in 1:loops){
   for (t in 1:(Nsteps-1)){
     for(i in 1:Nquarter){
-      Lambda_est_pe[t, i] <- S_it_est[t, i] / N_it[i] * sum( betas[, i] * I_sim_vect[t, ] )
+      Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum( betas[, i] * I_sim_vect[t, ] )
       LambdaR[t, i] <- I_sim_vect[t, i] * gamma
       R_new[t, i] <- rpois(1, LambdaR[t, i])
       I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i] ) )
@@ -175,14 +188,15 @@ proc.time() - ptm
 # T + 1 : DATA RESHAPE --------------------------------------------------------------
 
 # Simulated daily incidence to long format:
-z <- do.call(rbind.data.frame, I_new_plus1) # merge all sims to 1 df
-colnames(z) <- c(q_names, "sim_num")
-z$day <- 1:112
-I_simulated_plus1 <- gather(z, quarter, I_simulated, 1:9) # wide to long
-I_it_daily <- data.frame(I_it_daily)
-colnames(I_it_daily) <- q_names
-I_it_daily$day <- 1:112
-I_obs_lng <- gather(I_it_daily, quarter, I_obs, 1:9)
+y <- do.call(rbind.data.frame, I_new_plus1) # merge all sims to 1 df
+y[is.na(y)] <- 0
+colnames(y) <- c(q_names, "sim_num")
+y$day <- 1:112
+I_simulated_plus1 <- gather(y, quarter, I_simulated, 1:9) # wide to long
+I_obs_df <- data.frame(I_it_daily)
+colnames(I_obs_df) <- q_names
+I_obs_df$day <- 1:112
+I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
 
 
 
@@ -190,7 +204,7 @@ I_obs_lng <- gather(I_it_daily, quarter, I_obs, 1:9)
 
 sim1_plus1 <- ggplot() + 
   geom_line(data = I_simulated_plus1, 
-            alpha = 0.5,
+            alpha = 0.01,
             aes(x = day, y = I_simulated,
                 group = interaction(quarter, sim_num),
                 color = quarter)) +
@@ -212,25 +226,25 @@ ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/
 
 # T + 1: Citywide ---------------------------------------------------------
 
-city_sim_plus1 <- data.frame(rowSums(z[, 1:9]))
+city_sim_plus1 <- data.frame(rowSums(y[, 1:9]))
 colnames(city_sim_plus1) <- "I_simulated"
-city_sim_plus1$day <- z$day
-city_sim_plus1$sim_num <- z$sim_num
+city_sim_plus1$day <- y$day
+city_sim_plus1$sim_num <- y$sim_num
 
 city_plus1_plot <- ggplot() +
   geom_line(data = city_sim_plus1,
             aes(x = day, y = I_simulated, group = sim_num),
-            color = "green",
-            alpha = 0.5) +
-  geom_line(data = city_obs,
-            aes(x = day_index, y = cases)) +
+            color = "dark green",
+            alpha = 0.01) +
+  geom_line(data = city_obs_2,
+            aes(x = day_index, y = I)) +
   ylab("Daily incidence") +
   theme_minimal() +
   ggtitle("Simulated t + 1\naggregated to city level")
+city_plus1_plot
 
-
-ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-1-citywide.png',
-       plot = city1_plot,
+ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-1-plus1-citywide.png',
+       plot = city_plus1_plot,
        width = 26,
        height = 16,
        units = 'cm',
