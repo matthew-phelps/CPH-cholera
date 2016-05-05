@@ -14,7 +14,6 @@ ifelse(grepl("wrz741", getwd()),
        save.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Results")
 setwd(wd.path)
 
-/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Rplot.pdf
 library(ggplot2)
 library(tidyr)
 require(grid)
@@ -25,9 +24,8 @@ library(plotrix)
 # LOAD data ---------------------------------------------------------------
 
 load(file = "sim-multi-1-data.Rdata")
-col_ext <- 
 par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
-color2D.matplot(log2(betas), 
+color2D.matplot(log(betas), 
                 show.values = TRUE,
                 axes = FALSE,
                 xlab = "",

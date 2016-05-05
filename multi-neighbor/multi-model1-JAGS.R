@@ -77,7 +77,7 @@ mcmcplot(model_jags_list_1[[1]])
 
 # View each chain individually
 model_1_mcmc <- as.mcmc.list(model_jags_list_1[[1]])
-model_1_mcmc <- as.mcmc.list(x)
+model_1_mcmc <- as.mcmc.list(jags_rep_5)
 # Label parameters for ggs object
 param_names <- data.frame(
   Parameter = names((model_1_mcmc[[1]][1,])),
@@ -124,7 +124,7 @@ ggs_autocorrelation(model_1_ggs, family = "phi") +
   theme_minimal() +
   theme(legend.position = "none")
 
-ggs_caterpillar(model_1_betas) +
+ggs_caterpillar(model_1_ggs, family = "beta") +
   theme_minimal() +
   theme(legend.position = 'none')
 
