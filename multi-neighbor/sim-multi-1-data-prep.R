@@ -22,7 +22,9 @@ library(runjags)
 
 load(file = "Data/Rdata/quarter_combined.Rdata")
 load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
-load(file = "/Users/Matthew/Dropbox (Personal)/AWS-Rstudio/multi-model-1-jags-list-large.Rdata")
+load(file = "/Users/Matthew/Dropbox (Personal)/AWS-Rstudio/JAGS-rep-4-ext1.Rdata")
+y <- jags_rep_4
+
 
 N_i_daily <- dataList[[1]]$N_i_daily
 I_it_daily <- dataList[[1]]$I_incidence
@@ -66,30 +68,11 @@ phi <- mcmc_median[82]
 
 # INITIALIZE EMPTY DF -----------------------------------------------------
 
-# I_sim <- matrix(NA, Nquarter, Nsteps-1)
-# S_sim <- matrix(NA, Nquarter, Nsteps-1)
+
 N_it <- matrix(NA, Nquarter, 1)
-
-# I_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-# S_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-# N_i_t1 <- matrix(0, nrow = 1, ncol = 1)
-
 N_it[, 1] <- unique(combined$est.pop.1853)
-# 
-# for (t in 1:Nsteps){
-#   N_it[1, t] <- (combined$est.pop.1853[which(combined$quarter== "St. Annae Vester")])[t]
-# }
 
-# # Bind first time-step of infection data to block of NAs the size of the remaining
-# # timesteps. These NAs will be overwritten with simulated data
-# I_it_est <- (cbind(I_i_t1, I_sim))
-# S_it_est <- (cbind(S_i_t1, S_sim))
-# I_it_est <- I_it_est[1, ]
-# S_it_est <- S_it_est[1, ]
-# I_plus1 <- I_it_est
-# S_plus1 <- S_it_est
-# 
-# rm(N_i_t1, S_i_t1 , I_i_t1, I_it, S_it)
+
 
 # # PREPARE MCMC DRAWS ------------------------------------------------------
 # 
