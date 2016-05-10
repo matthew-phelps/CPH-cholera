@@ -19,11 +19,13 @@ library(runjags)
 library(coda)
 library(ggmcmc)
 # LOAD --------------------------------------------------------------------
-load("multi-JAGS-rep-5.Rdata")
-model_1_mcmc <- as.mcmc.list(jags_rep_5_ext1)
-model_1_ggs <- ggs(model_1_mcmc)
+load("multi-JAGS-rep-5_ext2.Rdata")
+load("JAGS-rep-4-ext1.Rdata")
+model_5_mcmc <- as.mcmc.list(jags_rep_5_ext2)
+model_5_ggs <- ggs(model_5_mcmc)
 
-
+model_4_mcmc <- as.mcmc.list(jags_rep_4)
+model_4_ggs <- ggs(model_4_mcmc)
 # 1 - DIAGNOSTICS ---------------------------------------------------------
 #add.summary(jags_rep_5_ext1)
 #mcmcplot(jags_rep_5_ext1)
@@ -33,9 +35,9 @@ model_1_ggs <- ggs(model_1_mcmc)
 # 2 - GGS DIAGS -----------------------------------------------------------
 setwd(out.path)
 
-den <- ggs_density(model_1_ggs, family = 'beta') +
+den <- ggs_density(model_4_ggs, family = 'beta') +
   theme(legend.position = 'none')
-ggsave(den, file = "betas-density.png",
+ggsave(den, file = "betas-density-4.png",
        width = 26,
        height = 300,
        units = 'cm',
@@ -43,7 +45,7 @@ ggsave(den, file = "betas-density.png",
        limitsize = F)
 
 
-catp <- ggs_caterpillar(model_1_ggs, family = "beta") +
+catp <- ggs_caterpillar(model_4_ggs, family = "beta") +
   theme_minimal() +
   theme(legend.position = 'none')
 ggsave(catp, file = "betas-catapillar.png",
@@ -54,23 +56,27 @@ ggsave(catp, file = "betas-catapillar.png",
        limitsize = F)
 
 
-beta_trace <- ggs_traceplot(model_1_ggs, family = 'beta', simplify = .3) +
+beta_trace <- ggs_traceplot(model_4_ggs, family = 'beta', simplify = 0) +
   theme(legend.position = 'none')
 ggsave(beta_trace, file = "betas-trace.jpg",
-       width = 126,
-       height = 286,
+       width = 20,
+       height = 300,
        units = 'cm',
        dpi = 150,
        limitsize = F)
 
-rhat <- ggs_Rhat(model_1_ggs) + xlab("R_hat")
-ggsave(rhat, file = "rhat.jpg",
+rhat <- ggs_Rhat(model_4_ggs) + xlab("R_hat")
+ggsave(rhat, file = "rhat2.jpg",
        width = 26,
        height = 40,
        units = 'cm',
        dpi = 150,
        limitsize = F)
 
-ggs_autocorrelation(model_1_ggs, family = "phi") +
+gelman.plot(model_4_mcmc)
+gelman.diag(model_4_mcmc)
+
+
+ggs_autocorrelation(model_4_ggs, family = "phi") +
   theme_minimal() +
   theme(legend.position = "none")

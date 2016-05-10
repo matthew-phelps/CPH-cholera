@@ -22,8 +22,13 @@ library(CholeraDataDK)
 library(plotrix)
 
 # LOAD data ---------------------------------------------------------------
-
+load(file = "Proportion-attributable-t0.Rdata")
+load(file = "Attributable-cases-t0.Rdata")
 load(file = "sim-multi-1-data.Rdata")
+load(file = "Attributable-cases-tplus1.Rdata")
+load(file = "Proportion-attributable-tplus1.Rdata")
+
+# BETA TABLE --------------------------------------------------------------
 par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
 color2D.matplot(log(betas), 
                 show.values = TRUE,
@@ -32,7 +37,7 @@ color2D.matplot(log(betas),
                 ylab = "",
                 vcex = 2,
                 vcol = "black",
-                extremes = c("blue", "red"))
+                extremes = c("white", "blue"))
 xpos <- seq_len(ncol(betas)) +0.2
 ypos <- seq_len(ncol(betas)) - 0.4
 axis(3, # specifies top border x position
@@ -56,7 +61,7 @@ text(y = ypos,
      adj = 0,
      xpd = T) # not sure but allows txt to overflow table
 
-# SAVE
+# SAVE 
 setwd(save.path)
 dev.copy(png,
          file = "R1 - posterior table.png",
@@ -66,3 +71,181 @@ dev.copy(png,
          units = "cm")
 dev.off()
 
+
+# T = 0 : ATTRIBUTABLE CASES TABLE ------------------------------------------------
+
+par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
+color2D.matplot(I_att_mean, 
+                show.values = TRUE,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 1.4,
+                vcol = "black",
+                extremes = c("white", "blue"))
+xpos <- seq_len(ncol(betas)) +0.2
+ypos <- seq_len(ncol(betas)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names(betas),
+     srt = 45, # angle to rotate
+     pos = 3, # specifies to put txt at top
+     par("usr")[4] +0.7, # 0.7 lines above the top. [4] places ref to top border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(betas)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+# SAVE 
+setwd(save.path)
+dev.copy(png,
+         file = "R2 - Attrib-cases-absolute-t0.png",
+         width = 20,
+         height = 20,
+         res = 300,
+         units = "cm")
+dev.off()
+
+
+# T = 0 : PROPORTION ATTRIBUTABLE TABLE -------------------------------------------
+par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
+color2D.matplot(I_proportion, 
+                show.values = TRUE,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 1.4,
+                vcol = "black",
+                extremes = c("white", "blue"))
+xpos <- seq_len(ncol(betas)) +0.2
+ypos <- seq_len(ncol(betas)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names(betas),
+     srt = 45, # angle to rotate
+     pos = 3, # specifies to put txt at top
+     par("usr")[4] +0.7, # 0.7 lines above the top. [4] places ref to top border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(betas)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+
+
+# SAVE 
+setwd(save.path)
+dev.copy(png,
+         file = "R3 - attribt-cases-proption-t0.png",
+         width = 20,
+         height = 20,
+         res = 300,
+         units = "cm")
+dev.off()
+
+
+# T + 1 : ATTRIBUTABLE CASES TABLE ------------------------------------------------
+
+par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
+color2D.matplot(I_att_mean_plus1, 
+                show.values = TRUE,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 1.4,
+                vcol = "black",
+                extremes = c("white", "blue"))
+xpos <- seq_len(ncol(betas)) +0.2
+ypos <- seq_len(ncol(betas)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names(betas),
+     srt = 45, # angle to rotate
+     pos = 3, # specifies to put txt at top
+     par("usr")[4] +0.7, # 0.7 lines above the top. [4] places ref to top border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(betas)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+# SAVE 
+setwd(save.path)
+dev.copy(png,
+         file = "R4 - Attrib-cases-absolute-tplus1.png",
+         width = 20,
+         height = 20,
+         res = 300,
+         units = "cm")
+dev.off()
+
+
+
+# T + 1 : PROPORTION ATTRIBUTABLE TABLE -------------------------------------------
+par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
+color2D.matplot(I_proportion_plus1, 
+                show.values = TRUE,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 1.4,
+                vcol = "black",
+                extremes = c("white", "blue"))
+xpos <- seq_len(ncol(betas)) +0.2
+ypos <- seq_len(ncol(betas)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names(betas),
+     srt = 45, # angle to rotate
+     pos = 3, # specifies to put txt at top
+     par("usr")[4] +0.7, # 0.7 lines above the top. [4] places ref to top border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(betas)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+
+
+# SAVE 
+setwd(save.path)
+dev.copy(png,
+         file = "R5 - attribt-cases-proption-tplus1.png",
+         width = 20,
+         height = 20,
+         res = 300,
+         units = "cm")
+dev.off()
