@@ -28,6 +28,7 @@ load(file = "sim-multi-1-data.Rdata")
 load(file = "Attributable-cases-tplus1.Rdata")
 load(file = "Proportion-attributable-tplus1.Rdata")
 
+
 # BETA TABLE --------------------------------------------------------------
 par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
 color2D.matplot(log(betas), 
