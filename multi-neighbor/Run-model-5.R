@@ -44,7 +44,7 @@ for (reps in 1:num_reps){
   # Run the JAGS models 10 times. Each run fits all quarters together
   # Each [[reps]] is one JAGS model with 5 chains
   set.seed(13) # Not sure if this does anything in current set-up
-  model_jags_list_1[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-1.stan',
+  model_jags_list_1[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-5.stan',
                                         method = 'parallel',
                                         monitor = c('beta', 'phi'),
                                         modules = "glm",
