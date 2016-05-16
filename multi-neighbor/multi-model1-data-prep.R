@@ -49,7 +49,7 @@ rownames(pop) <- NULL
 # X_qrt <- select(I_multi_replicate, contains("rep"))
 
 #
-# DATA PREP FOR STAN ------------------------------------------------------
+# DATA PREP FOR JAGS ------------------------------------------------------
 # Find cumsum for each rep for each quarter using ddply() function
 cum_qrt <- ddply(I_multi_replicate[, 3:12], .(I_multi_replicate$quarter), cumsum)
 cum_qrt$day_index <- I_multi_replicate$day_index
@@ -88,6 +88,11 @@ for (i in 1:length(I_reps)) {
   I_reps[[i]] <- data.matrix(I_reps[[i]])
   }
 S_reps <- split(S_it_daily, f = S_it_daily$rep_num)
+
+
+
+
+
 
 
 # CLEAN DATASPACE ---------------------------------------------------------
