@@ -23,7 +23,7 @@ library(coda)
 library(parallel)
 library(runjags)
 library(rjags)
-# library(mcmcplots)
+library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
 options(mc.cores = (parallel::detectCores() -1 ))
@@ -58,11 +58,11 @@ jags_m1_rep_4 <- run.jags(model = 'JAGS-multi-quarter-1.stan',
                        monitor = c('beta_1', "beta_2", 'phi'),
                        modules = "glm",
                        data = dataList,
-                       n.chains = 4,
-                       adapt = 1000,
-                       burnin = 20000,
-                       sample = 1000,
-                       thin = 25,
+                       n.chains = 3,
+                       adapt = 50,
+                       burnin = 20,
+                       sample = 100,
+                       thin = 3,
                        plots = T)
 
 
@@ -73,16 +73,17 @@ mcmcplot(combine.mcmc(jags_m1_rep_4, collapse.chains = F))
 
 
 
-
-
-
-jags_rep_4_ext1 <- extend.jags(jags_rep_4,
+jags_m1_rep_4_ext1 <- extend.jags(jags_m1_rep_4,
                                method = "parallel",
                                adapt = 500,
                                sample = 400,
-                               thin = 35)
+                               thin = 3)
 
 
+add.summary(jags_m1_rep_4_ext1)
+extract(jags_m1_rep_4_ext1, what = "dic")
+
+mcmcplot(combine.mcmc(jags_m1_rep_4_ext1, collapse.chains = F))
 
 
 save(jags_rep_4, file="jags_rep_4_ext1.Rdata")

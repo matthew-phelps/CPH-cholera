@@ -4,16 +4,17 @@ model {
   gamma ~ dexp(5)
   
   # One hyperprior for entire city
-  mu ~ dnorm(0, 0.001)
-  tau ~ dgamma(0.001, 0.001)
-  sigma <- pow(tau, -0.5) # Do I need this?
+  mu1 ~ dnorm(0, 0.001)
+  tau1 ~ dgamma(0.001, 0.001)
+  mu2 ~ dnorm(0, 0.001)
+  tau2 ~ dgamma(0.001, 0.001)
  
   # 1 Internal force, same for every quarter
-  log_beta_1 ~ dnorm(mu, tau)
+  log_beta_1 ~ dnorm(mu1, tau1)
   beta_1 <- exp(log_beta_1)
   
   # 1 external force, same for every quarter
-  log_beta_2 ~ dnorm(mu, tau)
+  log_beta_2 ~ dnorm(mu2, tau2)
   beta_2 <- exp(log_beta_2)
   
   # Phi - under reporting fraction (same for all quarters)

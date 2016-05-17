@@ -13,8 +13,10 @@
 parameters {
   real log_beta_1;
   real log_beta_2;
-  real mu;
-  real tau;
+  real mu1;
+  real tau1;
+  real mu2;
+  real tau2;
   real logit_phi;
   real gamma_r;
 }
@@ -28,7 +30,6 @@ transformed parameters {
   real <lower=0> lambdaR[Nsteps, Nquarter];
   matrix <lower=0>[Nsteps, Nquarter] I_prev;
   matrix <lower=0>[Nsteps, Nquarter] S_it_daily;
-  int <lower=0>  R_new [Nsteps, Nquarter];		//# no. recovered at each observation
   real <lower=0> phi;
   
   
@@ -50,7 +51,7 @@ transformed parameters {
     for (i in 1:Nquarter) {
       lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(beta[, i] * (I_prev[t, ])));
       lambdaR[t, i] <- I_prev[t, i] * gamma_r;
-      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] - R_new[t, i]);
+      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] - round(lambdaR[t, i]));
       S_it_daily[t+1, i] <- S_it_daily[t, i] - (I_incidence[t, i] / phi);
       
 
@@ -59,17 +60,21 @@ transformed parameters {
 }
 
 model {
-  // hyper-priors
-  tau ~ cauchy(0, 5); // From: https://goo.gl/P5x3Kx
-  mu ~ normal (0, 100);
-  log_beta_1 ~ normal(mu, tau);
-  log_beta_2 ~ normal(mu, tau);
+  // hyper-priors beta_1
+  tau1 ~ cauchy(0, 5); // From: https://goo.gl/P5x3Kx
+  mu1 ~ normal (0, 100);
+  
+  // hyper-priors beta_2
+  tau2 ~ cauchy(0, 5);
+  mu2 ~ normal(0, 100);
+  
+  log_beta_1 ~ normal(mu1, tau1);
+  log_beta_2 ~ normal(mu2, tau2);
   gamma_r ~ exponential(5);
   logit_phi ~ normal(0, 100);
   for (t in 1:Nsteps-1){
     for (i in 1:Nquarter){
       I_incidence[t+1, i] ~ poisson(lambdaI[t, i]); // sampling from data
-      R_new[t, i] ~ poisson(lambdaR[t, i]); 
     }
   }
 }

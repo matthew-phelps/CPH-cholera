@@ -3,6 +3,7 @@
 
 
 # Intro -------------------------------------------------------------------
+rm(list=ls())
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
        data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
@@ -34,7 +35,7 @@ load(file = "multi-model1-data-prep.Rdata")
 
 
 # Stan Prep -------------------------------------------------------------
-# Save in list form to pass to JAGS
+# Save in list form to pass to Stan
 
 dataList <- list()
 num_reps <- length(I_reps)
@@ -44,18 +45,35 @@ dataList<- list(N_i_daily = N_pop[, 2],
                 Nsteps=Nsteps,
                 Nquarter = Nquarter)
 
+init_val_sub <- list(tau1 = 0.5,
+                 mu1 = -0.1,
+                 tau2 = 0.5,
+                 mu2 = -0.1,
+                 logit_phi = -1.8,
+                 LambdaI = 2,
+                 LambdaR = 0,
+                 I_prev = 1)
+
+init_val <- list(init_val_sub,
+                 init_val_sub,
+                 init_val_sub)
+
+
+
+
 setwd(model.path)
 
 stan_obj_1_rep_4 <- rstan::stan_model(file = "Stan-multi-quarter-1-OldToNew.stan")
 
-samp_size <- 100
+samp_size <- 1000
 stan_samples_1_rep_4 <- rstan::sampling(
   object = stan_obj_1_rep_4,
   data = dataList,
-  chains = 1,
+  chains = 3,
   iter = samp_size,
   warmup = samp_size/2,
   refresh = samp_size / 100,
+  inits = "0",
   seed = 1
 )
  
