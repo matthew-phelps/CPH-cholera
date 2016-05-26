@@ -8,7 +8,7 @@ ifelse(grepl("wrz741", getwd()),
        data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
 
 ifelse(grepl("wrz741", getwd()),
-       model.path <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
+       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
        model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
 
 
@@ -26,7 +26,7 @@ library(rjags)
 library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
-options(mc.cores = (parallel::detectCores() -1 ))
+options(mc.cores = (parallel::detectCores() -4 ))
 rm(amazon)
 
 # LOAD -------------------------------------------------------
@@ -58,11 +58,11 @@ jags_m1_rep_4 <- run.jags(model = 'JAGS-multi-quarter-1.stan',
                        monitor = c('beta_1', "beta_2", 'phi'),
                        modules = "glm",
                        data = dataList,
-                       n.chains = 3,
-                       adapt = 50,
-                       burnin = 20,
-                       sample = 100,
-                       thin = 3,
+                       n.chains = 4,
+                       adapt = 1e3,
+                       burnin = 5e4,
+                       sample = 1e2,
+                       thin = 35,
                        plots = T)
 
 
