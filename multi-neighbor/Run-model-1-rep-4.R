@@ -71,19 +71,20 @@ add.summary(jags_m1_rep_4)
 
 mcmcplot(combine.mcmc(jags_m1_rep_4, collapse.chains = F))
 
+setwd(data.path)
+save(jags_m1_rep_4, file = "jags_m1_rep_4_ext_1.Rdata")
 
-
-jags_m1_rep_4_ext1 <- extend.jags(jags_m1_rep_4,
+jags_m1_rep_4_ext_2 <- extend.jags(jags_m1_rep_4,
                                method = "parallel",
-                               adapt = 500,
-                               sample = 400,
-                               thin = 3)
+                               adapt = 1e3,
+                               sample = 1e3,
+                               thin = 35)
 
+save(jags_m1_rep_4_ext_2, file = "jags_m1_rep_4_ext_2.Rdata")
+add.summary(jags_m1_rep_4_ext_2)
+extract(jags_m1_rep_4_ext_2, what = "dic")
 
-add.summary(jags_m1_rep_4_ext1)
-extract(jags_m1_rep_4_ext1, what = "dic")
-
-mcmcplot(combine.mcmc(jags_m1_rep_4_ext1, collapse.chains = F))
+mcmcplot(combine.mcmc(jags_m1_rep_4_ext_2, collapse.chains = F))
 
 
 save(jags_rep_4, file="jags_rep_4_ext1.Rdata")
