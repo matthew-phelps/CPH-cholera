@@ -82,39 +82,5 @@ jags_m1_rep_4_ext_2 <- extend.jags(jags_m1_rep_4,
 
 save(jags_m1_rep_4_ext_2, file = "jags_m1_rep_4_ext_2.Rdata")
 add.summary(jags_m1_rep_4_ext_2)
-extract(jags_m1_rep_4_ext_2, what = "dic")
 
 mcmcplot(combine.mcmc(jags_m1_rep_4_ext_2, collapse.chains = F))
-
-
-save(jags_rep_4, file="jags_rep_4_ext1.Rdata")
-
-
-jags_rep_4_ext2 <- extend.jags(jags_rep_4,
-                               method = "parallel",
-                               adapt = 500,
-                               sample = 1000,
-                               thin = 35,
-                               drop.chain = c(1,3,5,7))
-
-
-save(jags_rep_4_ext2, file="jags-rep-4-ext2.Rdata")
-
-
-jags_rep_4_ext3 <- extend.jags(jags_rep_4_ext2,
-                               method = "parallel",
-                               adapt = 500,
-                               sample = 1000,
-                               thin = 35)
-
-save(jags_rep_4_ext3, file="jags-rep-4-ext3.Rdata")
-
-# S -----------------------------------------------------------------------
-
-jags_rep_4_ext4 <- extend.jags(jags_rep_4_ext3,
-                               method = "parallel",
-                               adapt = 500,
-                               sample = 1000,
-                               thin = 35)
-
-save(jags_rep_4_ext4, file="jags-rep-4-ext-4.Rdata")
