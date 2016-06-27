@@ -26,7 +26,7 @@ library(rjags)
 library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
-options(mc.cores = (parallel::detectCores() -4 ))
+options(mc.cores = 4)
 rm(amazon)
 
 # LOAD -------------------------------------------------------
@@ -36,10 +36,54 @@ load(file = "multi-model1-data-prep.Rdata")
 
 # JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
+jags_m1_ls <- list()
+dataList <- list()
+num_reps <- length(I_reps)
+for (reps in 1:num_reps){
+  dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
+                           I_incidence=I_reps[[reps]],
+                           Nsteps=Nsteps,
+                           Nquarter = Nquarter)
+}
+
+# Model 1 -----------------------------------------------------------------
+
+# JAGS
+# Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
+setwd(model.path)
+for (reps in 1:num_reps){
+set.seed(13) # Not sure if this does anything in current set-up
+jags_m1_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-1.stan',
+                          method = 'parallel',
+                          monitor = c('beta_1', "beta_2", 'phi'),
+                          modules = "glm",
+                          data = dataList[[reps]],
+                          n.chains = 4,
+                          adapt = 1e3,
+                          burnin = 1e4,
+                          sample = 1e4,
+                          thin = 1,
+                          plots = T)
+}
+
+
+add.summary(jags_m1_ls[[reps]])
+mcmcplot(combine.mcmc(jags_m1_ls[[reps]], collapse.chains = F))
+
+
+setwd(data.path)
+save(jags_m1_ls, file = "jags_m1_ls.Rdata")
+
+################################################################################
+################################################################################
+################################################################################
+
+# JAGS -------------------------------------------------------------
+# Save in list form to pass to JAGS
 model_jags_list_1 <- list()
 dataList <- list()
 num_reps <- length(I_reps)
-rep_num <- 2
+rep_num <- 3
 dataList<- list(N_i_daily = N_pop[, 2],
                 I_incidence=I_reps[[rep_num]],
                 Nsteps=Nsteps,
@@ -53,35 +97,25 @@ dataList<- list(N_i_daily = N_pop[, 2],
 # Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
 setwd(model.path)
 set.seed(13) # Not sure if this does anything in current set-up
-jags_m1_rep_2 <- run.jags(model = 'JAGS-multi-quarter-1.stan',
+jags_m1_rep_3 <- run.jags(model = 'JAGS-multi-quarter-1.stan',
                           method = 'parallel',
                           monitor = c('beta_1', "beta_2", 'phi'),
                           modules = "glm",
                           data = dataList,
                           n.chains = 4,
                           adapt = 1e3,
-                          burnin = 5e4,
-                          sample = 1e2,
-                          thin = 35,
+                          burnin = 1e4,
+                          sample = 1e4,
+                          thin = 1,
                           plots = T)
 
 
 
-add.summary(jags_m1_rep_2)
-
-mcmcplot(combine.mcmc(jags_m1_rep_2, collapse.chains = F))
+add.summary(jags_m1_rep_3)
+mcmcplot(combine.mcmc(jags_m1_rep_3, collapse.chains = F))
 
 setwd(data.path)
-save(jags_m1_rep_2, file = "jags_m1_rep_2_ext_1.Rdata")
-
-jags_m1_rep_2_ext_2 <- extend.jags(jags_m1_rep_2,
-                                   method = "parallel",
-                                   adapt = 1e3,
-                                   sample = 1e3,
-                                   thin = 35)
-
-save(jags_m1_rep_2_ext_2, file = "jags_m1_rep_2_ext_2.Rdata")
-add.summary(jags_m1_rep_2_ext_2)
+save(jags_m1_rep_3, file = "jags_m1_rep_3_ext_1.Rdata")
 
 
 ################################################################################
@@ -114,26 +148,16 @@ jags_m1_rep_3 <- run.jags(model = 'JAGS-multi-quarter-1.stan',
                           data = dataList,
                           n.chains = 4,
                           adapt = 1e3,
-                          burnin = 5e4,
-                          sample = 1e2,
-                          thin = 35,
+                          burnin = 1e4,
+                          sample = 1e4,
+                          thin = 1,
                           plots = T)
 
 
 
 add.summary(jags_m1_rep_3)
-
 mcmcplot(combine.mcmc(jags_m1_rep_3, collapse.chains = F))
 
 setwd(data.path)
 save(jags_m1_rep_3, file = "jags_m1_rep_3_ext_1.Rdata")
 
-jags_m1_rep_3_ext_2 <- extend.jags(jags_m1_rep_3,
-                                   method = "parallel",
-                                   adapt = 1e3,
-                                   sample = 1e3,
-                                   thin = 35)
-
-save(jags_m1_rep_3_ext_2, file = "jags_m1_rep_3_ext_2.Rdata")
-add.summary(jags_m1_rep_3_ext_2)
-mcmcplot(combine.mcmc(jags_m1_rep_3_ext_2, collapse.chains = F))

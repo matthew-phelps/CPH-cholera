@@ -1,14 +1,14 @@
 # 1 beta (citywide) + 1 alpha for city
 model {
   # Gamma
-  gamma ~ dexp(5)
+  gamma_b ~ dexp(5)
   
   # One hyperprior for entire city
   mu1 ~ dnorm(0, 0.001)
   tau1 ~ dgamma(0.001, 0.001)
   mu2 ~ dnorm(0, 0.001)
   tau2 ~ dgamma(0.001, 0.001)
- 
+  
   # 1 Internal force, same for every quarter
   log_beta_1 ~ dnorm(mu1, tau1)
   beta_1 <- exp(log_beta_1)
@@ -18,7 +18,7 @@ model {
   beta_2 <- exp(log_beta_2)
   
   # Phi - under reporting fraction (same for all quarters)
-  logit_phi ~dnorm(0, 0.001)
+  logit_phi ~ dnorm(0, 0.001)
   phi<- exp(logit_phi) / (1 + exp(logit_phi))
   
   for (k in 1:Nquarter){
@@ -28,7 +28,7 @@ model {
     # Asign 1 infected person into both
     I_prev[1, k] <- 1
     #I_prev[1, i] <- ifelse(i==5,1,0)
-
+    
     for (i in 1:Nquarter){
       # All external transmission coefficients are the same
       beta[k, i] <- ifelse(k==i, beta_1, beta_2)
@@ -39,8 +39,10 @@ model {
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
       lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(beta[, i] * (I_prev[t, ])))
-      lambdaR[t, i] <- I_prev[t, i] * gamma
-      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] - R_new[t, i])
+      lambdaR[t, i] <- I_prev[t, i] * gamma_b
+      R_temp[t, i] <- lambdaR[t, i]
+      R_new[t, i] <- min(I_prev[t, i], R_temp[t, i])
+      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] / phi - R_new[t, i])
       S_it_daily[t+1, i] <- S_it_daily[t, i] - (I_incidence[t, i] / phi)
     }
   }
@@ -48,8 +50,8 @@ model {
   # Likelihood function
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
-      I_incidence[t+1, i] ~ dpois(lambdaI[t, i])
-      R_new[t, i] ~ dpois(lambdaR[t, i])
+      I_incidence[t+1, i] ~ dpois(lambdaI[t, i] * phi)
+      
     }
   }
   #data# Nsteps
