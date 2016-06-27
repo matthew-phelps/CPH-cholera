@@ -136,3 +136,4 @@ jags_m1_rep_3_ext_2 <- extend.jags(jags_m1_rep_3,
 
 save(jags_m1_rep_3_ext_2, file = "jags_m1_rep_3_ext_2.Rdata")
 add.summary(jags_m1_rep_3_ext_2)
+mcmcplot(combine.mcmc(jags_m1_rep_3_ext_2, collapse.chains = F))
