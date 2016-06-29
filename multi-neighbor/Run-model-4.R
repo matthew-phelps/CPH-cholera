@@ -1,7 +1,8 @@
 # Author: Matthew Phelps
-#Desc: JAGS model of CPH 1853 - multineighborhood.
+#Desc: JAGS model with independent internal betas and 1 shared external beta
 
 # Intro -------------------------------------------------------------------
+rm(list = ls())
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
        data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
@@ -36,10 +37,10 @@ load(file = "multi-model1-data-prep.Rdata")
 
 # JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
-jags_m1_ls <- list()
+jags_m4_ls <- list()
 dataList <- list()
 num_reps <- length(I_reps)
-
+num_reps <- 1
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[reps]],
@@ -53,35 +54,36 @@ for (reps in 1:num_reps){
 # Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
 setwd(model.path)
 for (reps in 1:num_reps){
-set.seed(13) # Not sure if this does anything in current set-up
-jags_m1_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-1-b.stan',
-                          method = 'parallel',
-                          monitor = c('beta_1', "beta_2", 'phi'),
-                          modules = "glm",
-                          data = dataList[[reps]],
-                          n.chains = 4,
-                          adapt = 1e3,
-                          burnin = 1e4,
-                          sample = 1e4,
-                          thin = 1,
-                          plots = T)
+  set.seed(13) # Not sure if this does anything in current set-up
+  jags_m4_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-4.stan',
+                                 method = 'parallel',
+                                 monitor = c('beta_1', "beta_2", 'phi'),
+                                 modules = "glm",
+                                 data = dataList[[reps]],
+                                 n.chains = 4,
+                                 adapt = 1e3,
+                                 burnin = 1e3,
+                                 sample = 1e3,
+                                 thin = 1,
+                                 plots = T)
 }
 
 
-add.summary(jags_m1_ls[[reps]])
-mcmcplot(combine.mcmc(jags_m1_ls[[reps]], collapse.chains = F))
+add.summary(jags_m4_ls[[reps]])
+mcmcplot(combine.mcmc(jags_m4_ls[[reps]], collapse.chains = F))
 
 
 setwd(data.path)
-save(jags_m1_ls, file = "jags_m1_ls.Rdata")
+save(jags_m4_ls, file = "jags_m4_ls.Rdata")
 
 ################################################################################
 ################################################################################
 ################################################################################
 
-load(file = "jags_m1_ls.Rdata")
-dic_m1 <- ls()
-for (i in 1:length(jags_m1_ls)){
-  dic_m1[[i]] <- extract.runjags(jags_m1_ls[[i]], what = "dic")
+load(file = "jags_m4_ls.Rdata")
+dic_m4 <- list()
+for (i in 1:length(jags_m4_ls)){
+  dic_m4[[i]] <- extract.runjags(jags_m4_ls[[i]], what = "dic")
+  
 }
-
+save(file = "dic_m3.Rdata")

@@ -23,7 +23,7 @@ library(CholeraDataDK)
 # LOAD data ---------------------------------------------------------------
 load(file = "Data_3.Rdata")
 Nweeks <- Nsteps
-load(file = "sim-model-1-data.Rdata")
+load(file = "sim-model-2-data.Rdata")
 
 
 

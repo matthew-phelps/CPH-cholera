@@ -23,7 +23,7 @@ library(CholeraDataDK)
 # LOAD data ---------------------------------------------------------------
 load(file = "Data_3.Rdata")
 Nweeks <- Nsteps
-load(file = "sim-model-1-data.Rdata")
+load(file = "sim-model-3-data.Rdata")
 
 
 
@@ -151,29 +151,10 @@ sim1_plot <- ggplot() +
   facet_wrap(~quarter) +
   theme_minimal() +
   theme(legend.position = "none") +
-  ggtitle("Simulation from t = 0")
+  ggtitle("M3 Simulation from t = 0")
 sim1_plot
 
 
-
-# T = 0: Citywide ---------------------------------------------------------
-
-city_sim <- data.frame(rowSums(x[, 1:9]))
-colnames(city_sim) <- "I_simulated"
-city_sim$day <- x$day
-city_sim$sim_num <- x$sim_num
-
-city1_plot <- ggplot() +
-  geom_line(data = city_sim,
-            aes(x = day, y = I_simulated, group = sim_num),
-            color = "orange",
-            alpha = 0.02) +
-  geom_line(data = city_obs_2,
-            aes(x = day_index, y = I)) +
-  ylab("Daily incidence") +
-  theme_minimal() +
-  ggtitle("Simulated from t = 0 \naggregated to city level")
-city1_plot
 
 
 # T = 0: Attributable cases -----------------------------------------------
@@ -194,23 +175,15 @@ for (i in 1:Nquarter){
 # T = 0: Save -------------------------------------------------------
 
 setwd(save.plot.path)
-ggsave(filename = 'Sim-1-quarter.png',
+ggsave(filename = 'Sim-3-quarter.png',
        plot = sim1_plot,
        width = 26,
        height = 16,
        units = 'cm',
        dpi = 300)
-
-ggsave(filename = 'Sim-1-citywide.png',
-       plot = city1_plot,
-       width = 26,
-       height = 16,
-       units = 'cm',
-       dpi = 300)
-
 setwd(wd.path)
-save(I_att_mean, file = "Attributable-cases-t0.Rdata")
-save(I_proportion, file = "Proportion-attributable-t0.Rdata")
+save(I_att_mean, file = "Attributable-cases-t0-m3.Rdata")
+save(I_proportion, file = "Proportion-attributable-t0-m3.Rdata")
 
 
 
@@ -300,29 +273,8 @@ sim1_plus1 <- ggplot() +
   facet_wrap(~quarter) +
   theme_minimal() +
   theme(legend.position = "none") +
-  ggtitle("Simulation t + 1")
+  ggtitle("M3 sim t + 1")
 sim1_plus1
-
-
-
-# T + 1: Citywide ---------------------------------------------------------
-
-city_sim_plus1 <- data.frame(rowSums(y[, 1:9]))
-colnames(city_sim_plus1) <- "I_simulated"
-city_sim_plus1$day <- y$day
-city_sim_plus1$sim_num <- y$sim_num
-
-city_plus1_plot <- ggplot() +
-  geom_line(data = city_sim_plus1,
-            aes(x = day, y = I_simulated, group = sim_num),
-            color = "dark green",
-            alpha = 0.01) +
-  geom_line(data = city_obs_2,
-            aes(x = day_index, y = I)) +
-  ylab("Daily incidence") +
-  theme_minimal() +
-  ggtitle("Simulated t + 1\naggregated to city level")
-city_plus1_plot
 
 
 
@@ -346,22 +298,16 @@ for (i in 1:Nquarter){
 
 setwd(save.plot.path)
 
-ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-1-plus1-quarter.png',
+ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-3-plus1-quarter.png',
        plot = sim1_plus1,
        width = 26,
        height = 16,
        units = 'cm',
        dpi = 300)
 
-ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-1-plus1-citywide.png',
-       plot = city_plus1_plot,
-       width = 26,
-       height = 16,
-       units = 'cm',
-       dpi = 300)
 
-save(I_att_mean_plus1, file = "Attributable-cases-tplus1.Rdata")
-save(I_proportion_plus1, file = "Proportion-attributable-tplus1.Rdata")
+save(I_att_mean_plus1, file = "Attributable-cases-tplus1-m3.Rdata")
+save(I_proportion_plus1, file = "Proportion-attributable-tplus1-m3.Rdata")
 
 
 

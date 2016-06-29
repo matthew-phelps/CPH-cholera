@@ -1,63 +1,88 @@
 # Author: Matthew Phelps
-#Desc: JAGS model of CPH 1853 - multineighborhood.
+#Desc: JAGS model with independent internal betas and 1 shared external beta
 
 # Intro -------------------------------------------------------------------
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
-setwd(wd.path)
-rm(list = ls())
+       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
+       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
+
+ifelse(grepl("wrz741", getwd()),
+       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
+       model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
+
+
+amazon <- F
+
+ifelse(amazon == T,
+       data.path <- "~/Dropbox/AWS-Rstudio",
+       data.path <- data.path)
+setwd(data.path)
 library(plyr)
 library(coda)
 library(parallel)
 library(runjags)
 library(rjags)
 library(mcmcplots)
-library(ggmcmc)
-library(ggplot2)
-options(mc.cores = (parallel::detectCores() - 1))
-
+# library(ggmcmc)
+# library(ggplot2)
+options(mc.cores = 4)
+rm(amazon)
 
 # LOAD -------------------------------------------------------
-rm(list = ls())
-load(file = "data/Rdata/multi-model1-data-prep.Rdata")
+
+load(file = "multi-model1-data-prep.Rdata")
 
 
 # JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
-model_jags_list_1 <- list()
+jags_m5_ls <- list()
 dataList <- list()
 num_reps <- length(I_reps)
 num_reps <- 1
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
-                           I_incidence=I_reps[[2]],
+                           I_incidence=I_reps[[reps]],
                            Nsteps=Nsteps,
                            Nquarter = Nquarter)
 }
 
 # Model 1 -----------------------------------------------------------------
 
+# JAGS
+# Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
+setwd(model.path)
 for (reps in 1:num_reps){
-  # JAGS
-  # Run the JAGS models 10 times. Each run fits all quarters together
-  # Each [[reps]] is one JAGS model with 5 chains
   set.seed(13) # Not sure if this does anything in current set-up
-  model_jags_list_1[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-5.stan',
-                                        method = 'parallel',
-                                        monitor = c('beta', 'phi'),
-                                        modules = "glm",
-                                        data = dataList[[reps]],
-                                        n.chains = 4,
-                                        adapt = 1000,
-                                        burnin = 1000,
-                                        sample = 10,
-                                        thin = 35,
-                                        plots = T)
-  
+  jags_m5_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-5.stan',
+                                 method = 'parallel',
+                                 monitor = c("beta", 'phi'),
+                                 modules = "glm",
+                                 data = dataList[[reps]],
+                                 n.chains = 4,
+                                 adapt = 1e3,
+                                 burnin = 1e4,
+                                 sample = 1e4,
+                                 thin = 1,
+                                 plots = T)
 }
-x <-  model_jags_list_1[[1]]
+
+
+add.summary(jags_m5_ls[[reps]])
+mcmcplot(combine.mcmc(jags_m5_ls[[reps]], collapse.chains = F))
+
+
+setwd(data.path)
+save(jags_m5_ls, file = "jags_m5_ls.Rdata")
+
+
+
+
+
+#################################################
+#################################################
+#################################################
+#################################################
 
 y <- extend.jags(model_jags_list_1[[reps]],
             method = "parallel",
@@ -173,58 +198,3 @@ ggsave(phi_posteriors, file = "Output\\MCMC\\phi_posteriors.png")
 
 
 
-
-# Model 2 -----------------------------------------------------------------
-
-
-model_jags_list_2 <- list()
-for (reps in 1:num_reps){
-  # JAGS
-  # Run the JAGS models 10 times. Each run fits all quarters together
-  # Each [[reps]] is one JAGS model with 5 chains
-  set.seed(13) # Not sure if this does anything in current set-up
-  model_jags_list_2[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-2.stan',
-                                        method = 'parallel',
-                                        monitor = c('beta', 'phi'),
-                                        data = dataList[[reps]],
-                                        n.chains = 4,
-                                        adapt = 1000,
-                                        burnin = 1000,
-                                        sample = 1000,
-                                        thin = 3,
-                                        plots = T)
-  
-}
-
-add.summary(model_jags_list_2[[1]])
-
-mcmcplot(model_jags_list_2[[1]])
-
-
-
-
-# Model 3-----------------------------------------------------------------
-
-
-model_jags_list_3 <- list()
-for (reps in 1:num_reps){
-  # JAGS
-  # Run the JAGS models 10 times. Each run fits all quarters together
-  # Each [[reps]] is one JAGS model with 5 chains
-  set.seed(13) # Not sure if this does anything in current set-up
-  model_jags_list_3[[reps]] <- run.jags(model = '/Users/Matthew/GitClones/RCodes/multi-neighbor/JAGS-multi-quarter-2.stan',
-                                        method = 'parallel',
-                                        monitor = c('beta', 'phi'),
-                                        data = dataList[[reps]],
-                                        n.chains = 4,
-                                        adapt = 1000,
-                                        burnin = 1000,
-                                        sample = 1000,
-                                        thin = 3,
-                                        plots = T)
-  
-}
-
-add.summary(model_jags_list_3[[1]])
-
-mcmcplot(model_jags_list_3[[1]])
