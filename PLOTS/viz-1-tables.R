@@ -160,3 +160,11 @@ dev.copy(png,
          res = 300,
          units = "cm")
 dev.off()
+
+
+
+# SUM EXTERNAL CASES ------------------------------------------------------
+
+zx <- I_att_mean_plus1
+diag(zx) <- 0
+rowSums(zx)
