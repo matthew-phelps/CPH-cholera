@@ -85,4 +85,4 @@ for (i in 1:length(jags_m2_ls)){
   dic_m2[[i]] <- extract.runjags(jags_m2_ls[[i]], what = "dic")
   
 }
-
+save(dic_m2, file = "dic_m2.Rdata")

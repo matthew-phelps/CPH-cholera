@@ -82,8 +82,20 @@ save(jags_m3_ls, file = "jags_m3_ls.Rdata")
 
 load(file = "jags_m3_ls.Rdata")
 dic_m3 <- list()
-for (i in 1:length(jags_m2_ls)){
+for (i in 1:length(jags_m3_ls)){
   dic_m3[[i]] <- extract.runjags(jags_m3_ls[[i]], what = "dic")
   
 }
-save(file = "dic_m3.Rdata")
+save(dic_m3, file = "dic_m3.Rdata")
+dic.samples(jags_m3_ls[[1]])
+dic_m3[[1]]
+
+x <- dic_m3[[1]]
+sum(x$deviance) + sum(x$penalty)
+
+x <- lapply(dic_m3, "[", "deviance")
+sum(x$deviance)
+z <- lapply(x, sum)
+# Make it easier to read manually
+m3_dic <- 
+print(x)

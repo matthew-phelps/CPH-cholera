@@ -80,8 +80,8 @@ save(jags_m1_ls, file = "jags_m1_ls.Rdata")
 ################################################################################
 
 load(file = "jags_m1_ls.Rdata")
-dic_m1 <- ls()
+dic_m1 <- list()
 for (i in 1:length(jags_m1_ls)){
   dic_m1[[i]] <- extract.runjags(jags_m1_ls[[i]], what = "dic")
 }
-
+save(dic_m1, file = "dic_m1.Rdata")

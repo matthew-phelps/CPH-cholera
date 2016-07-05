@@ -2,6 +2,7 @@
 #Desc: JAGS model of CPH 1853 - multineighborhood.
 
 # Intro -------------------------------------------------------------------
+rm(list = ls())
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
        data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
@@ -11,38 +12,29 @@ ifelse(grepl("wrz741", getwd()),
        model.path <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
        model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
 
-
-amazon <- F
-
-ifelse(amazon == T,
-       data.path <- "~/Dropbox/AWS-Rstudio",
-       data.path <- data.path)
 setwd(data.path)
 
-options(mc.cores = (parallel::detectCores() -1 ))
-rm(amazon)
+library(runjags)
+library(rjags)
 
-# LOAD JAGS OUTPUTS-------------------------------------------------------
+# LOAD --------------------------------------------------------------------
 
-load(file = "multi-model1-data-prep.Rdata")
+load(file = "dic_m1.Rdata")
+load(file = "dic_m2.Rdata")
+load(file = "dic_m3.Rdata")
+load(file = "dic_m5.Rdata")
 
-
-# JAGS -------------------------------------------------------------
-# Save in list form to pass to JAGS
-model_jags_list_1 <- list()
-dataList <- list()
-num_reps <- length(I_reps)
-rep_num <- 4
-dataList<- list(N_i_daily = N_pop[, 2],
-                I_incidence=I_reps[[rep_num]],
-                Nsteps=Nsteps,
-                Nquarter = Nquarter)
-
-
-
-# Model 1 -----------------------------------------------------------------
-# Need to reun extract() on runjags output
-dic_m1_rep4 <- runjags::extract(model = , what = "dic")
-dic2 <- runjags::extract(model = 'JAGS-multi-quarter-2.stan', what = "dic")
-dic3 <- runjags::extract(model = 'JAGS-multi-quarter-3.stan', what = "dic")
-dic4 <- runjags::extract(model = 'JAGS-multi-quarter-4.stan', what = "dic")
+dic_m1
+dic_m2
+dic_m3
+dic_m5
+dic <- data.frame(pd_1 = c(3941, 3844, 3977, 4086, 3988, 3994,
+                              4049, 3925, 4016, 3994),
+                     pd_2 = c(3637, 3552, 3648, 3753, 3666, 3671,
+                              3728, 3622, 3718, 3659),
+                     pd_3 = c(3605, 3552, 3613, 3705, 3632, 3629,
+                              3682, 3558, 3685, 3622),
+                     pd_5 = c(3507, 3417, 3538, 3660, 3525, 3498,
+                              3597, 3526, 3542, 3545))
+colSums(dic)
+colMeans(dic)
