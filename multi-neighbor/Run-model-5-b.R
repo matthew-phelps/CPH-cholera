@@ -39,7 +39,6 @@ load(file = "multi-model1-data-prep.Rdata")
 jags_m5_ls_b <- list()
 dataList <- list()
 num_reps <- length(I_reps)
-num_reps <- 2
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[reps]],
