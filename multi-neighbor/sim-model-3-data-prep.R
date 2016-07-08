@@ -71,7 +71,10 @@ rownames(betas) <- q_names
 colnames(betas) <- q_names
 
 phi <- mcmc_median["phi"]
+gamma <- mcmc_median['gamma_b']
 
+# 95% HDI
+int_hpd <- data.frame(HPDinterval(y, 0.95))
 
 
 # INITIALIZE EMPTY DF -----------------------------------------------------

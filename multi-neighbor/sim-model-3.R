@@ -41,12 +41,137 @@ quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 
 # GLOBAL VARIABLES -------------------------------------------------------------------
 
-loops <- 12 # Has to be the same for both full sum and t+1 sim
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 n_gam <- loops*Nsteps*Nquarter
 gamma <- 1/5
 ###############################################################################
 ###############################################################################
 ###############################################################################
+
+
+
+# T + 1: PREP -----------------------------------------------------
+
+Lambda_est_pe <-  matrix(nrow = Nsteps, ncol = Nquarter)
+LambdaR <-        matrix(nrow = Nsteps, ncol = Nquarter)
+R_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
+I_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
+I_prev_vect <-     matrix(nrow = Nsteps, ncol = Nquarter)
+S_plus1_mat <-    matrix(nrow = Nsteps, ncol = Nquarter)
+I_new_plus1 <- list(data.frame(matrix(data = NA, nrow = Nsteps, ncol = Nquarter)))
+# Attributable infections variables:
+Lambda_quart<-lapply(1:Nquarter,
+                     function(x) data.frame(matrix(NA,
+                                                   nrow=Nsteps,
+                                                   ncol=Nquarter)))
+I_attr <-lapply(1:loops,
+                function(x) data.frame(matrix(NA,
+                                              nrow=Nquarter,
+                                              ncol=Nquarter)))
+
+# Starting values
+I_prev_vect[1, ] <- I_it_daily[1]
+I_prev_vect[1, c(5, 8, 9)] <- 1 # Init St.A.V & Ø + Nyb with cases
+S_plus1_mat[1, ] <- N_it[, 1] # init all S
+
+# T + 1: SIMULATION -----------------------------------------------------
+# "I_it_daily" is the daily "observed" incidence.
+ptm <- proc.time()
+set.seed(13)
+for (z in 1:loops){
+  for (t in 1:(Nsteps-1)){
+    for(i in 1:Nquarter){
+      Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum(betas[, i] * I_prev_vect[t, ])
+      LambdaR[t, i] <- I_prev_vect[t, i] * gamma
+      
+      R_temp <- LambdaR[t, i]
+      R_new[t, i] <- min(R_temp, I_prev_vect[t, i])
+      
+      I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i]  * phi) )
+      I_prev_vect[t + 1, i] <- max(0, (I_prev_vect[t, i] + I_it_daily[t, i] / phi - R_new[t, i]))
+      
+      S_temp <- (S_plus1_mat[t, i]) - (I_it_daily[t, i]) / (phi)
+      S_plus1_mat[t + 1, i] <- max(0, S_temp)
+      Lambda_quart[[i]][t, ] <- ((S_plus1_mat[t, i] / N_it[i]) * ( betas[, i] * I_prev_vect[t, ])) * phi
+    }
+  }
+  # For each quarter: store sum of infections attributed to each quarter over
+  # all time-steps
+  I_attr[[z]] <- sapply(Lambda_quart, colSums, na.rm=T)
+  I_new_plus1[[z]] <- data.frame(I_new)
+  I_new_plus1[[z]]$sim_sum <- z
+}
+proc.time() - ptm
+
+# T + 1 : DATA RESHAPE --------------------------------------------------------------
+# Simulated daily incidence to long format:
+y <- do.call(rbind.data.frame, I_new_plus1) # merge all sims to 1 df
+y[is.na(y)] <- 0
+colnames(y) <- c(q_names, "sim_num")
+y$day <- 1:112
+I_simulated_plus1 <- gather(y, quarter, I_simulated, 1:9) # wide to long
+I_obs_df <- data.frame(I_it_daily)
+colnames(I_obs_df) <- q_names
+I_obs_df$day <- 1:112
+I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
+
+
+
+# T + 1: PLOT PANEL QUARTERS-------------------------------------------------------------
+
+sim1_plus1 <- ggplot() + 
+  geom_line(data = I_simulated_plus1, 
+            alpha = 0.5,
+            aes(x = day, y = I_simulated,
+                group = interaction(quarter, sim_num),
+                color = quarter)) +
+  geom_line(data = I_obs_lng, aes(x = day,
+                                  y = I_obs, group = quarter)) +
+  facet_wrap(~quarter) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  ggtitle("M3 sim t + 1")
+sim1_plus1
+
+
+
+# T + 1: Attributable cases -----------------------------------------------
+# Element-wise mean of list of matrices. From : http://goo.gl/VA7S66
+I_att_mean_plus1 <- data.frame(Reduce("+", I_attr) / length(I_attr), row.names = q_names)
+colnames(I_att_mean_plus1) <- q_names
+
+I_proportion_plus1 <- data.frame(matrix(data = NA, nrow = Nquarter, ncol = Nquarter), row.names = q_names)
+colnames(I_proportion_plus1) <- q_names
+for (i in 1:Nquarter){
+  for (j in 1:Nquarter){
+    I_proportion_plus1[j, i] <- I_att_mean_plus1[j, i] / quarter_sums[i, 2]
+    
+  }
+}
+
+
+# T + 1: Save -------------------------------------------------------
+
+setwd(save.plot.path)
+
+ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-3-plus1-quarter.png',
+       plot = sim1_plus1,
+       width = 26,
+       height = 16,
+       units = 'cm',
+       dpi = 300)
+
+setwd(wd.path)
+save(I_att_mean_plus1, file = "Attributable-cases-tplus1-m3.Rdata")
+save(I_proportion_plus1, file = "Proportion-attributable-tplus1-m3.Rdata")
+
+
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+
 
 
 # T = 0: PREP-----------------------------------------------------
@@ -89,7 +214,7 @@ for (z in 1:loops){
       
       S_temp <- (S_it_est[t, i]) -    (I_new[t, i]) / (phi)
       S_it_est[t + 1, i] <- max(0, S_temp)
-      Lambda_quart[[i]][t, ] <- (S_it_est[t, i] / N_it[i]) * ( betas[, i] * I_prev_vect[t, ])
+      Lambda_quart[[i]][t, ] <- ((S_it_est[t, i] / N_it[i]) * ( betas[, i] * I_prev_vect[t, ])) * phi
     }
   }
   # For each quarter: store sum of infections attributed to each quarter over
@@ -184,131 +309,5 @@ ggsave(filename = 'Sim-3-quarter.png',
 setwd(wd.path)
 save(I_att_mean, file = "Attributable-cases-t0-m3.Rdata")
 save(I_proportion, file = "Proportion-attributable-t0-m3.Rdata")
-
-
-
-
-###############################################################################
-###############################################################################
-###############################################################################
-
-
-# T + 1: PREP -----------------------------------------------------
-
-Lambda_est_pe <-  matrix(nrow = Nsteps, ncol = Nquarter)
-LambdaR <-        matrix(nrow = Nsteps, ncol = Nquarter)
-R_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
-I_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
-I_prev_vect <-     matrix(nrow = Nsteps, ncol = Nquarter)
-S_plus1_mat <-    matrix(nrow = Nsteps, ncol = Nquarter)
-I_new_plus1 <- list(data.frame(matrix(data = NA, nrow = Nsteps, ncol = Nquarter)))
-# Attributable infections variables:
-Lambda_quart<-lapply(1:Nquarter,
-                     function(x) data.frame(matrix(NA,
-                                                   nrow=Nsteps,
-                                                   ncol=Nquarter)))
-I_attr <-lapply(1:loops,
-                function(x) data.frame(matrix(NA,
-                                              nrow=Nquarter,
-                                              ncol=Nquarter)))
-
-# Starting values
-I_prev_vect[1, ] <- I_it_daily[1]
-I_prev_vect[1, c(5, 8, 9)] <- 1 # Init St.A.V & Ø + Nyb with cases
-S_plus1_mat[1, ] <- N_it[, 1] # init all S
-
-# T + 1: SIMULATION -----------------------------------------------------
-# "I_it_daily" is the daily "observed" incidence.
-ptm <- proc.time()
-set.seed(13)
-for (z in 1:loops){
-  for (t in 1:(Nsteps-1)){
-    for(i in 1:Nquarter){
-      Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum(betas[, i] * I_prev_vect[t, ])
-      LambdaR[t, i] <- I_prev_vect[t, i] * gamma
-      
-      R_temp <- LambdaR[t, i]
-      R_new[t, i] <- min(R_temp, I_prev_vect[t, i])
-      
-      I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i]  * phi) )
-      I_prev_vect[t + 1, i] <- max(0, (I_prev_vect[t, i] + I_it_daily[t, i] / phi - R_new[t, i]))
-      
-      S_temp <- (S_plus1_mat[t, i]) - (I_it_daily[t, i]) / (phi)
-      S_plus1_mat[t + 1, i] <- max(0, S_temp)
-      Lambda_quart[[i]][t, ] <- (S_plus1_mat[t, i] / N_it[i]) * (betas[, i] * I_prev_vect[t, ])
-    }
-  }
-  # For each quarter: store sum of infections attributed to each quarter over
-  # all time-steps
-  I_attr[[z]] <- sapply(Lambda_quart, colSums, na.rm=T)
-  I_new_plus1[[z]] <- data.frame(I_new)
-  I_new_plus1[[z]]$sim_sum <- z
-}
-proc.time() - ptm
-
-# T + 1 : DATA RESHAPE --------------------------------------------------------------
-# Simulated daily incidence to long format:
-y <- do.call(rbind.data.frame, I_new_plus1) # merge all sims to 1 df
-y[is.na(y)] <- 0
-colnames(y) <- c(q_names, "sim_num")
-y$day <- 1:112
-I_simulated_plus1 <- gather(y, quarter, I_simulated, 1:9) # wide to long
-I_obs_df <- data.frame(I_it_daily)
-colnames(I_obs_df) <- q_names
-I_obs_df$day <- 1:112
-I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
-
-
-
-# T + 1: PLOT PANEL QUARTERS-------------------------------------------------------------
-
-sim1_plus1 <- ggplot() + 
-  geom_line(data = I_simulated_plus1, 
-            alpha = 0.5,
-            aes(x = day, y = I_simulated,
-                group = interaction(quarter, sim_num),
-                color = quarter)) +
-  geom_line(data = I_obs_lng, aes(x = day,
-                                  y = I_obs, group = quarter)) +
-  facet_wrap(~quarter) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  ggtitle("M3 sim t + 1")
-sim1_plus1
-
-
-
-# T + 1: Attributable cases -----------------------------------------------
-# Element-wise mean of list of matrices. From : http://goo.gl/VA7S66
-I_att_mean_plus1 <- data.frame(Reduce("+", I_attr) / length(I_attr), row.names = q_names)
-colnames(I_att_mean_plus1) <- q_names
-
-I_proportion_plus1 <- data.frame(matrix(data = NA, nrow = Nquarter, ncol = Nquarter), row.names = q_names)
-colnames(I_proportion_plus1) <- q_names
-for (i in 1:Nquarter){
-  for (j in 1:Nquarter){
-    I_proportion_plus1[j, i] <- I_att_mean_plus1[j, i] / quarter_sums[i, 2]
-    
-  }
-}
-
-
-
-# T + 1: Save -------------------------------------------------------
-
-setwd(save.plot.path)
-
-ggsave(filename = '/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/multi/Sim-3-plus1-quarter.png',
-       plot = sim1_plus1,
-       width = 26,
-       height = 16,
-       units = 'cm',
-       dpi = 300)
-
-
-save(I_att_mean_plus1, file = "Attributable-cases-tplus1-m3.Rdata")
-save(I_proportion_plus1, file = "Proportion-attributable-tplus1-m3.Rdata")
-
-
 
 
