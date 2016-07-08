@@ -23,9 +23,9 @@ library(runjags)
 
 load(file = "Data/Rdata/quarter_combined.Rdata")
 load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
-load(file = "Data/Rdata/jags_m5_ls.Rdata")
-zx <- jags_m5_ls
-rm(jags_m5_ls)
+load(file = "Data/Rdata/jags_m5_ls_b.Rdata")
+zx <- jags_m5_ls_b
+rm(jags_m5_ls, jags_m5_ls_b)
 
 N_i_daily <- dataList[[1]]$N_i_daily
 I_it_daily <- dataList[[1]]$I_incidence
@@ -81,7 +81,7 @@ N_it[, 1] <- unique(combined$est.pop.1853)
 
 # SAVE --------------------------------------------------------------------
 rm(combined, dataList, N_i_daily, mcmc_median, z, zx)
-save(int_hpd, file = 'data/Rdata/int_hpd.Rdata')
+save(int_hpd, file = 'data/Rdata/int_hpd_b.Rdata')
 rm(int_hpd)
-save(list = ls(), file = 'data/Rdata/sim-model-5-data.Rdata' )
+save(list = ls(), file = 'data/Rdata/sim-model-5-data-b.Rdata' )
 

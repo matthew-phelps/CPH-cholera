@@ -15,6 +15,7 @@ setwd(wd.path)
 
 library(ggplot2)
 library(tidyr)
+library(dplyr)
 require(grid)
 library(coda)
 library(CholeraDataDK)
@@ -22,8 +23,8 @@ library(CholeraDataDK)
 # LOAD data ---------------------------------------------------------------
 load(file = "Data_3.Rdata")
 Nweeks <- Nsteps
-load(file = "sim-model-5-data.Rdata")
-
+b <- T
+ifelse(b, load("sim-model-5-data-b.Rdata"), load("sim-model-5-data.Rdata"))
 
 
 # CITY LEVEL DATA ---------------------------------------------------------
@@ -41,10 +42,6 @@ quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 # GLOBAL VARIABLES -------------------------------------------------------------------
 
 loops <- 100 # Has to be the same for both full sum and t+1 sim
-duration <- 5 # In days. "1-2 weeks" from DOI:  10.1038/nrmicro2204
-gamma <- .28
-
-
 
 ###############################################################################
 ###############################################################################
@@ -129,7 +126,7 @@ I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
 
 sim1_plus1 <- ggplot() + 
   geom_line(data = I_simulated_plus1, 
-            alpha = 0.01,
+            alpha = 0.1,
             aes(x = day, y = I_simulated,
                 group = interaction(quarter, sim_num),
                 color = quarter)) +
