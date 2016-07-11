@@ -24,7 +24,7 @@ model {
     for (j in 1:Nquarter){
       # Beta log hypreprior distributions
       log_beta[i, j] ~ dnorm(mu, tau);
-      # Betas - force of infection. diagnols are internal, off-diag are between
+      # Betas - force of infection. Diagnols are internal, off-diag are between
       # neighborhood
       beta[i, j] <- exp(log_beta[i, j]);
     } 

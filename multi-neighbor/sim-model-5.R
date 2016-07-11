@@ -7,8 +7,8 @@ ifelse(grepl("wrz741", getwd()),
        wd.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata",
        wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
 ifelse(grepl("wrz741", getwd()),
-       save.plot.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/Multi",
-       save.plot.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations/Multi")
+       save.plot.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations",
+       save.plot.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Simulations")
 
 setwd(wd.path)
 
@@ -37,6 +37,8 @@ city_obs_2$day_index <- seq(from = 7, to = (Nweeks )* 7, length.out = Nweeks)
 city_obs_2$I <- rowSums(city_obs_2[, 1:9]) / 7
 quarter_sums <- select(combined, c(quarter, week.id, cum.sick))
 quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
+
+
 
 
 # GLOBAL VARIABLES -------------------------------------------------------------------
@@ -82,7 +84,7 @@ for (z in 1:loops){
     for(i in 1:Nquarter){
       Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum( betas[, i] * I_prev_vect[t, ] )
       LambdaR[t, i] <- I_prev_vect[t, i] * gamma
-     
+      
       # Number of infections caused by quarter i at time t
       Lambda_quart[[i]][t, ] <- ((S_plus1_mat[t, i] / N_it[i]) * ( betas[, i] * I_prev_vect[t, ])) * phi
       
@@ -126,12 +128,12 @@ I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
 
 sim1_plus1 <- ggplot() + 
   geom_line(data = I_simulated_plus1, 
-            alpha = 0.1,
+            alpha = 0.01,
             aes(x = day, y = I_simulated,
                 group = interaction(quarter, sim_num),
                 color = quarter)) +
-  geom_line(data = I_obs_lng, aes(x = day,
-                                  y = I_obs, group = quarter)) +
+  geom_line(data = combined, aes(x = (week.id+1) * 7,
+                                 y = sick.total.week/7, group = quarter)) +
   facet_wrap(~quarter) +
   theme_minimal() +
   theme(legend.position = "none") +
@@ -243,6 +245,21 @@ colnames(x) <- c(q_names, "sim_num")
 x$day <- 1:Nsteps
 I_simulated <- gather(x, quarter, I_simulated, 1:Nquarter) # wide to long
 
+# Remove all outbreaks that didn't take hold:
+# Helper function to test if sim is valid
+test_outbreak <- function(x){
+  # test if quarter 5 has 0 infections on day 45
+  if(x$X5[45] == 0){F} else{T}
+}
+# Index where sims didn't catch using helper function
+null_idx <- sapply(I_new_mat, test_outbreak)
+x <- I_new_mat[null_idx]
+x2 <- do.call(rbind.data.frame, x) # merge all sims to 1 df
+colnames(x2) <- c(q_names, "sim_num")
+x2$day <- 1:Nsteps
+I_sim_filtered <- gather(x2, quarter, I_simulated, 1:Nquarter) # wide to long
+
+
 # Observed data
 I_obs_df <- data.frame(I_it_daily)
 colnames(I_obs_df) <- q_names
@@ -253,14 +270,17 @@ rm(x)
 
 # T = 0: PLOT PANEL QUARTERS-------------------------------------------------------------
 
+# Remove outbreaks that don't take hold
+
+
 sim1_plot <- ggplot() +
-  geom_line(data = I_simulated,
-            alpha = 0.5,
+  geom_line(data = I_sim_filtered,
+            alpha = 0.1,
             aes(x = day, y = I_simulated,
                 group = interaction(quarter, sim_num),
                 color = quarter)) +
-  geom_line(data = I_obs_lng, aes(x = day,
-                                  y = I_obs, group = quarter)) +
+  geom_line(data = combined, aes(x = (week.id+1) * 7,
+                                 y = sick.total.week/7, group = quarter)) +
   facet_wrap(~quarter) +
   theme_minimal() +
   theme(legend.position = "none") +
@@ -309,13 +329,6 @@ for (i in 1:Nquarter){
 setwd(save.plot.path)
 ggsave(filename = 'Sim-1-quarter.png',
        plot = sim1_plot,
-       width = 26,
-       height = 16,
-       units = 'cm',
-       dpi = 300)
-
-ggsave(filename = 'Sim-1-citywide.png',
-       plot = city1_plot,
        width = 26,
        height = 16,
        units = 'cm',
