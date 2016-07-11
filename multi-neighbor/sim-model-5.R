@@ -41,7 +41,7 @@ quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 
 # GLOBAL VARIABLES -------------------------------------------------------------------
 
-loops <- 100 # Has to be the same for both full sum and t+1 sim
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 
 ###############################################################################
 ###############################################################################
@@ -135,7 +135,7 @@ sim1_plus1 <- ggplot() +
   facet_wrap(~quarter) +
   theme_minimal() +
   theme(legend.position = "none") +
-  ggtitle("Simulation t + 1")
+  ggtitle("Sim: t + 1")
 sim1_plus1
 
 
@@ -160,7 +160,7 @@ for (i in 1:Nquarter){
 
 setwd(save.plot.path)
 
-ggsave(filename = 'Sim-5-plus1-quarter.png',
+ggsave(filename = 'Sim-m5-tplus1.png',
        plot = sim1_plus1,
        width = 26,
        height = 16,

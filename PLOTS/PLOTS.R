@@ -4,22 +4,27 @@
 
 ## intro
 rm(list = ls())
+
 graphics.off()
-mac<- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data"
-pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
+ifelse(grepl("wrz741", getwd()),
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
+ifelse(grepl("wrz741", getwd()),
+       save.plot.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Output",
+       save.plot.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output")
 
-setwd(mac)
-
+setwd(wd.path)
 library (ggplot2)
 library (reshape) # for renaming variables
 library(plyr)
 library(rCharts)
 library(dplyr)
+library(CholeraDataDK)
 
 
 
 # City-wide time-series ---------------------------------------------------
-
+outbreak <- cph_citywide_data
 outbreak <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
 citywide <- ggplot(outbreak, aes(x = day.index))+
   geom_line(aes(y = cholera.cases, color = "cases"), size = 1) +
@@ -46,7 +51,7 @@ ggsave(citywide,
        units = 'in')
 
 # City-wide aggregated to the week ----------------------------------------
-load(file = "Rdata\\quarter_combined.Rdata")
+load(file = "data/Rdata/quarter_combined.Rdata")
 Nsteps <- 16
 quarterID <- as.numeric(combined$quarterID)
 n <- as.numeric(length(quarterID))
@@ -60,7 +65,7 @@ for (i in 1:Nquarter){
   for( t in 1:Nsteps){
     S_it[i, t] <- (combined$S[which(combined$quarterID==i)])[t]
     I_it[i, t] <- (combined$sick.total.week[which(combined$quarterID==i)])[t]
-    N_i[i, t] <- (combined$pop1855[which(combined$quarterID==i)])[t]
+    N_i[i, t] <- (combined$est.pop.1853[which(combined$quarterID==i)])[t]
   }
 }
 row.names(I_it) <- q_names[, 1]
@@ -95,8 +100,9 @@ ggsave(city_week_plot,
        units = 'in')
 
 # Quarter - Incident cases per week ---------------------------------------
-
-load("Rdata\\incident_cases_per_week.Rd")
+load(file = "data/Rdata/quarter_combined.Rdata")
+quarter <- combined
+quarter$startday.index <- seq(from = 7, to = (Nsteps)* 7, length.out = Nsteps)
 incident.cases <- ggplot (quarter, aes( x = startday.index, y = sick.total.week, group = quarter, color = quarter))+
   geom_line() +
   geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black") +
@@ -108,8 +114,8 @@ incident.cases <- ggplot (quarter, aes( x = startday.index, y = sick.total.week,
 incident.cases
 
 # Quarter - Normalized incidence per week ---------------------------------
-load("Rdata/Quarter - normailzed incidence per week.Rdata")
-normal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = normal.incidence, group = quarter, color = quarter))+
+quarter$normal.incidence <- quarter$sick.total.week / quarter$est.pop.1853 * 100
+normal.incident.cases <- ggplot (quarter, aes( x = startday.index, y = normal.incidence, group = quarter, color = quarter))+
   geom_line() +
   geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black") +
   xlab("Day index") +
@@ -122,14 +128,31 @@ normal.incident.cases
 
 
 # Quarter - Panal Normalized incidence per week ---------------------------------
-load("Rdata/Quarter - normailzed incidence per week.Rdata")
-panal.incident.cases <- ggplot (quarter.by.week, aes( x = startday.index, y = normal.incidence, group = quarter, color = quarter))+
-  geom_line() +
-  geom_vline( xintercept = 39, linetype = 2, alpha = 0.6, color = "black") +
-  facet_wrap(~quarter) +
-  xlab("Day index") +
-  ylab("Incident cases per 1000 ppl") +
-  xlim(0, 75) +
-  ggtitle ("Normalized incident cases per week by quarter")
 
+panal.incident.cases <- ggplot (quarter, aes( x = week.id+1, y = normal.incidence, group = quarter, color = quarter))+
+  geom_line(size = 1) +
+  geom_vline( xintercept = 6, linetype = 2, color = "black") +
+  facet_wrap(~quarter) +
+  xlab("Week index") +
+  scale_x_continuous(limits = c(1, 11)) +
+  ylab("Incidence per 100") +
+  ggtitle ("Neighorhood outbreaks") +
+  theme_classic() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 18, face = "bold", vjust = -0.1),
+        axis.title.y = element_text(size = 16, face = "bold", vjust = 0.5),
+        plot.title = element_text(size = 22, face="bold"),
+        plot.margin = unit(c(0,0,0.5,0), 'lines'),
+        strip.background = element_rect(color = '#F0F0F0', fill = '#F0F0F0')) +
+  theme(panel.margin = unit(c(0.5,0.5,0.5,2), "lines"))
 panal.incident.cases
+
+setwd(save.plot.path)
+ggsave(filename = 'Neighborhood curves.png',
+       plot = panal.incident.cases,
+       width = 26,
+       height = 16,
+       units = 'cm',
+       dpi = 300)
