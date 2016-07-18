@@ -13,7 +13,7 @@ ifelse(grepl("wrz741", getwd()),
        model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
 
 setwd(data.path)
- 
+
 library(runjags)
 library(rjags)
 
