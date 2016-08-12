@@ -1,19 +1,17 @@
 # Author: Matthew Phelps
-#Desc: JAGS diagnostics from AWS
+#Desc: JAGS diagnostics from model 5b
 
 # Intro -------------------------------------------------------------------
 rm(list = ls())
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:/Users/wrz741/Dropbox (Personal)/AWS-Rstudio",
-       wd.path <-"/Users/Matthew/Dropbox (Personal)/AWS-Rstudio")
+
 ifelse(grepl("wrz741", getwd()),
        out.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Output/MCMC/",
        out.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/MCMC/")
 ifelse(grepl("wrz741", getwd()),
-       rdata.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/rdata",
-       rdata.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/rdata")
-setwd(wd.path)
+       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/rdata",
+       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/rdata")
+setwd(data.path)
 
 
 
@@ -24,21 +22,24 @@ library(coda)
 library(ggmcmc)
 # LOAD --------------------------------------------------------------------
 
-load("jags-rep-5-ext-4.Rdata")
-load("jags-rep-4-ext-4.Rdata")
-load("JAGS-rep-6-ext-4.Rdata")
-jags_list <- list(jags_rep_4_ext4,
-                  jags_rep_5_ext4,
-                  jags_rep_6_ext4)
-jags_list_drop_6 <- list(jags_rep_4_ext4,
-                  jags_rep_5_ext4)
+load("jags_m5_ls_b.Rdata") # Load the JAGS output to do diagnostics on
 
-setwd(rdata.path)
-load("sim-multi-1-data.Rdata")
-rm(I_it_daily, N_it, weekly_avg)
+load("sim-model-5-data-b.Rdata") # Not sure why this is loaded 
+rm(I_it_daily, N_it, weekly_avg, y)
+gc()
+# Collapse chains within each imputation. Plot this to see if imputations are
+# diff from each other
+m5_mcmc_10 <- lapply(jags_m5_ls_b, combine.mcmc, collapse.chains = T)
+rm(jags_m5_ls_b)
+mcmcplot(m5_mcmc_10)
+# Collapse everything into one huge mcmc object
+m5_mcmc <- combine.mcmc(m5_mcmc)
 
-model_5_mcmc <- as.mcmc.list(jags_rep_5_ext4)
-model_5_ggs <- ggs(model_5_mcmc)
+param_avg <- data.frame(colMeans(m5_mcmc))
+
+
+model_5_mcmc <- lapply(jags_m5_ls_b, as.mcmc.list)
+model_5_ggs <- lapply(ggs(model_5_mcmc)
 
 model_4_mcmc <- as.mcmc.list(jags_rep_4_ext4)
 model_4_ggs <- ggs(model_4_mcmc)
