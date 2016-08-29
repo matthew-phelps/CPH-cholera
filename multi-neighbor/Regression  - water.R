@@ -18,18 +18,18 @@ gc()
 
 # LOAD --------------------------------------------------------------------
 
-load("data/Rdata/sim-model-5-data-b.Rdata")
+
+q_names <- c("Combined_upper", "Combined_lower", "Christianshavn", "Kjoebmager",
+             "Nyboder", "Oester", "Rosenborg", "St. Annae Oester", "St. Annae Vester")
+print(q_names)
+
 water_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/water-matrix.csv")
-
-
+border_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/border-matrix.csv")
+betas_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/betas-matrix.csv")
 
 water <- read.csv(text = water_url)
-border <- read.csv("data/border-matrix.csv")
-water <- read.csv("data/water-matrix.csv")
-water <- water[, 2:(length(q_names)+1)] # Remove variable with quarter names
-border <- border[, 2:(length(q_names)+1)]
-rownames(water) <- q_names
-rownames(border) <- q_names
+border <- read.csv(text = border_url)
+betas <- read.csv(text = betas_url)
 
 # Convert to vector to lm()
 water_vec <-as.vector(t(water))
