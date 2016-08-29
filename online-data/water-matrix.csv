@@ -1,10 +1,10 @@
-"","X","Combined_upper","Combined_lower","Christianshavn","Kjoebmager","Nyboder","Oester","Rosenborg","St..Annae.Oester","St..Annae.Vester"
-"1","Combined_upper",NA,1,0,1,0,1,1,0,0
-"2","Combined_lower",0,NA,1,1,0,1,0,0,0
-"3","Christianshavn",0,0,NA,0,0,0,0,0,0
-"4","Kjoebmager",0,1,0,NA,0,1,1,1,0
-"5","Nyboder",0,1,0,1,NA,1,0,1,0
-"6","Oester",0,1,0,1,0,NA,0,0,0
-"7","Rosenborg",0,1,0,1,0,1,NA,0,0
-"8","St. Annae Oester",0,1,0,1,0,1,0,NA,0
-"9","St. Annae Vester",0,1,0,1,1,1,0,1,NA
+"X","Combined_upper","Combined_lower","Christianshavn","Kjoebmager","Nyboder","Oester","Rosenborg","St..Annae.Oester","St..Annae.Vester"
+"Combined_upper",NA,1,0,1,0,1,1,0,0
+"Combined_lower",0,NA,1,1,0,1,0,0,0
+"Christianshavn",0,0,NA,0,0,0,0,0,0
+"Kjoebmager",0,1,0,NA,0,1,1,1,0
+"Nyboder",0,1,0,1,NA,1,0,1,0
+"Oester",0,1,0,1,0,NA,0,0,0
+"Rosenborg",0,1,0,1,0,1,NA,0,0
+"St. Annae Oester",0,1,0,1,0,1,0,NA,0
+"St. Annae Vester",0,1,0,1,1,1,0,1,NA
