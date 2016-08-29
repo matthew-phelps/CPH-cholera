@@ -10,8 +10,10 @@ ifelse(grepl("wrz741", getwd()),
        wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
 setwd(wd.path)
 rm(list = ls())
-gc()
 
+# garbage collection in case I had previously loaded large JAGS outputs and they
+# are still lingering in memory
+gc() 
 
 
 # LOAD --------------------------------------------------------------------
@@ -33,22 +35,26 @@ border_vec <- as.vector(t(border))
 diag(betas) <- NA
 betas_vec <- as.vector(t(betas))
 
-# REGERSSION 1 ------------------------------------------------------------
+# UNIVARIATE REGRESSIONS ------------------------------------------------------------
 
 hist(log(betas_vec))
 qqnorm(log(betas_vec))
-qqline(log(betas_vec))
+qqline(log(betas_vec)) # Not ideally normally distributed, but not entirely off
 plot(water_vec, log(betas_vec))
 plot(border_vec, log(betas_vec))
 
-x <- lm(log(betas_vec) ~ water_vec + border_vec)
-x2 <- lm(log(betas_vec) ~ border_vec)
-x3 <- lm(log(betas_vec) ~ water_vec)
-summary(x)
-summary(x2)
-summary(x3)
-anova(x3, x2, x)
+lm_border <- lm(log(betas_vec) ~ border_vec)
+lm_pipes <- lm(log(betas_vec) ~ water_vec)
+summary(lm_border)
+summary(lm_pipes)
 
 
+# FULL REGRESSION -----------------------------------------------------
+
+lm_full <- lm(log(betas_vec) ~ water_vec + border_vec)
+summary(lm_full)
+
+anova(lm_full, lm_pipes, test="Chisq")
+anova(lm_full, lm_border, test="Chisq")
 # Little evidence that water and/or sharing a border is significant in
 # predicting the force of transmission between neighborhoods. 
