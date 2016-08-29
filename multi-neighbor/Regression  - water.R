@@ -10,7 +10,7 @@ ifelse(grepl("wrz741", getwd()),
        wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
 setwd(wd.path)
 rm(list = ls())
-
+library(RCurl) # https compatability
 # garbage collection in case I had previously loaded large JAGS outputs and they
 # are still lingering in memory
 gc() 
@@ -19,9 +19,13 @@ gc()
 # LOAD --------------------------------------------------------------------
 
 load("data/Rdata/sim-model-5-data-b.Rdata")
+water_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/water-matrix.csv")
 
-water <- read.csv("data/water-matrix.csv")
+
+
+water <- read.csv(text = water_url)
 border <- read.csv("data/border-matrix.csv")
+water <- read.csv("data/water-matrix.csv")
 water <- water[, 2:(length(q_names)+1)] # Remove variable with quarter names
 border <- border[, 2:(length(q_names)+1)]
 rownames(water) <- q_names
