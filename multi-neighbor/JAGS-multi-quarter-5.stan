@@ -20,9 +20,10 @@ model {
     I_prev[1, i] <- ifelse(i==1,1,0)
     
     for (j in 1:Nquarter){
-      # Beta log hypreprior distributions
+      # For each force of infection (foi), draw log_beta from
+      # normal with hyperprior params
       log_beta[i, j] ~ dnorm(mu, tau);
-      # Beta
+      # Exponentiate into Beta 
       beta[i, j] <- exp(log_beta[i, j]);
     } 
   }
