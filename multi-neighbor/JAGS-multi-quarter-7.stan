@@ -1,5 +1,5 @@
-# Model 6 - Water pipe connectivity. If quarters are connected, 
-# beta = beta * eta, else beta = beta
+# Model 6 - border pipe connectivity. If quarters are connected, 
+# beta = beta * chi, else beta = beta
 # *non-reported cases are not infectious
 
 model {
@@ -16,8 +16,8 @@ model {
   tau_2 ~ dgamma(0.001, 0.001)
   
   # Effect of hydraulic connection
-  log_eta ~ dnorm(mu_2, tau_2)
-  eta <- exp(log_eta)
+  log_chi ~ dnorm(mu_2, tau_2)
+  chi <- exp(log_chi)
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
@@ -35,11 +35,11 @@ model {
       # off-diag are between-neighborhood foi.
       # For each, draw log_beta from normal with hyperprior params
       log_beta[i, j] ~ dnorm(mu, tau);
-
-      # If there is a water-pipe connection b/w neighborhoods, foi = foi * eta
+      
+      # If there is a border-pipe connection b/w neighborhoods, foi = foi * chi
       b_temp[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
-      beta[i, j] <- ifelse(water[i, j]==1, eta * b_temp[i, j], b_temp[i, j]);
+      beta[i, j] <- ifelse(border[i, j]==1, chi * b_temp[i, j], b_temp[i, j]);
     } 
   }
   
@@ -70,7 +70,7 @@ model {
   #data# N_i_daily
   #data# I_incidence
   #data# Nquarter
-  #data# water
+  #data# border
   
   #inits# inits1
   #inits# inits2
