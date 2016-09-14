@@ -43,6 +43,7 @@ dic <- data.frame(pd_1 = c(3941, 3844, 3977, 4086, 3988, 3994,
                   pd_6 = c(3522, 3521, 3522, 3521, 3521, 3521,
                            3521, 3521, 3521, 3521))
 
-
+range(dic$pd_5_b)
+range(dic$pd_6)
 colSums(dic)
 colMeans(dic, na.rm = T)

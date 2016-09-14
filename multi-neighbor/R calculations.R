@@ -6,6 +6,7 @@
 # Intro -------------------------------------------------------------------
 graphics.off()
 rm(list = ls())
+gc()
 ifelse(grepl("wrz741", getwd()),
        wd.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata",
        wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
@@ -28,11 +29,12 @@ load(file = "int_hpd.Rdata")
 
 
 
-b <- T
+b <- F
 m3 <- F
+m6 <- T
 ifelse(m3, load("sim-model-3-data.Rdata"), load(file = "sim-model-5-data-b.Rdata"))
 ifelse(b, jags_m5_ls <- jags_m5_ls_b, NA)
-
+ifelse(m6, load("sim-model-6-data.Rdata"), NA)
 rm(I_it_daily, N_it, weekly_avg, phi, Nsteps)
 
 

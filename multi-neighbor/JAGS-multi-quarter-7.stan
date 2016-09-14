@@ -1,5 +1,5 @@
-# Model 6 - border pipe connectivity. If quarters are connected, 
-# beta = beta * chi, else beta = beta
+# Model 7 - Shared border. IF quarters share a border THEN, beta = beta * chi,
+# ELSE beta = beta
 # *non-reported cases are not infectious
 
 model {
@@ -11,17 +11,15 @@ model {
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
   
-  # Effect of hydraulic connection hyperprior
-  mu_2 ~ dnorm(0, 0.001)
-  tau_2 ~ dgamma(0.001, 0.001)
+
   
   # Effect of hydraulic connection
-  log_chi ~ dnorm(mu_2, tau_2)
+  log_chi ~ dnorm(0, 0.001)
   chi <- exp(log_chi)
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
-  phi <- exp(logit_phi) / (1 + exp(logit_phi))
+  phi <- 1 / (1 + exp(-logit_phi))
   
   # Create force of infection matrix and populate 1st time-step from data
   for (i in 1:Nquarter){
@@ -36,7 +34,7 @@ model {
       # For each, draw log_beta from normal with hyperprior params
       log_beta[i, j] ~ dnorm(mu, tau);
       
-      # If there is a border-pipe connection b/w neighborhoods, foi = foi * chi
+      # IF there is a shared border between i,j, THEN foi = foi * chi
       b_temp[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
       beta[i, j] <- ifelse(border[i, j]==1, chi * b_temp[i, j], b_temp[i, j]);

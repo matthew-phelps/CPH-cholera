@@ -50,7 +50,7 @@ rm(water_temp, border_temp)
 
 dataList <- list()
 num_reps <- length(I_reps)
-#num_reps <- 1
+num_reps <- 1
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[5]],
@@ -97,12 +97,12 @@ inits_list <- list(inits1, inits2, inits3, inits4)
 # JAGS Run the JAGS models for each iteration in a separate instance on AWS. Run
 # 4 chains in each
 setwd(model.path)
-jags_m7_ls <- list()
+jags_m7_ls_waic <- list()
 system.time(for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
-  jags_m7_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-7.stan',
+  jags_m7_ls_waic[[reps]] <- run.jags(model = 'JAGS-multi-quarter-7-WAIC.stan',
                                  method = 'parallel',
-                                 monitor = c("beta", 'phi', 'gamma_b', "chi"),
+                                 monitor = c("beta", 'phi', 'gamma_b', "chi", "llsim"),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  inits = inits_list,
@@ -115,13 +115,17 @@ system.time(for (reps in 1:num_reps){
 }
 )
 
-add.summary(jags_m7_ls[[reps]])
-m7_mcmc <- combine.mcmc(jags_m7_ls[[reps]], collapse.chains = F)
+add.summary(jags_m7_ls_waic[[reps]])
+m7_mcmc <- combine.mcmc(jags_m7_ls_waic[[reps]], collapse.chains = F)
 mcmcplot(m7_mcmc)
+
+x <- m7_mcmc[[1]]
+x[[1, 85]]
+x <- extract.runjags(jags_m7_ls_waic[[1]], samplers)
 
 
 setwd(data.path)
-save(jags_m7_ls, file = "jags_m7_ls.Rdata")
+save(jags_m7_ls_waic, file = "jags_m7_ls_waic.Rdata")
 
 #################################################
 #################################################

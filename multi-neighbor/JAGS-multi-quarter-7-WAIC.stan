@@ -1,4 +1,4 @@
-# Model 6 - Hydraulic connections. IF quarters are connected, THRN beta = beta * eta,
+# Model 7 - Shared border. IF quarters share a border THEN, beta = beta * chi,
 # ELSE beta = beta
 # *non-reported cases are not infectious
 
@@ -16,8 +16,8 @@ model {
   tau_2 ~ dgamma(0.001, 0.001)
   
   # Effect of hydraulic connection
-  log_eta ~ dnorm(mu_2, tau_2)
-  eta <- exp(log_eta)
+  log_chi ~ dnorm(mu_2, tau_2)
+  chi <- exp(log_chi)
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
@@ -35,11 +35,11 @@ model {
       # off-diag are between-neighborhood foi.
       # For each, draw log_beta from normal with hyperprior params
       log_beta[i, j] ~ dnorm(mu, tau);
-
-      # If there is a water-pipe connection b/w neighborhoods, foi = foi * eta
+      
+      # IF there is a shared border between i,j, THEN foi = foi * chi
       b_temp[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
-      beta[i, j] <- ifelse(water[i, j]==1, eta * b_temp[i, j], b_temp[i, j]);
+      beta[i, j] <- ifelse(border[i, j]==1, chi * b_temp[i, j], b_temp[i, j]);
     } 
   }
   
@@ -64,13 +64,17 @@ model {
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
       I_incidence[t+1, i] ~ dpois(lambdaI[t, i])
+      
+      # This log-density function is not documented in the JAGS manual. Found via
+      # the 6th response on this forum: https://goo.gl/UisKKW
+      llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
     }
   }
   #data# Nsteps
   #data# N_i_daily
   #data# I_incidence
   #data# Nquarter
-  #data# water
+  #data# border
   
   #inits# inits1
   #inits# inits2
