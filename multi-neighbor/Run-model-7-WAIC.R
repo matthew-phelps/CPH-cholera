@@ -3,6 +3,7 @@
 
 # Intro -------------------------------------------------------------------
 rm(list=ls())
+gc()
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
        data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
@@ -50,7 +51,6 @@ rm(water_temp, border_temp)
 
 dataList <- list()
 num_reps <- length(I_reps)
-num_reps <- 1
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[5]],
@@ -107,38 +107,70 @@ system.time(for (reps in 1:num_reps){
                                  data = dataList[[reps]],
                                  inits = inits_list,
                                  n.chains = 4,
-                                 adapt = 1e2,
-                                 burnin = 1e2,
-                                 sample = 2e2,
+                                 adapt = 1e3,
+                                 burnin = 2e4,
+                                 sample = 3e4,
                                  thin = 2,
                                  plots = T)
 }
 )
 
-add.summary(jags_m7_ls_waic[[reps]])
-m7_mcmc <- combine.mcmc(jags_m7_ls_waic[[reps]], collapse.chains = F)
-mcmcplot(m7_mcmc)
-
-x <- m7_mcmc[[1]]
-x[[1, 85]]
-x <- extract.runjags(jags_m7_ls_waic[[1]], samplers)
-
-
+# SAVE
 setwd(data.path)
 save(jags_m7_ls_waic, file = "jags_m7_ls_waic.Rdata")
 
+add.summary(jags_m7_ls_waic[[reps]])
+
+
 #################################################
 #################################################
 #################################################
 #################################################
 
+
+# WAIC --------------------------------------------------------------------
+
+# Need the ll to be in a n X S dimension matrix, where n = number of observations and S = number of iterations. See pg 2, eq (3) of https://goo.gl/a1GrwT
+m7_mcmc <- combine.mcmc(jags_m7_ls_waic[[reps]], collapse.chains = T)
+
+# Turn mcmc object into matrix (or arrary if not collapsing chains)
+ll <- coda::as.array.mcmc.list(m7_mcmc)
+# Get number of variables for y
+n_var <- ncol(ll)
+
+# Remove non-LL variables
+ll <- ll[, 85:n_var]
+
+# Transpose to get in n X S form & turn to df
+ll <- t(ll)
+#ll <- as.data.frame(ll)
+
+# Function from footnote on pg 14 of https://goo.gl/a1GrwT
+colVars <- function(a) {
+  n <- dim(a)[[1]]
+  c <- dim(a)[[2]]
+  return(.colMeans(((a - matrix(.colMeans(a, n, c),
+                                nrow = n, ncol = c,
+                                byrow = TRUE)) ^2),
+                   n, c) * n / (n - 1))
+}
+
+S <- nrow(ll)
+n <- ncol(ll)
+lpd <- log(colMeans(exp(ll)))
+p_waic <- colVars(ll)
+elpd_waic <- lpd - p_waic
+waic <- -2 * elpd_waic
+sum(waic)
+
+str(lpd)
 # DIC ---------------------------------------------------------------------
 
 
-load(file = "jags_m7_ls.Rdata")
-dic_m7 <- list()
-for (i in 1:length(jags_m7_ls)){
-  dic_m7[[i]] <- extract.runjags(jags_m7_ls[[i]], what = "dic")
+load(file = "jags_m7_ls_waic.Rdata")
+dic_m7_waic <- list()
+for (i in 1:length(jags_m7_ls_waic)){
+  dic_m7_waic[[i]] <- extract.runjags(jags_m7_ls_waic[[i]], what = "dic")
 }
-save(dic_m7, file = "dic_m7.Rdata")
-dic_m7
+save(dic_m7_waic, file = "dic_m7_waic.Rdata")
+dic_m7_waic
