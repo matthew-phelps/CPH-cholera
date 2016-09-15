@@ -23,7 +23,7 @@ library(CholeraDataDK)
 # LOAD data ---------------------------------------------------------------
 load(file = "Data_3.Rdata")
 Nweeks <- Nsteps
-b <- T
+b <- F
 ifelse(b, load("sim-model-5-data-b.Rdata"), load("sim-model-5-data.Rdata"))
 
 

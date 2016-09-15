@@ -12,11 +12,11 @@ model {
   tau ~ dgamma(0.001, 0.001)
   
   # Effect of hydraulic connection hyperprior
-  mu_2 ~ dnorm(0, 0.001)
-  tau_2 ~ dgamma(0.001, 0.001)
+  # mu_2 ~ dnorm(0, 0.001)
+  # tau_2 ~ dgamma(0.001, 0.001)
   
   # Effect of hydraulic connection
-  log_eta ~ dnorm(mu_2, tau_2)
+  log_eta ~ dnorm(0, 0.001)
   eta <- exp(log_eta)
   
   # Phi - under reporting fraction
@@ -39,7 +39,7 @@ model {
       # If there is a water-pipe connection b/w neighborhoods, foi = foi * eta
       b_temp[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
-      beta[i, j] <- ifelse(water[i, j]==1, eta * b_temp[i, j], b_temp[i, j]);
+      beta[i, j] <- ifelse(water[i, j]==1, eta + b_temp[i, j], b_temp[i, j]);
     } 
   }
   

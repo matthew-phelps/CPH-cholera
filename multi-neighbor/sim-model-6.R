@@ -42,7 +42,7 @@ quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 
 # GLOBAL VARIABLES -------------------------------------------------------------------
 
-loops <- 100 # Has to be the same for both full sum and t+1 sim
+loops <- 1000 # Has to be the same for both full sum and t+1 sim
 
 ###############################################################################
 ###############################################################################

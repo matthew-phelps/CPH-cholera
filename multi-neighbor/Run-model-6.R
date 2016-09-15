@@ -44,7 +44,7 @@ water <- as.matrix(water_temp)
 
 dataList <- list()
 num_reps <- length(I_reps)
-num_reps <- 10
+num_reps <- 1
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[5]],
@@ -102,8 +102,8 @@ for (reps in 1:num_reps){
                                  inits = inits_list,
                                  n.chains = 4,
                                  adapt = 1e3,
-                                 burnin = 3e4,
-                                 sample = 3e4,
+                                 burnin = 3e3,
+                                 sample = 3e3,
                                  thin = 2,
                                  plots = T)
 }

@@ -11,7 +11,6 @@ model {
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
   
-
   
   # Effect of hydraulic connection
   log_chi ~ dnorm(0, 0.001)
@@ -35,9 +34,9 @@ model {
       log_beta[i, j] ~ dnorm(mu, tau);
       
       # IF there is a shared border between i,j, THEN foi = foi * chi
-      b_temp[i, j] <- exp(log_beta[i, j])
+      beta[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
-      beta[i, j] <- ifelse(border[i, j]==1, chi * b_temp[i, j], b_temp[i, j]);
+      foi[i, j] <- ifelse(border[i, j]==1, chi + beta[i, j], beta[i, j]);
     } 
   }
   
@@ -45,7 +44,7 @@ model {
   # Lambda, I, S, & R
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
-      lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(beta[, i] * (I_prev[t, ])))
+      lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(foi[, i] * (I_prev[t, ])))
       lambdaR[t, i] <- I_prev[t, i] * gamma_b
       # dpois(lambdaR[t, i]) took too long to fit, so just use lambdaR
       R_temp[t, i] <- lambdaR[t, i] 
