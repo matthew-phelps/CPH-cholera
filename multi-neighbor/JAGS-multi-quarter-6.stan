@@ -37,9 +37,9 @@ model {
       log_beta[i, j] ~ dnorm(mu, tau);
 
       # If there is a water-pipe connection b/w neighborhoods, foi = foi * eta
-      b_temp[i, j] <- exp(log_beta[i, j])
+      beta[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
-      beta[i, j] <- ifelse(water[i, j]==1, eta + b_temp[i, j], b_temp[i, j]);
+      foi[i, j] <- ifelse(water[i, j]==1, eta + beta[i, j], beta[i, j]);
     } 
   }
   
@@ -47,7 +47,7 @@ model {
   # Lambda, I, S, & R
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
-      lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(beta[, i] * (I_prev[t, ])))
+      lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(foi[, i] * (I_prev[t, ])))
       lambdaR[t, i] <- I_prev[t, i] * gamma_b
       # dpois(lambdaR[t, i]) took too long to fit, so just use lambdaR
       R_temp[t, i] <- lambdaR[t, i] 
@@ -64,6 +64,9 @@ model {
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
       I_incidence[t+1, i] ~ dpois(lambdaI[t, i])
+      # This log-density function is not documented in the JAGS manual. Found via
+      # the 6th response on this forum: https://goo.gl/UisKKW
+      llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
     }
   }
   #data# Nsteps

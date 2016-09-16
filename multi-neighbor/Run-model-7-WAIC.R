@@ -102,7 +102,8 @@ system.time(for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m7_ls_waic[[reps]] <- run.jags(model = 'JAGS-multi-quarter-7-WAIC.stan',
                                  method = 'parallel',
-                                 monitor = c("beta", 'phi', 'gamma_b', "chi", "llsim"),
+                                 monitor = c("beta", 'phi',
+                                             "chi", "llsim"),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  inits = inits_list,
@@ -131,7 +132,33 @@ add.summary(jags_m7_ls_waic[[reps]])
 # WAIC --------------------------------------------------------------------
 
 # Need the ll to be in a n X S dimension matrix, where n = number of observations and S = number of iterations. See pg 2, eq (3) of https://goo.gl/a1GrwT
-m7_mcmc <- combine.mcmc(jags_m7_ls_waic[[reps]], collapse.chains = T)
+m7_mcmc <- combine.mcmc(jags_m7_ls_waic[[1]], collapse.chains = T)
+m7_mcmc <- jags_m7_ls_waic[[1]]$mcmc[1:4][, 85:1083]
+x <- combine.mcmc(jags_m7_ls_waic[[1]]$mcmc[1][, 85:1083])
+str(combine.mcmc(jags_m7_ls_waic[[1]]$mcmc[1][, 1:5]))
+y <- jags_m7_ls_waic[[2]]
+rm(jags_m7_ls_waic)
+gc()
+x <- coda::as.array.mcmc.list(y$mcmc[2])
+head(x[1:4])
+z <- data.frame(x)
+rm(x)
+x <- z[2, ]
+x[, "beta.2.1."]
+x[, "chi"]
+x[, "beta.2.1."] +x[, "chi"]
+x[, "foi.1.1."] == x[, "beta.1.1."]
+
+
+x <- combine.mcmc(jags_m7_ls_waic[[1]]$mcmc[1])
+x <- coda::as.array.mcmc.list(x)
+y <- data.frame(x[1, c(1:81, 84, 1084:1140)])
+x["chi", ]  + x["beta[2,1]", ]
+x["foi[2,1]", ]
+
+str(jags_m7_ls_waic[[1]]$mcmc[1][, 85:1083])
+rm(m7_mcmc)
+1164-81
 
 # Turn mcmc object into matrix (or arrary if not collapsing chains)
 ll <- coda::as.array.mcmc.list(m7_mcmc)
