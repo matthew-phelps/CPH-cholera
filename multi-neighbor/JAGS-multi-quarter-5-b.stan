@@ -9,10 +9,10 @@ model {
   # One hyperprior for entire city
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
-  
+
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
-  phi<- exp(logit_phi) / (1 + exp(logit_phi))
+  phi <- 1 / (1 + exp(-logit_phi))
   
   # Create force of infection matrix and populate 1st time-step from data
   for (i in 1:Nquarter){
