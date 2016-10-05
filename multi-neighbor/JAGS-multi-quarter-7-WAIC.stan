@@ -13,7 +13,7 @@ model {
   
   # Effect of hydraulic connection hyperprior
 
-  
+  dmouch(1)
   # Effect of hydraulic connection
   log_chi ~ dnorm(0, 0.001)
   chi <- exp(log_chi)
@@ -38,7 +38,7 @@ model {
       # IF there is a shared border between i,j, THEN foi = foi * chi
       beta[i, j] <- exp(log_beta[i, j])
       #beta[i, j] <- b_temp[i,j]
-      foi[i, j] <- ifelse(border[i, j]==1, chi + beta[i, j], beta[i, j]);
+      foi[i, j] <- border[i, j] *  chi + beta[i, j], beta[i, j];
     } 
   }
   
@@ -67,6 +67,7 @@ model {
       # This log-density function is not documented in the JAGS manual. Found via
       # the 6th response on this forum: https://goo.gl/UisKKW
       llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
+      llsim # exp(llsim)
     }
   }
   #data# Nsteps

@@ -45,6 +45,7 @@ model {
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
       I_incidence[t+1, i] ~ dpois(lambdaI[t, i] * phi)
+      llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
     }
   }
   #data# Nsteps
