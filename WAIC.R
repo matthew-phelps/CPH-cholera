@@ -87,7 +87,7 @@ R <- 20
 C <- 10
 
 # Simulate data as gamma-Poisson:
-lambda <- rgamma(R, 1, rate=1/10)
+lambda <- rgamma(R*20, 1, rate=1/10)
 Obs <- rpois(R*C, lambda)
 dim(Obs) <- c(R,C)
 
