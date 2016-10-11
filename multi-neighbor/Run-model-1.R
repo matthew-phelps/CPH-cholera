@@ -14,11 +14,6 @@ ifelse(grepl("wrz741", getwd()),
        fun.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
        fun.path <-"/Users/Matthew/GitClones/RCodes")
 
-amazon <- F
-
-ifelse(amazon == T,
-       data.path <- "~/Dropbox/AWS-Rstudio",
-       data.path <- data.path)
 setwd(data.path)
 library(plyr)
 library(coda)
@@ -29,7 +24,6 @@ library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
 options(mc.cores = 4)
-rm(amazon)
 
 # LOAD -------------------------------------------------------
 
