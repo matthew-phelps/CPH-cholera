@@ -39,7 +39,7 @@ setwd(fun.path)
 source("WAIC-function.R")
 setwd(data.path)
 
-# JAGS -------------------------------------------------------------
+# SETUP JAGS-------------------------------------------------------------
 # Save in list form to pass to JAGS
 jags_m5_ls_b <- list()
 dataList <- list()
@@ -53,7 +53,7 @@ for (reps in 1:num_reps){
                            Nquarter = Nquarter)
 }
 
-# Model 1 -----------------------------------------------------------------
+# RUN JAGS -----------------------------------------------------------------
 
 # JAGS
 # Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
@@ -88,6 +88,10 @@ save(jags_m5_ls_b, file = "jags_m5_ls_b.Rdata")
 #################################################
 #################################################
 
+
+# WAIC --------------------------------------------------------------------
+
+
 load(file = "jags_m5_ls_b.Rdata")
 
 
@@ -104,6 +108,10 @@ waic_m5b <- get_waic(mean_lik, var_loglik)
 waic_m5b$waic
 waic_m5b$p_waic
 save(waic_m5b, file = "waic_m5b.Rdata")
+
+
+
+# DIC ---------------------------------------------------------------------
 
 dic_m5_b <- list()
 for (i in 1:length(jags_m5_ls_b)){
