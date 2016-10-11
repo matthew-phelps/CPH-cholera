@@ -43,7 +43,7 @@ setwd(data.path)
 # Save in list form to pass to JAGS
 jags_m5_ls_b <- list()
 dataList <- list()
-TestFlag <- T # T = use only 1 imputation for testing
+TestFlag <- F # T = use only 1 imputation for testing
 ifelse(TestFlag, num_reps <- 1, num_reps <- length(I_reps))
 
 for (reps in 1:num_reps){
@@ -103,7 +103,7 @@ var_loglik <- var_loglik[2:nrow(var_loglik), ]
 waic_m5b <- get_waic(mean_lik, var_loglik)
 waic_m5b$waic
 waic_m5b$p_waic
-
+save(waic_m5b, file = "waic_m5b.Rdata")
 
 dic_m5_b <- list()
 for (i in 1:length(jags_m5_ls_b)){
