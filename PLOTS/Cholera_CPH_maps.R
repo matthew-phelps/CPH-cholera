@@ -22,7 +22,10 @@ library(dplyr)
 
 load("Rdata\\quarter_eng.Rdata")
 quarter.sheet <- reshape::rename(quarter, replace = c("sick.total.week" = "I"))
+quarter.sheet$cum_sick_rate <- (quarter.sheet$cum.sick/ quarter.sheet$est.pop.1853)*1000
 
+cum_sick_rate <- quarter.sheet[quarter.sheet$week.id==15, c("quarter", "cum_sick_rate")]
+cum_sick_rate <- cum_sick_rate[complete.cases(cum_sick_rate), ]
 
 # shapefile
 quarter.shp <- readOGR(dsn = "GIS", layer = "CPH_Quarters2", stringsAsFactors = F)
