@@ -57,22 +57,22 @@ setwd(model.path)
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m2_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-2.stan',
-                                   method = 'rjparallel',
-                                   monitor = c("beta", 'phi'),
-                                   modules = "glm",
-                                   data = dataList[[reps]],
-                                   n.chains = 4,
-                                   adapt = 1e2,
-                                   burnin = 4e2,
-                                   sample = 4e2,
-                                   thin = 1,
-                                   plots = T)
+                                 method = 'rjparallel',
+                                 monitor = c("beta", 'phi'),
+                                 modules = "glm",
+                                 data = dataList[[reps]],
+                                 n.chains = 4,
+                                 adapt = 1e3,
+                                 burnin = 4e4,
+                                 sample = 4e4,
+                                 thin = 1,
+                                 plots = T)
 }
 
 
-add.summary(jags_m2_ls[[reps]])
-m2_mcmc <- combine.mcmc(jags_m2_ls[[reps]], collapse.chains = F)
-mcmcplot(m2_mcmc)
+# add.summary(jags_m2_ls[[reps]])
+# m2_mcmc <- combine.mcmc(jags_m2_ls[[reps]], collapse.chains = F)
+# mcmcplot(m2_mcmc)
 
 
 setwd(data.path)
