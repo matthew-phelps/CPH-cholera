@@ -7,13 +7,13 @@ model {
   # One hyperprior for entire city
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
-  sigma <- pow(tau, -0.5) # Do I need this?
+  
   log_beta_2 ~ dnorm(mu, tau)
   beta_2 <- exp(log_beta_2)
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
-  phi<- exp(logit_phi) / (1 + exp(logit_phi))
+  phi<- 1 / (1 + exp(-logit_phi))
   
   for (i in 1:Nquarter){
     # First time-step
