@@ -56,6 +56,7 @@ setwd(model.path)
 
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
+  print(reps)
   jags_m3_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-3.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi'),
@@ -70,9 +71,9 @@ for (reps in 1:num_reps){
 }
 
 
-add.summary(jags_m3_ls[[reps]])
-m3_mcmc <- combine.mcmc(jags_m3_ls[[reps]], collapse.chains = F)
-mcmcplot(m3_mcmc)
+# add.summary(jags_m3_ls[[reps]])
+# m3_mcmc <- combine.mcmc(jags_m3_ls[[reps]], collapse.chains = F)
+# mcmcplot(m3_mcmc)
 
 
 setwd(data.path)

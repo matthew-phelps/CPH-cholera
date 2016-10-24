@@ -1,5 +1,5 @@
-# Multible Betas (1 for each quarter) + 1 alpha for each quarter
- 
+# Multible Betas (1 for each quarter) + 1 alpha for city
+
 model {
   # Gamma
   gamma_b ~ dexp(5)
@@ -7,11 +7,13 @@ model {
   # One hyperprior for entire city
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
-
+  
+  log_beta_2 ~ dnorm(mu, tau)
+  beta_2 <- exp(log_beta_2)
   
   # Phi - under reporting fraction
-  logit_phi ~dnorm(0, 0.001)
-  phi<- exp(logit_phi) / (1 + exp(logit_phi))
+  logit_phi ~ dnorm(0, 0.001)
+  phi<- 1 / (1 + exp(-logit_phi))
   
   for (i in 1:Nquarter){
     # First time-step
@@ -24,13 +26,9 @@ model {
     # An independent internal transmission coefficient
     log_beta_1[i] ~ dnorm(mu, tau)
     beta_1[i] <- exp(log_beta_1[i])
-    
-    # Each quarter has 1 alpha
-    log_beta_2[i] ~ dnorm(mu, tau)
-    beta_2[i] <- exp(log_beta_2[i])
     for (j in 1:Nquarter){
-      #  1 alpha for each quarter
-      beta[i, j] <- ifelse(i==j, beta_1[i], beta_2[i])
+      # All external transmission coefficients are the same
+      beta[i, j] <- ifelse(i==j, beta_1[i], beta_2)
     }
   }
   
@@ -50,7 +48,12 @@ model {
   # Likelihood function
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
-      I_incidence[t+1, i] ~ dpois(lambdaI[t, i] * phi)
+      mu_I[t, i] <- lambdaI[t, i] * phi
+      log_a[t, i] ~ dnorm(0, 0.001)
+      a[t, i] <- exp(log_a[t, i])
+      lambda_prime[t, i] ~ dgamma(a[t, i]+ 0.01, (mu_I[t, i] + 0.01) / a[t, i])
+      I_incidence[t+1, i] ~ dpois(lambda_prime[t, i])
+      
       # This log-density function is not documented in the JAGS manual. Found via
       # the 6th response on this forum: https://goo.gl/UisKKW
       llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])

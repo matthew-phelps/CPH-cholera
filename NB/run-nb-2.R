@@ -8,8 +8,8 @@ ifelse(grepl("wrz741", getwd()),
        data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
 
 ifelse(grepl("wrz741", getwd()),
-       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
-       model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
+       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
+       model.path <-"/Users/Matthew/GitClones/RCodes")
 ifelse(grepl("wrz741", getwd()),
        fun.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
        fun.path <-"/Users/Matthew/GitClones/RCodes")
@@ -38,7 +38,7 @@ setwd(data.path)
 # Save in list form to pass to JAGS
 jags_m2_ls <- list()
 dataList <- list()
-TestFlag <- F # T = use only 1 imputation for testing
+TestFlag <- T # T = use only 1 imputation for testing
 ifelse(TestFlag, num_reps <- 1, num_reps <- length(I_reps))
 
 for (reps in 1:num_reps){
@@ -57,15 +57,15 @@ setwd(model.path)
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
-  jags_m2_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-2.stan',
-                                 method = 'rjparallel',
+  jags_m2_ls[[reps]] <- run.jags(model = 'NB/nb-model-2.stan',
+                                 method = 'rjags',
                                  monitor = c("beta", 'phi'),
                                  modules = "glm",
                                  data = dataList[[reps]],
-                                 n.chains = 4,
-                                 adapt = 1e3,
-                                 burnin = 4e4,
-                                 sample = 4e4,
+                                 n.chains = 1,
+                                 adapt = 1,
+                                 burnin = 4e2,
+                                 sample = 4e2,
                                  thin = 1,
                                  plots = T)
 }
