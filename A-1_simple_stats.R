@@ -5,8 +5,9 @@
 rm(list = ls())  
 graphics.off()
 ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
+       wd.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
+
 
 setwd(wd.path)
 library(rgdal)
@@ -15,43 +16,63 @@ library(rgeos)
 
 # LOAD DATA ---------------------------------------------------------------
 
-load("Rdata\\cholera_by_street.Rdata")
-load("Rdata\\quarter_eng.Rdata")
-load('Rdata\\age1855.Rdata')
-load('Rdata\\age1850.Rdata')
-load('Rdata\\age_mortality.Rdata')
-
-city <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
+load(file = "quarter_combined.Rdata")
+qu_ls <- split(combined, f = combined$quarter)
+q_names <- names(qu_ls)
+# load("Rdata/cholera_by_street.Rdata")
+# load("Rdata/quarter_eng.Rdata")
+# load('Rdata/age1855.Rdata')
+# load('Rdata/age1850.Rdata')
+# load('Rdata/age_mortality.Rdata')
+# 
+# city <-read.table('CPH cholera outbreak 1853.csv', header=T, sep=",")
 
 
 
 
 # Simple numbers ----------------------------------------------------------
 
-sick.city <- sum(city$cholera.cases)
-
-sick <- sum(quarter$sick.total.week)
-dead <- sum(quarter$dead.total.week)
+sick <- sum(combined$sick.total.week)
+dead <- sum(combined$dead.total.week)
 CFR <- dead/sick
 
 
-# Interpolate 1853 population--------------------------------------------------
 
-# Calculate interpolated population
-age_ts <- age1850$age_range
-age_ts <- data.frame(age_ts)
-age_ts$total1850 <- age1850$total
-age_ts$total1853 <- NA 
-age_ts$total1855 <- age1855$total
-age_ts <- plyr::rename(age_ts, replace = c("age_ts" = "age"))
-
-# Weighted average to estimate pop in 1853
-age_ts$total1853 <- round((2 * age_ts$total1850 + 3 * age_ts$total1855) / 5, digits = 0) 
+# PEAK DATE ---------------------------------------------------------------
+vec <- c("sick.total.week")
+peak <- data.frame(inx = NA)
+for(i in 1:length(qu_ls)){
+  peak[i, ] <- which.max(qu_ls[[i]][, vec])
+}
 
 
 
-# AGE_ADJUSTED MORTALITY --------------------------------------------------
 
+# CFR OVER TIME -------------------------------------------------------------
+# CFR before / after peak
+x <- dplyr::filter(combined, week.id <=7)
+x2 <- dplyr::filter(combined, week.id >7)
+cfr_early <- sum(x$dead.total.week) / sum(x$sick.total.week)
+cfr_late <- sum(x2$dead.total.week) / sum(x2$sick.total.week)
+rm(x, x2)
+
+
+# CFR BY AREA -------------------------------------------------------------
+cfr_area <- data.frame(quarter = q_names)
+cfr_area$cfr <- sapply(qu_ls, function(x) sum(x$dead.total.week)/sum(x$sick.total.week))
+
+mort_area <- data.frame(quarter = q_names)
+mort_area$mort.rate <- sapply(qu_ls, function(x) sum(x$dead.total.week)/max(x$est.pop.1853))
+
+morb_area <- data.frame(quarter = q_names)
+morb_area$morb.rate <- sapply(qu_ls, function(x) sum(x$sick.total.week)/max(x$est.pop.1853))
+sum(qu_ls$Christianshavn$sick.total.week)
+max(qu_ls$Christianshavn$est.pop.1853)
+sum(qu_ls$Combined_upper$sick.total.week) / max(qu_ls$Combined_upper$est.pop.1853)
+
+
+# AGE_ADJUSTED MORTALITY -------------------------------------------------
+ 
 mortality_rates <- age_ts$age[1:22]
 mortality_rates <- as.data.frame(mortality_rates)
 mortality_rates$rate <- age_mortality$total_sick / age_ts$total1853[1:22]
@@ -59,7 +80,7 @@ mortality_rates <- plyr::rename(mortality_rates, replace = c('mortality_rates' =
 
 plot(mortality_rates)
 
-save(mortality_rates, file = 'Rdata\\mortality_rates.Rdata')
+save(mortality_rates, file = 'Rdata/mortality_rates.Rdata')
 
 
 
@@ -71,7 +92,7 @@ quarter_summary <- quarter[which(quarter$week.id == 15),
 
 # POPULATION DENSITY ------------------------------------------------------
 
-load("Rdata\\quarter_eng.Rdata")
+load("Rdata/quarter_eng.Rdata")
 quarter.sheet <- reshape::rename(quarter, replace = c("sick.total.week" = "I"))
 
 # shapefile
@@ -89,7 +110,7 @@ rm(areas, quarter_area_temp)
 
 # Join area data with disease data
 quarter_summary <- inner_join(quarter_summary, quarter_area,
-                             by = c("quarter" = "Quarter"))
+                              by = c("quarter" = "Quarter"))
 quarter_summary$pop_density <- quarter_summary$est.pop.1853 / quarter_summary$areas
 quarter_summary$infect_density <- quarter_summary$areas / quarter_summary$cum.sick
 quarter_summary$cum_incidence <- quarter_summary$cum.sick / quarter_summary$est.pop.1853

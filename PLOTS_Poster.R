@@ -5,10 +5,11 @@
 ## intro
 rm(list = ls())
 graphics.off()
-mac<- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH"
-pc <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data"
+ifelse(grepl("wrz741", getwd()),
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
 
-setwd(pc)
+setwd(wd.path)
 
 library (ggplot2)
 library (reshape) # for renaming variables
@@ -25,6 +26,11 @@ library(grid)
 library(extrafont) 
 library(scales)
 loadfonts(device = "win")# Use fonts with tiff
+
+
+# LOAD --------------------------------------------------------------------
+
+load(file = "quarter_combined.Rdata")
 
 
 # City-wide time-series ---------------------------------------------------

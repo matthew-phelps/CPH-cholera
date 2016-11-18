@@ -24,6 +24,12 @@ load(file = "dic_m2.Rdata")
 load(file = "dic_m3.Rdata")
 load(file = "dic_m5.Rdata")
 load(file = "dic_m5_b.Rdata")
+load(file = "waic_m1b.Rdata")
+load(file = "waic_m3.Rdata")
+load(file = "waic_m5b.Rdata")
+
+
+waic <- data.frame(waic_m1b$waic)
 
 dic_m1
 dic_m2
