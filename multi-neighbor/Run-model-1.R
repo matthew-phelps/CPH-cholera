@@ -98,9 +98,10 @@ for(i in 1:reps){
   # Remove first row because we start at t + 1
   mean_lik <- mean_lik[2:nrow(mean_lik), ]
   var_loglik <- var_loglik[2:nrow(var_loglik), ]
-  
-  waic_m1_ls[[reps]] <- get_waic(mean_lik, var_loglik)
+  waic_m1_ls[[i]] <-  get_waic(mean_lik, var_loglik)
 }
+
+
 
 waic_m1b$waic
 waic_m1b$p_waic
