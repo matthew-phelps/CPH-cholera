@@ -101,7 +101,8 @@ for(i in 1:reps){
   waic_m1_ls[[i]] <-  get_waic(mean_lik, var_loglik)
 }
 
-
+save(waic_m1_ls, file = "waic_m1_ls.Rdata")
+lapply()
 
 waic_m1b$waic
 waic_m1b$p_waic
