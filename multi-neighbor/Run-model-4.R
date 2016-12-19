@@ -90,16 +90,22 @@ save(jags_m4_ls, file = "jags_m4_ls.Rdata")
 load(file = "jags_m4_ls.Rdata")
 
 
-ll <- jags.samples(as.jags(jags_m4_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
 
-mean_lik <- apply(ll$mean$lik,c(1,2),mean)
+waic_m3_ls <- list()
+for(i in 1:reps){
+  ll <- jags.samples(as.jags(jags_m2_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
+  
+  mean_lik <- apply(ll$mean$lik,c(1,2),mean)
+  
+  var_loglik <- apply(ll$variance$llsim, c(1,2),mean)
+  # Remove first row because we start at t + 1
+  mean_lik <- mean_lik[2:nrow(mean_lik), ]
+  var_loglik <- var_loglik[2:nrow(var_loglik), ]
+  waic_m3_ls[[i]] <-  get_waic(mean_lik, var_loglik)
+}
 
-var_loglik <- apply(ll$variance$llsim, c(1,2),mean)
-# Remove first row because we start at t + 1
-mean_lik <- mean_lik[2:nrow(mean_lik), ]
-var_loglik <- var_loglik[2:nrow(var_loglik), ]
-
-waic_m4 <- get_waic(mean_lik, var_loglik)
+save(waic_m3_ls, file = "waic_m3_ls.Rdata")
+waic_m3$waic
 waic_m4$waic
 waic_m4$p_waic
 save(waic_m4, file = "waic_m4.Rdata")

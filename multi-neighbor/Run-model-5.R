@@ -74,62 +74,31 @@ mcmcplot(m5_mcmc)
 
 
 
-# WAIC --------------------------------------------------------------------
-str()
-m5_mcmc <- combine.mcmc(jags_m5_ls[[1]], collapse.chains = T)
-m5_mcmc <- jags_m5_ls[[1]]$mcmc[1:4][, 85:1081]
-x <- combine.mcmc(jags_m5_ls[[1]]$mcmc[1][, 85:1081])
-str(combine.mcmc(jags_m5_ls[[1]]$mcmc[1][, 1:5]))
-y <- jags_m5_ls[[2]]
-rm(jags_m5_ls_waic)
-gc()
-x <- coda::as.array.mcmc.list(y$mcmc, chains = F)
-# Remove "foi" vars
-x <- x[, 1:1081, ]
-
-
-
-
-# Function from footnote on pg 14 of https://goo.gl/a1GrwT
-colVars <- function(a) {
-  n <- dim(a)[[1]]
-  c <- dim(a)[[2]]
-  return(.colMeans(((a - matrix(.colMeans(a, n, c),
-                                nrow = n, ncol = c,
-                                byrow = TRUE)) ^2),
-                   n, c) * n / (n - 1))
-}
-
-# WAIC Function
-waic <- function(x) {
-  # Turn mcmc object into matrix (or arrary if not collapsing chains)
-  #ll <- coda::as.array.mcmc.list(x)
-  ll <- x
-  # Get number of variables for y
-  n_var <- ncol(ll)
-  # Remove non-LL variables
-  ll <- ll[, 85:n_var]
-  # Transpose to get in n X S form & turn to df
-  ll <- t(ll)
-  # S <- nrow(ll)
-  # n <- ncol(ll)
-  lpd <- log(colMeans(exp(ll)))
-  p_waic <- colVars(ll)
-  elpd_waic <- lpd - p_waic
-  waic <- -2 * elpd_waic
-  return(sum(waic))
-}
-
-for (i in 1:4){
-  print(waic(x[, , i]))
-}
-
-#################################################
-#################################################
-#################################################
 #################################################
 
 load(file = "jags_m5_ls.Rdata")
+
+
+waic_m5_ls <- list()
+for(i in 1:reps){
+  ll <- jags.samples(as.jags(jags_m5_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
+  
+  mean_lik <- apply(ll$mean$lik,c(1,2),mean)
+  
+  var_loglik <- apply(ll$variance$llsim, c(1,2),mean)
+  # Remove first row because we start at t + 1
+  mean_lik <- mean_lik[2:nrow(mean_lik), ]
+  var_loglik <- var_loglik[2:nrow(var_loglik), ]
+  waic_m5_ls[[i]] <-  get_waic(mean_lik, var_loglik)
+}
+
+save(waic_m5_ls, file = "waic_m5_ls.Rdata")
+
+
+
+
+
+
 dic_m5 <- list()
 for (i in 1:length(jags_m5_ls)){
   dic_m5[[i]] <- extract.runjags(jags_m5_ls[[i]], what = "dic")
