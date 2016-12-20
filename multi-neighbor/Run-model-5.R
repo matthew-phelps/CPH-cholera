@@ -54,14 +54,14 @@ setwd(model.path)
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m5_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-5.stan',
-                                 method = 'parallel',
+                                 method = 'rjparallel',
                                  monitor = c("beta", 'phi', 'llsim'),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  n.chains = 4,
                                  adapt = 1e3,
-                                 burnin = 1e4,
-                                 sample = 1e4,
+                                 burnin = 4e4,
+                                 sample = 4e4,
                                  thin = 1,
                                  plots = T)
 }
