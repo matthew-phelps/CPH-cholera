@@ -44,7 +44,7 @@ model {
     }
   }
   
-  # Likelihood function
+  # Likelihood function with added tracking of "lik" to allow WAIC calculation
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
       I_incidence[t+1, i] ~ dpois(lambdaI[t, i])
