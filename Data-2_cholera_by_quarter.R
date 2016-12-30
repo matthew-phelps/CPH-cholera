@@ -10,11 +10,12 @@ ifelse(grepl("wrz741", getwd()),
 
 setwd(wd.path)
 rm(list = ls())
+library(plyr)
 library (MASS) # used for fiting distributions
 library (ggplot2)
 library (stats)
 library (reshape) # for renaming variables
-library(plyr)
+library(dplyr)
 
 load("Rdata/cholera_by_street.Rdata")
 
@@ -32,6 +33,19 @@ for (i in 1:nrow(quarter)){
   quarter$sick.total.week[i] <- quarter$mensick.week[i] + quarter$womensick.week[i]
   quarter$dead.total.week[i] <- quarter$mendead.week[i] + quarter$womendead.week[i]
 }
+
+quarter <- dplyr::arrange(quarter, quarter, startday.index)
+
+
+# CHECK SUMMATIONS --------------------------------------------------------
+# Check to see if sums correspond to summations provided in original report
+daily_cases <- quarter %>%
+  group_by(startday.index) %>%
+  dplyr::summarise(men = sum(mensick.week),
+                   women = sum(womensick.week),
+                   total = sum(sick.total.week),
+                   week = min(start.date))
+sum(daily_cases$total)
 
 
 # Find week of peak in each quarter:
@@ -107,16 +121,16 @@ rm(start.day, peak.day)
 
 # These are quarters to be combined
 combined_lower <- ddply(quarter[which(quarter$quarter == "Vester" | 
-                                           quarter$quarter ==  "Snarens"|
-                                           quarter$quarter == "Strand" |
-                                           quarter$quarter == "Frimands"),],
-                           .(week.id), summarize,
-                           sick.total.week = sum(sick.total.week),
-                           dead.total.week = sum(dead.total.week),
-                           est.pop.1853 = sum(est.pop.1853),
-                           cum.sick = sum(cum.sick),
-                           S = sum(S),
-                           R = sum(R))
+                                        quarter$quarter ==  "Snarens"|
+                                        quarter$quarter == "Strand" |
+                                        quarter$quarter == "Frimands"),],
+                        .(week.id), summarize,
+                        sick.total.week = sum(sick.total.week),
+                        dead.total.week = sum(dead.total.week),
+                        est.pop.1853 = sum(est.pop.1853),
+                        cum.sick = sum(cum.sick),
+                        S = sum(S),
+                        R = sum(R))
 combined_upper <- ddply(quarter[which(quarter$quarter == "Noerre" | 
                                         quarter$quarter == "Klaedebo"),],
                         .(week.id), summarize,

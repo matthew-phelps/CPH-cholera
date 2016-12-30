@@ -46,7 +46,7 @@ for (i in 1:nrow(street.data)){
 
 }
 
-save(street.data, file = "Rdata\\cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
+save(street.data, file = "Rdata/cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
 
 
 

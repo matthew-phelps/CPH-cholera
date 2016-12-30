@@ -12,7 +12,9 @@ ifelse(grepl("wrz741", getwd()),
 setwd(wd.path)
 library(rgdal)
 library(rgeos)
+library(plyr)
 library(dplyr)
+
 
 
 # LOAD DATA ---------------------------------------------------------------
@@ -125,5 +127,10 @@ plot(quarter_summary$cum_incidence ~ quarter_summary$pop_density)
 
 case_summary <- quarter %>%
   group_by(quarter) %>%
-  summarize(cases = sum(sick.total.week))
+  dplyr::summarize(cases = sum(sick.total.week))
+
+quarter %>%
+  group_by(quarter) %>%
+  dplyr::summarize(nos = n())
+
 case_summary

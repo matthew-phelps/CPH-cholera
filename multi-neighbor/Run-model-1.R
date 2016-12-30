@@ -64,19 +64,25 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 4e4,
-                                 thin = 1,
+                                 thin = 2,
                                  plots = T)
 }
-
-
-add.summary(jags_m1_ls[[reps]])
-m1_mcmc <- combine.mcmc(jags_m1_ls[[reps]], collapse.chains = F)
-mcmcplot(m1_mcmc)
-
 
 setwd(data.path)
 save(jags_m1_ls, file = "jags_m1_ls.Rdata")
 
+
+# Get summary table
+jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)
+
+# Check that no prsf is higher than our 1.02 cutoff value
+max(jags_summary$psrf)
+which.max(jags_summary$psrf)
+
+
+
+# m1_mcmc <- combine.mcmc(jags_m1_ls[[reps]], collapse.chains = F)
+# mcmcplot(m1_mcmc)
 #################################################
 #################################################
 #################################################
@@ -84,9 +90,8 @@ save(jags_m1_ls, file = "jags_m1_ls.Rdata")
 
 
 # WAIC --------------------------------------------------------------------
-
-
-load(file = "jags_m1_ls.Rdata")
+# if not loaded, load data
+if(!exists("jags_m1_ls")) load(file = "jags_m1_ls.Rdata")
 
 waic_m1_ls <- list()
 for(i in 1:reps){
@@ -102,11 +107,6 @@ for(i in 1:reps){
 }
 
 save(waic_m1_ls, file = "waic_m1_ls.Rdata")
-lapply()
-
-waic_m1b$waic
-waic_m1b$p_waic
-save(waic_m1b, file = "waic_m1b.Rdata")
 
 
 

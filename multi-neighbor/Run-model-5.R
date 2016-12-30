@@ -60,7 +60,7 @@ for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m5_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-5.stan',
                                  method = 'rjparallel',
-                                 monitor = c("beta", 'phi', 'llsim'),
+                                 monitor = c("beta", 'phi'),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  n.chains = 4,
@@ -75,7 +75,7 @@ setwd(data.path)
 save(jags_m5_ls, file = "jags_m5_ls.Rdata")
 
 # Get summary table
-jags_summary <- data.frame(add.summary(jags_m3_ls[[reps]])$summaries)
+jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)
 
 # Check that no prsf is higher than our 1.02 cutoff value
 max(jags_summary$psrf)
