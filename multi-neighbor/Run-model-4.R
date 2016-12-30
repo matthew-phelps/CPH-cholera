@@ -69,14 +69,17 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 
-
-add.summary(jags_m4_ls[[reps]])
-m4_mcmc <- combine.mcmc(jags_m4_ls[[reps]], collapse.chains = F)
-mcmcplot(m4_mcmc)
-
-
 setwd(data.path)
 save(jags_m4_ls, file = "jags_m4_ls.Rdata")
+
+# Get summary table
+jags_summary <- data.frame(add.summary(jags_m4_ls[[reps]])$summaries)
+
+# Check that no prsf is higher than our 1.02 cutoff value
+max(jags_summary$psrf)
+which.max(jags_summary$psrf)
+
+
 
 #################################################
 #################################################

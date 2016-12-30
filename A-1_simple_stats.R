@@ -12,11 +12,13 @@ ifelse(grepl("wrz741", getwd()),
 setwd(wd.path)
 library(rgdal)
 library(rgeos)
+library(dplyr)
 
 
 # LOAD DATA ---------------------------------------------------------------
 
 load(file = "quarter_combined.Rdata")
+load(file = "quarter_eng.Rdata")
 qu_ls <- split(combined, f = combined$quarter)
 q_names <- names(qu_ls)
 # load("Rdata/cholera_by_street.Rdata")
@@ -72,7 +74,7 @@ sum(qu_ls$Combined_upper$sick.total.week) / max(qu_ls$Combined_upper$est.pop.185
 
 
 # AGE_ADJUSTED MORTALITY -------------------------------------------------
- 
+
 mortality_rates <- age_ts$age[1:22]
 mortality_rates <- as.data.frame(mortality_rates)
 mortality_rates$rate <- age_mortality$total_sick / age_ts$total1853[1:22]
@@ -116,3 +118,12 @@ quarter_summary$infect_density <- quarter_summary$areas / quarter_summary$cum.si
 quarter_summary$cum_incidence <- quarter_summary$cum.sick / quarter_summary$est.pop.1853
 
 plot(quarter_summary$cum_incidence ~ quarter_summary$pop_density)
+
+
+
+# HOSPITALS AND SICK HOUSES -----------------------------------------------
+
+case_summary <- quarter %>%
+  group_by(quarter) %>%
+  summarize(cases = sum(sick.total.week))
+case_summary

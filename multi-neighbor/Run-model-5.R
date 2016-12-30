@@ -10,7 +10,9 @@ ifelse(grepl("wrz741", getwd()),
 ifelse(grepl("wrz741", getwd()),
        model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
        model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
-
+ifelse(grepl("wrz741", getwd()),
+       fun.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
+       fun.path <-"/Users/Matthew/GitClones/RCodes")
 
 amazon <- F
 
@@ -24,6 +26,8 @@ library(parallel)
 library(runjags)
 library(rjags)
 library(mcmcplots)
+
+
 # library(ggmcmc)
 # library(ggplot2)
 options(mc.cores = 4)
@@ -32,8 +36,9 @@ rm(amazon)
 # LOAD -------------------------------------------------------
 
 load(file = "multi-model1-data-prep.Rdata")
-
-
+setwd(fun.path)
+source("WAIC-function.R")
+setwd(data.path)
 # JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
 jags_m5_ls <- list()
@@ -68,9 +73,29 @@ for (reps in 1:num_reps){
 
 setwd(data.path)
 save(jags_m5_ls, file = "jags_m5_ls.Rdata")
+
+# Get summary table
+jags_summary <- data.frame(add.summary(jags_m3_ls[[reps]])$summaries)
+
+# Check that no prsf is higher than our 1.02 cutoff value
+max(jags_summary$psrf)
+which.max(jags_summary$psrf)
+
+# Remove un-needed monitored parameters otherwise the summary function does not
+# work
+rmLik <- function(z1){
+  z1$mcmc <- lapply(z1$mcmc, function(y){y[, 1:82]})
+  z1
+}
+jags_m5_ls_smll <- lapply(jags_m5_ls, rmLik)
+
+summary(jags_m5_ls[[reps]])
 add.summary(jags_m5_ls[[reps]])
 m5_mcmc <- combine.mcmc(jags_m5_ls[[reps]], collapse.chains = F)
-mcmcplot(m5_mcmc)
+m5_mcmc2 <- lapply(m5_mcmc, function(x){x[, 1:82]})
+
+
+mcmcplot(m5_mcmc2)
 
 
 
