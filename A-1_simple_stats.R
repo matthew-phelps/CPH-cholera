@@ -75,6 +75,39 @@ max(qu_ls$Christianshavn$est.pop.1853)
 sum(qu_ls$Combined_upper$sick.total.week) / max(qu_ls$Combined_upper$est.pop.1853)
 
 
+
+
+
+# HOSPITALS / LOCATION SUMMARIES -----------------------------------------------
+
+# overall CFR
+sum(quarter$dead.total.week)/ sum(quarter$sick.total.week)
+
+
+case_summary <- quarter %>%
+  group_by(quarter) %>%
+  dplyr::summarize(cases = sum(sick.total.week),
+                   deaths = sum(dead.total.week),
+                   outside = max(outside))
+
+# Cases outside the city walls:
+in_out_cases <- case_summary %>%
+  filter(quarter != "Fra skibe")%>%
+  group_by(outside) %>%
+  dplyr::summarize(cases = sum(cases),
+                   deaths = sum(deaths))
+in_out_cases
+in_out_cases$deaths / in_out_cases$cases
+
+
+hosp_poor_cases <- quarter %>%
+  group_by(hosp_poor) %>%
+  dplyr::summarize(cases = sum(sick.total.week),
+                   deaths = sum(dead.total.week),
+                   outside = max(outside))
+hosp_poor_cases
+hosp_poor_cases$deaths / hosp_poor_cases$cases
+
 # AGE_ADJUSTED MORTALITY -------------------------------------------------
 
 mortality_rates <- age_ts$age[1:22]
@@ -91,6 +124,10 @@ save(mortality_rates, file = 'Rdata/mortality_rates.Rdata')
 # QUARTER SUMMARY DATA FRAME ---------------------------------------------------------
 quarter_summary <- quarter[which(quarter$week.id == 15),
                            c("quarter", "est.pop.1853", "cum.sick", "S")]
+
+
+
+
 
 
 
@@ -123,14 +160,3 @@ plot(quarter_summary$cum_incidence ~ quarter_summary$pop_density)
 
 
 
-# HOSPITALS AND SICK HOUSES -----------------------------------------------
-
-case_summary <- quarter %>%
-  group_by(quarter) %>%
-  dplyr::summarize(cases = sum(sick.total.week))
-
-quarter %>%
-  group_by(quarter) %>%
-  dplyr::summarize(nos = n())
-
-case_summary
