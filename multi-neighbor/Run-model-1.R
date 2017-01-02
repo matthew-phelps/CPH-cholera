@@ -73,7 +73,7 @@ save(jags_m1_ls, file = "jags_m1_ls.Rdata")
 
 
 # Get summary table
-jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)
+jags_summary <- data.frame(add.summary(jags_m1_ls[[reps]])$summaries)
 
 # Check that no prsf is higher than our 1.02 cutoff value
 max(jags_summary$psrf)
