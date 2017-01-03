@@ -15,26 +15,35 @@ library (MASS) # used for fiting distributions
 library (ggplot2)
 library (stats)
 library (reshape) # for renaming variables
-library(dplyr)
+library(tidyverse)
 
 load("Rdata/cholera_by_street.Rdata")
 
 
+
+
+
 # Summarize each quarter -------------------------------------------------------
 # summarize each quarter by day index (i.e. by week)
-quarter <- ddply( street.data, .(quarter, quarter_secondary, startday.index, start.date, outside, hosp_poor), summarize, 
-                  mensick.week = sum(male.sick, na.rm = T),
-                  mendead.week = sum(male.dead, na.rm = T),
-                  womensick.week = sum(female.sick, na.rm = T),
-                  womendead.week = sum(female.dead, na.rm=T))
+quarter_secondary <- street.data %>%
+  group_by(quarter, quarter_secondary, startday.index, start.date,
+           outside, hosp_poor) %>%
+  dplyr::summarise(mensick.week = sum(male.sick, na.rm=T),
+                   mendead.week = sum(male.dead, na.rm = T),
+                   womensick.week = sum(female.sick, na.rm = T),
+                   womendead.week = sum(female.dead, na.rm=T),
+                   sick.total.week = sum(sick.total, na.rm = T),
+                   dead.total.week = sum(dead.total, na.rm = T))
 
-# combine male and female counts
-for (i in 1:nrow(quarter)){
-  quarter$sick.total.week[i] <- quarter$mensick.week[i] + quarter$womensick.week[i]
-  quarter$dead.total.week[i] <- quarter$mendead.week[i] + quarter$womendead.week[i]
-}
-
-quarter <- dplyr::arrange(quarter, quarter, startday.index)
+quarter <- street.data %>%
+  group_by(quarter, startday.index, start.date,
+           outside, hosp_poor) %>%
+  dplyr::summarise(mensick.week = sum(male.sick, na.rm=T),
+                   mendead.week = sum(male.dead, na.rm = T),
+                   womensick.week = sum(female.sick, na.rm = T),
+                   womendead.week = sum(female.dead, na.rm=T),
+                   sick.total.week = sum(sick.total, na.rm = T),
+                   dead.total.week = sum(dead.total, na.rm = T))
 
 
 # CHECK SUMMATIONS --------------------------------------------------------
@@ -47,12 +56,23 @@ daily_cases <- quarter %>%
                    week = min(start.date))
 sum(daily_cases$total)
 
+daily_cases$men + daily_cases$women == daily_cases$total
 
-# Find week of peak in each quarter:
-peak.day <- ddply(quarter, .(quarter), summarize, peakday = startday.index[which.max(sick.total.week)] )
+daily_cases2 <- quarter_secondary %>%
+  group_by(startday.index) %>%
+  dplyr::summarise(men = sum(mensick.week),
+                   women = sum(womensick.week),
+                   total = sum(sick.total.week),
+                   week = min(start.date))
+sum(daily_cases2$total)
 
-# Find week of first case in each qurter:
-start.day<- ddply (quarter, .(quarter), summarize, startday = startday.index[min(which(sick.total.week >0))])
+
+
+# # Find week of peak in each secondary quarter:
+# peak.day <- ddply(quarter, .(quarter_secondary), summarize, peakday = startday.index[which.max(sick.total.week)] )
+# 
+# # Find week of first case in each qurter:
+# start.day<- ddply (quarter, .(quarter_secondary), summarize, startday = startday.index[min(which(sick.total.week >0))])
 
 
 
@@ -107,12 +127,15 @@ row.names(quarter) <- NULL
 quarter$S <- quarter$est.pop.1853 - quarter$cum.sick # no. of susceptibles at each timestep
 quarter$R <- quarter$est.pop.1853 - (quarter$S + quarter$sick.total.week)
 
+
+rm(start.day, peak.day)
+
+# SAVE --------------------------------------------------------------------
 save(quarter, file = "Rdata/quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
+save(quarter_secondary, file = "Rdata/quarter_eng_secondary.Rdata")
 write.csv(quarter,
           file = "quarter_eng.csv",
           row.names = F)
-rm(start.day, peak.day)
-
 
 
 
@@ -170,6 +193,9 @@ combined <- rbind(combined_upper,
 x1 <- with(combined, paste(quarterID))
 combined <- within(combined, quarterID <- match(x1, unique(x1)))
 rm(x1, combined_lower, temp_names, x2, quarter.split, i)
-save(combined, file = "Rdata/quarter_combined.Rdata")
 
+
+
+# SAVE --------------------------------------------------------------------
+save(combined, file = "Rdata/quarter_combined.Rdata")
 

@@ -6,12 +6,13 @@
 ## intro
 rm(list = ls())
 ifelse(grepl("wrz741", getwd()),
-      wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
-      wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
+       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
+       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
 
 setwd(wd.path)
 
 library (reshape) # for renaming variables
+library(tidyverse)
 #library (gdata) # reading excel files
 
 
@@ -40,11 +41,51 @@ missing <- street.data[!complete.cases(street.data[, 4:7]), ]
 # create data index
 day0 <- as.Date("1853-06-12")
 
+street.data <- dplyr::arrange(street.data, quarter, street, start.date)
+
 street.data$startday.index <-0
 for (i in 1:nrow(street.data)){
-    street.data$startday.index[i] <- street.data$start.date[i] - day0
-
+  street.data$startday.index[i] <- street.data$start.date[i] - day0
+  
 }
+
+# Trouble shoot NA dead
+x <- which(is.na(street.data$female.dead))
+street.data[x, ]
+which(is.na(street.data$male.dead)) # no male NA dead
+
+# Since there were no female sick recorded, change NA to 0
+street.data$female.dead[x] <- 0
+
+# Combine male-female -----------------------------------------------------
+
+street.data$sick.total <- NA
+street.data$dead.total <- NA
+
+sickSum <- function(x) {
+  for (i in 1:nrow(x)){
+    stopifnot(!is.na(x$male.dead) | !is.na(x$female.dead))
+    if(is.na(x$male.sick[i])){
+      # browser()
+      x$sick.total[i]  <- x$female.sick[i]
+      x$dead.total[i] <- x$male.dead[i] + x$female.dead[i]
+    } else if(is.na(x$female.sick[i])){
+      x$sick.total[i]  <- x$male.sick[i]
+      x$dead.total[i] <- x$male.dead[i] + x$female.dead[i]
+    }else{
+      x$sick.total[i] <- x$male.sick[i] + x$female.sick[i]
+      x$dead.total[i] <- x$male.dead[i] + x$female.dead[i]
+    }
+  }
+  x
+}
+
+street.data <- street.data %>%
+  split(f = street.data$street) %>%
+  lapply(sickSum) %>%
+  bind_rows() %>%
+  dplyr::arrange(quarter, street, start.date)
+
 
 save(street.data, file = "Rdata/cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
 
