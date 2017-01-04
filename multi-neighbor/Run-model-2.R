@@ -87,7 +87,7 @@ save(jags_m2_ls, file = "jags_m2_ls.Rdata")
 
 # WAIC --------------------------------------------------------------------
 
-load(file = "jags_m2_ls.Rdata")
+if(!exists("jags_m2_ls")) load(file = "jags_m2_ls.Rdata")
 
 waic_m2_ls <- list()
 for(i in 1:reps){
@@ -103,17 +103,13 @@ for(i in 1:reps){
 }
 
 save(waic_m2_ls, file = "waic_m2_ls.Rdata")
-waic_m2$waic
-waic_m2$p_waic
-save(waic_m2, file = "waic_m2.Rdata")
-
 
 
 # DIC ---------------------------------------------------------------------
 # 
-# dic_m2 <- list()
-# for (i in 1:length(jags_m2_ls)){
-#   dic_m2[[i]] <- extract.runjags(jags_m2_ls[[i]], what = "dic")
-# }
-# save(dic_m2, file = "dic_m2.Rdata")
-# dic_m2
+dic_m2 <- list()
+for (i in 1:length(jags_m2_ls)){
+  dic_m2[[i]] <- extract.runjags(jags_m2_ls[[i]], what = "dic")
+}
+save(dic_m2, file = "dic_m2.Rdata")
+dic_m2
