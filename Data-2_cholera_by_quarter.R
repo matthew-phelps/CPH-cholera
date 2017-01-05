@@ -37,13 +37,14 @@ quarter_secondary <- street.data %>%
 
 quarter <- street.data %>%
   group_by(quarter, startday.index, start.date,
-           outside, hosp_poor) %>%
+           outside) %>%
   dplyr::summarise(mensick.week = sum(male.sick, na.rm=T),
                    mendead.week = sum(male.dead, na.rm = T),
                    womensick.week = sum(female.sick, na.rm = T),
                    womendead.week = sum(female.dead, na.rm=T),
                    sick.total.week = sum(sick.total, na.rm = T),
-                   dead.total.week = sum(dead.total, na.rm = T))
+                   dead.total.week = sum(dead.total, na.rm = T)) %>%
+  dplyr::arrange(quarter, start.date)
 
 
 # CHECK SUMMATIONS --------------------------------------------------------
@@ -56,17 +57,19 @@ daily_cases <- quarter %>%
                    week = min(start.date))
 sum(daily_cases$total)
 
-daily_cases$men + daily_cases$women == daily_cases$total
+# Evaluates to TRUE if all streetlevel summations correct
+all(daily_cases$men + daily_cases$women == daily_cases$total)
 
-daily_cases2 <- quarter_secondary %>%
+daily_cases_secondary <- quarter_secondary %>%
   group_by(startday.index) %>%
   dplyr::summarise(men = sum(mensick.week),
                    women = sum(womensick.week),
                    total = sum(sick.total.week),
                    week = min(start.date))
-sum(daily_cases2$total)
+sum(daily_cases_secondary$total)
 
-
+# TRUE if correct
+all(daily_cases_secondary == daily_cases)
 
 # # Find week of peak in each secondary quarter:
 # peak.day <- ddply(quarter, .(quarter_secondary), summarize, peakday = startday.index[which.max(sick.total.week)] )
@@ -101,25 +104,24 @@ rm(census, street.data)
 # Add Cumulative No. infected at each week --------------------------------
 quarter$week.id <- quarter$startday.index/7 # create time-step index
 quarter$quarterID <- as.numeric(as.factor(quarter$quarter))
-quarter$cum.sick <- quarter$sick.total.week
+quarter$cum.sick <-NA
 
 
 ## Calculate the number of ppl in each compartment (S,I,R) at each time step:
 # calculate cumilative number of infected in each quarter 
 
-quarter.split <- split(quarter, f = quarter$quarter)
-x1 <- quarter.split[[1]]
-
 # Write function to pass to lapply
-cumSick <- function(x1){
-  x1 <- x1[order(x1$start.date), ]
-  for (i in 2:nrow(x1)){
-    x1$cum.sick[i] <- x1$cum.sick[i - 1] + x1$sick.total.week[i]
-  }
-  return (x1)
+cumSick <- function(x){
+  x$cum.sick <- cumsum(x$sick.total.week)
+  x
 }
-x2 <- lapply(quarter.split, cumSick)
-quarter <- do.call(rbind.data.frame, x2)
+
+quarter <- quarter %>%
+  split(f = quarter$quarter) %>%
+  lapply(cumSick) %>%
+  bind_rows() %>%
+  dplyr::arrange(quarter, start.date)
+
 row.names(quarter) <- NULL
 
 
@@ -128,7 +130,6 @@ quarter$S <- quarter$est.pop.1853 - quarter$cum.sick # no. of susceptibles at ea
 quarter$R <- quarter$est.pop.1853 - (quarter$S + quarter$sick.total.week)
 
 
-rm(start.day, peak.day)
 
 # SAVE --------------------------------------------------------------------
 save(quarter, file = "Rdata/quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
@@ -192,7 +193,7 @@ combined <- rbind(combined_upper,
 # renumber Quarter ID so it's sequential from 1:8
 x1 <- with(combined, paste(quarterID))
 combined <- within(combined, quarterID <- match(x1, unique(x1)))
-rm(x1, combined_lower, temp_names, x2, quarter.split, i)
+rm(x1, combined_lower, temp_names)
 
 
 

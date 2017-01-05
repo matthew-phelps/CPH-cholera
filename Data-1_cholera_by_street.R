@@ -64,18 +64,8 @@ street.data$dead.total <- NA
 
 sickSum <- function(x) {
   for (i in 1:nrow(x)){
-    stopifnot(!is.na(x$male.dead) | !is.na(x$female.dead))
-    if(is.na(x$male.sick[i])){
-      # browser()
-      x$sick.total[i]  <- x$female.sick[i]
-      x$dead.total[i] <- x$male.dead[i] + x$female.dead[i]
-    } else if(is.na(x$female.sick[i])){
-      x$sick.total[i]  <- x$male.sick[i]
-      x$dead.total[i] <- x$male.dead[i] + x$female.dead[i]
-    }else{
-      x$sick.total[i] <- x$male.sick[i] + x$female.sick[i]
-      x$dead.total[i] <- x$male.dead[i] + x$female.dead[i]
-    }
+      x$sick.total[i] <- sum(x$male.sick[i], x$female.sick[i], na.rm = T)
+      x$dead.total[i] <- sum(x$male.dead[i], x$female.dead[i], na.rm = T)
   }
   x
 }

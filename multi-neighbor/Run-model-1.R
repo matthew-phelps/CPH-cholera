@@ -113,6 +113,13 @@ save(waic_m1_ls, file = "waic_m1_ls.Rdata")
 # DIC ---------------------------------------------------------------------
 
 dic_m1 <- list()
+
+# Test lapply
+# lapply(jags_m1_ls, extract.runjags, "dic")
+
+cl <- makeCluster(5)
+dic_test <- parLapply(cl, jags_m1_ls, extract.runjags, "dic")
+
 for (i in 1:length(jags_m1_ls)){
   dic_m1[[i]] <- extract.runjags(jags_m1_ls[[i]], what = "dic")
 }
