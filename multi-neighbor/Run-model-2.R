@@ -107,9 +107,11 @@ save(waic_m2_ls, file = "waic_m2_ls.Rdata")
 
 # DIC ---------------------------------------------------------------------
 # 
-dic_m2 <- list()
-for (i in 1:length(jags_m2_ls)){
-  dic_m2[[i]] <- extract.runjags(jags_m2_ls[[i]], what = "dic")
-}
+# 
+# 
+
+dic_m2 <- mclapply(jags_m2_ls, extract.runjags, "dic")
+
+
 save(dic_m2, file = "dic_m2.Rdata")
 dic_m2

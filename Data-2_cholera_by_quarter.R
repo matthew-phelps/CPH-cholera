@@ -26,8 +26,7 @@ load("Rdata/cholera_by_street.Rdata")
 # Summarize each quarter -------------------------------------------------------
 # summarize each quarter by day index (i.e. by week)
 quarter_secondary <- street.data %>%
-  group_by(quarter, quarter_secondary, startday.index, start.date,
-           outside, hosp_poor) %>%
+  group_by(quarter, quarter_secondary, startday.index, start.date, outside, hosp_poor) %>%
   dplyr::summarise(mensick.week = sum(male.sick, na.rm=T),
                    mendead.week = sum(male.dead, na.rm = T),
                    womensick.week = sum(female.sick, na.rm = T),
