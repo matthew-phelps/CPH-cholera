@@ -46,7 +46,7 @@ for (reps in 1:num_reps){
                            Nsteps=Nsteps,
                            Nquarter = Nquarter)
 }
-sum(I_reps[[1]][, 3])
+
 # RUN JAGS -----------------------------------------------------------------
 
 # JAGS
@@ -117,11 +117,11 @@ dic_m1 <- list()
 # Test lapply
 # lapply(jags_m1_ls, extract.runjags, "dic")
 
-cl <- makeCluster(4)
-dic_test <- parLapply(cl, jags_m1_ls, extract.runjags, "dic")
+dic_m1 <- mclapply(jags_m1_ls, extract.runjags, "dic")
 
-for (i in 1:length(jags_m1_ls)){
-  dic_m1[[i]] <- extract.runjags(jags_m1_ls[[i]], what = "dic")
-}
+# 
+# for (i in 1:length(jags_m1_ls)){
+#   dic_m1[[i]] <- extract.runjags(jags_m1_ls[[i]], what = "dic")
+# }
 save(dic_m1, file = "dic_m1.Rdata")
 dic_m1
