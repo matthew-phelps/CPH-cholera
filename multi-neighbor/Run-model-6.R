@@ -116,15 +116,33 @@ mcmcplot(m6_mcmc)
 setwd(data.path)
 save(jags_m6_ls, file = "jags_m6_ls.Rdata")
 
+
+
+# WAIC --------------------------------------------------------------------
+waic_m6_ls <- list()
+for(i in 1:reps){
+  ll <- jags.samples(as.jags(jags_m6_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
+  
+  mean_lik <- apply(ll$mean$lik,c(1,2),mean)
+  
+  var_loglik <- apply(ll$variance$llsim, c(1,2),mean)
+  # Remove first row because we start at t + 1
+  mean_lik <- mean_lik[2:nrow(mean_lik), ]
+  var_loglik <- var_loglik[2:nrow(var_loglik), ]
+  waic_m5_ls[[i]] <-  get_waic(mean_lik, var_loglik)
+}
+save(waic_m6_ls, file = "waic_m6_ls.Rdata")
+
+
+
+
 #################################################
 #################################################
 #################################################
 #################################################
 
-load(file = "jags_m6_ls.Rdata")
+
 dic_m6 <- list()
-for (i in 1:length(jags_m6_ls)){
-  dic_m6[[i]] <- extract.runjags(jags_m6_ls[[i]], what = "dic")
-}
+dic_m6 <- mclapply(jags_m6_ls, extract.runjags, "dic")
 save(dic_m6, file = "dic_m6.Rdata")
 dic_m6

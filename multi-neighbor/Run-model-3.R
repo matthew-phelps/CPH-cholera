@@ -66,7 +66,7 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 4e4,
-                                 thin = 1,
+                                 thin = 2,
                                  plots = T)
 }
 
@@ -106,17 +106,11 @@ for(i in 1:reps){
 }
 
 save(waic_m3_ls, file = "waic_m3_ls.Rdata")
-waic_m3$waic
-waic_m3$p_waic
-save(waic_m3, file = "waic_m3.Rdata")
-
 
 
 # DIC ---------------------------------------------------------------------
 
 dic_m3 <- list()
-for (i in 1:length(jags_m3_ls)){
-  dic_m3[[i]] <- extract.runjags(jags_m3_ls[[i]], what = "dic")
-}
+dic_m3 <- mclapply(jags_m3_ls, extract.runjags, "dic")
 save(dic_m3, file = "dic_m3.Rdata")
 dic_m3

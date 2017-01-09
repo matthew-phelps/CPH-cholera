@@ -66,7 +66,7 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 4e4,
-                                 thin = 1,
+                                 thin = 2,
                                  plots = T)
 }
 

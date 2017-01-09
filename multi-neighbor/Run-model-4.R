@@ -65,7 +65,7 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 4e4,
-                                 thin = 1,
+                                 thin = 2,
                                  plots = T)
 }
 
@@ -94,9 +94,9 @@ load(file = "jags_m4_ls.Rdata")
 
 
 
-waic_m3_ls <- list()
+waic_m4_ls <- list()
 for(i in 1:reps){
-  ll <- jags.samples(as.jags(jags_m2_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
+  ll <- jags.samples(as.jags(jags_m4_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
   
   mean_lik <- apply(ll$mean$lik,c(1,2),mean)
   
@@ -104,22 +104,17 @@ for(i in 1:reps){
   # Remove first row because we start at t + 1
   mean_lik <- mean_lik[2:nrow(mean_lik), ]
   var_loglik <- var_loglik[2:nrow(var_loglik), ]
-  waic_m3_ls[[i]] <-  get_waic(mean_lik, var_loglik)
+  waic_m4_ls[[i]] <-  get_waic(mean_lik, var_loglik)
 }
 
-save(waic_m3_ls, file = "waic_m3_ls.Rdata")
-waic_m3$waic
-waic_m4$waic
-waic_m4$p_waic
-save(waic_m4, file = "waic_m4.Rdata")
-
+save(waic_m4_ls, file = "waic_m4_ls.Rdata")
 
 
 # DIC ---------------------------------------------------------------------
 
 dic_m4 <- list()
-for (i in 1:length(jags_m4_ls)){
-  dic_m4[[i]] <- extract.runjags(jags_m4_ls[[i]], what = "dic")
-}
+
+dic_m4 <- mclapply(jags_m4_ls, extract.runjags, "dic")
+
 save(dic_m4, file = "dic_m4.Rdata")
 dic_m4

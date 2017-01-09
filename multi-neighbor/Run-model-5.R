@@ -67,7 +67,7 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 4e4,
-                                 thin = 1,
+                                 thin = 2,
                                  plots = T)
 }
 
@@ -81,28 +81,10 @@ jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)
 max(jags_summary$psrf)
 which.max(jags_summary$psrf)
 
-# Remove un-needed monitored parameters otherwise the summary function does not
-# work
-rmLik <- function(z1){
-  z1$mcmc <- lapply(z1$mcmc, function(y){y[, 1:82]})
-  z1
-}
-jags_m5_ls_smll <- lapply(jags_m5_ls, rmLik)
-
-summary(jags_m5_ls[[reps]])
-add.summary(jags_m5_ls[[reps]])
-m5_mcmc <- combine.mcmc(jags_m5_ls[[reps]], collapse.chains = F)
-m5_mcmc2 <- lapply(m5_mcmc, function(x){x[, 1:82]})
-
-
-mcmcplot(m5_mcmc2)
-
-
 
 #################################################
 
 load(file = "jags_m5_ls.Rdata")
-
 
 waic_m5_ls <- list()
 for(i in 1:reps){
@@ -116,17 +98,12 @@ for(i in 1:reps){
   var_loglik <- var_loglik[2:nrow(var_loglik), ]
   waic_m5_ls[[i]] <-  get_waic(mean_lik, var_loglik)
 }
-
 save(waic_m5_ls, file = "waic_m5_ls.Rdata")
 
 
-
-
-
+# DIC ---------------------------------------------------------------------
 
 dic_m5 <- list()
-for (i in 1:length(jags_m5_ls)){
-  dic_m5[[i]] <- extract.runjags(jags_m5_ls[[i]], what = "dic")
-}
+dic_m5 <- mclapply(jags_m5_ls, extract.runjags, "dic")
 save(dic_m5, file = "dic_m5.Rdata")
 dic_m5
