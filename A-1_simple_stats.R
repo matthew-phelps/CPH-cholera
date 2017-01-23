@@ -113,9 +113,14 @@ hosp_poor_cases <- quarter_secondary %>%
                    deaths = sum(dead.total.week),
                    outside = max(outside))
 hosp_poor_cases
-sum(hosp_poor_cases$cases)
+sum(hosp_poor_cases$cases) == sum(case_summary$cases) # TRUE is correct
 
 hosp_poor_cases$deaths / hosp_poor_cases$cases
+
+
+
+
+
 
 
 # Check that analysis subset includes all data
@@ -128,8 +133,6 @@ sum(model_cases$cases) == sum(combined$sick.total.week)
 
 
 # QUARTER SUMMARY DATA FRAME ---------------------------------------------------------
-
-
 # Date of first infected case in each quarter
 start <- combined %>%
   group_by(quarter) %>%
