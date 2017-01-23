@@ -83,6 +83,10 @@ all(daily_cases_secondary == daily_cases)
 # Merge census and cholera data 
 census <- read.csv ("Census - quarter.csv", sep=",", header=T, stringsAsFactors=F)
 quarter <- merge(quarter, census, by.x="quarter", by.y="Quarter", all.x = T)
+quarter <- dplyr::arrange(quarter, quarter, start.date)
+
+
+
 
 # Estimate 1853 population ------------------------------------------------
 quarter$est.pop.1853 <- round(((3/5) * (quarter$pop1855 - quarter$pop1850) + quarter$pop1850), digits = 0)
@@ -190,6 +194,7 @@ combined <- rbind(combined_upper,
                                   quarter$quarter== "Christianshavn"), ])
 
 # renumber Quarter ID so it's sequential from 1:8
+combined <- dplyr::arrange(combined, quarter, week.id)
 x1 <- with(combined, paste(quarterID))
 combined <- within(combined, quarterID <- match(x1, unique(x1)))
 rm(x1, combined_lower, temp_names)

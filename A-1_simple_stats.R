@@ -83,11 +83,14 @@ sum(quarter$dead.total.week)/ sum(quarter$sick.total.week)
 
 case_summary <- quarter %>%
   group_by(quarter) %>%
-  dplyr::summarize(cases = sum(sick.total.week),
+  dplyr::summarize(pop = max(est.pop.1853),
+                   cases = sum(sick.total.week),
                    deaths = sum(dead.total.week),
                    outside = max(outside))
 case_summary
 sum(case_summary$cases)
+total_reported_cases_everywhere <- sum(case_summary$cases)
+case_summary$AR = case_summary$cases / case_summary$pop
 
 # Cases outside the city walls:
 in_out_cases <- case_summary %>%
@@ -98,6 +101,7 @@ in_out_cases <- case_summary %>%
 in_out_cases
 sum(in_out_cases$cases)
 in_out_cases$deaths / in_out_cases$cases
+
 
 ships <- case_summary %>%
   filter(quarter == "Fra skibe")%>%
@@ -114,14 +118,29 @@ hosp_poor_cases <- quarter_secondary %>%
                    outside = max(outside))
 hosp_poor_cases
 sum(hosp_poor_cases$cases) == sum(case_summary$cases) # TRUE is correct
-
-hosp_poor_cases$deaths / hosp_poor_cases$cases
-
+hosp_poor_cases$deaths
 
 
+# Percetanges
+hosp_poor_cases$cases / total_reported_cases_everywhere
+in_out_cases$cases / total_reported_cases_everywhere
+ships$cases / total_reported_cases_everywhere
 
 
 
+# Case summary on analysis subset of data - with combined quarters
+case_summary_combined <- combined %>%
+  group_by(quarter) %>%
+  dplyr::summarize(pop = max(est.pop.1853),
+                   cases = sum(sick.total.week),
+                   deaths = sum(dead.total.week))
+                   
+
+case_summary_combined$AR <- case_summary_combined$cases / case_summary_combined$pop * 100
+case_summary_combined$CFR <- case_summary_combined$deaths / case_summary_combined$cases
+
+case_summary_combined$AR <- round(case_summary_combined$AR, digits = 1)
+case_summary_combined <- dplyr::arrange(case_summary_combined, quarter)
 
 # Check that analysis subset includes all data
 model_cases <- combined %>%
@@ -150,6 +169,9 @@ comb_summary$cum_incidence = comb_summary$cum.sick / comb_summary$est.pop.1853
 
 
 
+# SAVE --------------------------------------------------------------------
+
+save(case_summary_combined, file = "Rdata/case_summary_combined.Rdata")
 
 # POPULATION DENSITY ------------------------------------------------------
 # 

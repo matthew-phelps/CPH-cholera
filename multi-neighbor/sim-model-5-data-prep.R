@@ -23,7 +23,7 @@ library(runjags)
 
 load(file = "Data/Rdata/quarter_combined.Rdata")
 load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
-load(file = "Data/Rdata/jags_m5_ls_b.Rdata")
+load(file = "Data/Rdata/jags_m5_ls.Rdata")
 
 N_i_daily <- dataList[[1]]$N_i_daily
 I_it_daily <- dataList[[1]]$I_incidence
@@ -48,8 +48,8 @@ weekly_avg <- select(weekly_avg, c(quarter, week.id, avg))
 # MCMC PREP ---------------------------------------------------------------
 
 # Combine chains into 1
-z <- combine.MCMC(jags_m5_ls_b) # Combine different reps into one
-rm(jags_m5_ls_b)
+z <- combine.MCMC(jags_m5_ls) # Combine different reps into one
+rm(jags_m5_ls)
 gc()
 y <- combine.MCMC(z) # Combine different chains into 1 chain
 rm(z)
@@ -82,9 +82,9 @@ N_it[, 1] <- unique(combined$est.pop.1853)
 
 
 # SAVE --------------------------------------------------------------------
-rm(combined, dataList, N_i_daily, mcmc_median, z, zx)
+rm(combined, dataList, N_i_daily, mcmc_median)
 gc()
-save(int_hpd, file = 'data/Rdata/int_hpd_b.Rdata')
+save(int_hpd, file = 'data/Rdata/int_hpd.Rdata')
 rm(int_hpd)
-save(list = ls(), file = 'data/Rdata/sim-model-5-data-b.Rdata' )
+save(list = ls(), file = 'data/Rdata/sim-model-5-data.Rdata' )
 

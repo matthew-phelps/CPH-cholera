@@ -21,13 +21,21 @@ library(ggplot2)
 
 load("Data_4.Rdata")
 load(file = "quarter_combined.Rdata")
+load("case_summary_combined.Rdata")
 rm(day_sum)
 # Only using 10 replicates for now, so restrict data for easier handling:
 I_multi_replicate <- I_multi_replicate[1:12]
 
 
+
+# CHECK SUMMATIONS --------------------------------------------------------
+
+check <- I_multi_replicate %>%
+  group_by(quarter) %>%
+  dplyr::summarise(cum_cases = sum(rep1))
+case_summary_combined$cases == check$cum_cases
+rm(check, case_summary_combined)
 ######
-###### SELECT ONLY 3 NEIGHBORHOODS FOR TEST PURPOSES
 levels(I_multi_replicate$quarter)
 sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester" | I_multi_replicate$quarter == "Nyboder" | I_multi_replicate$quarter == "Kjoebmager" |
   I_multi_replicate$quarter == "Rosenborg" | I_multi_replicate$quarter == "Combined_upper" |

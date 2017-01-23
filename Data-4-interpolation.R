@@ -58,7 +58,7 @@ I_daily <- data.table::dcast(I_daily_long, day_index~variable)
 # Sort I_daily_long by Quarter then day.index - this will allow easier binding downstream
 I_daily_long <- I_daily_long[order(I_daily_long$variable, I_daily_long$day_index), ]
 dayCount_fn <- function(x) {
-  # Creates vector with a length = # of cases observed that week.
+  # Creates vector with a length == # of cases observed that week.
   # Each element of vector is a number (1-7) that represents the
   # day of the week to assign a single case
   z <- sample(1:7, x, replace = T)
@@ -126,7 +126,7 @@ colnames(I_multi_replicate)[3:(n+3)] <- paste("rep", 1:(n+1), sep = "") # http:/
 # VERIFY DATA MUNGING -----------------------------------------------------
 
 # All statements should evaluate to TRUE if everything worked correctly
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Christianshavn") ]) == combined$cum.sick[which(combined$quarter == "Christianshavn" & combined$week.id == 15)]
+sum(I_multi_replicate$rep2[which(I_multi_replicate$quarter == "Christianshavn") ]) == combined$cum.sick[which(combined$quarter == "Christianshavn" & combined$week.id == 15)]
 sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Kjoebmager") ]) == combined$cum.sick[which(combined$quarter == "Kjoebmager" & combined$week.id == 15)]
 sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Nyboder") ]) == combined$cum.sick[which(combined$quarter == "Nyboder" & combined$week.id == 15)]
 sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Oester") ]) == combined$cum.sick[which(combined$quarter == "Oester" & combined$week.id == 15)]
