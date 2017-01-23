@@ -12,10 +12,7 @@ ifelse(grepl("wrz741", getwd()),
 
 setwd(wd.path)
 
-
-library(ggplot2)
-library(tidyr)
-library(dplyr)
+library(tidyverse)
 require(grid)
 library(coda)
 library(CholeraDataDK)
@@ -28,14 +25,15 @@ ifelse(b, load("sim-model-5-data-b.Rdata"), load("sim-model-5-data.Rdata"))
 
 
 # CITY LEVEL DATA ---------------------------------------------------------
-city_obs <- cholera_daily_data[cholera_daily_data$city == "copenhagen", ] # city-wide data
-city_obs <- select(city_obs, c(day_index, cases)) # remove un-needed columns
+city_obs <- cholera_daily_data %>%
+  dplyr::filter(city == "copenhagen")
+city_obs <- dplyr::select(city_obs, c(day_index, cases)) # remove un-needed columns
 
 city_obs_2 <- data.frame(t(I_it))
 colnames(city_obs_2) <- q_names
 city_obs_2$day_index <- seq(from = 7, to = (Nweeks )* 7, length.out = Nweeks)
 city_obs_2$I <- rowSums(city_obs_2[, 1:9]) / 7
-quarter_sums <- select(combined, c(quarter, week.id, cum.sick))
+quarter_sums <- dplyr::select(combined, c(quarter, week.id, cum.sick))
 quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 
 
@@ -44,11 +42,7 @@ quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 # GLOBAL VARIABLES -------------------------------------------------------------------
 
 loops <- 1000 # Has to be the same for both full sum and t+1 sim
-
-###############################################################################
-###############################################################################
-###############################################################################
-
+gamma <- 1/5
 
 
 # T + 1: PREP -----------------------------------------------------
@@ -60,6 +54,7 @@ I_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
 I_prev_vect <-     matrix(nrow = Nsteps, ncol = Nquarter)
 S_plus1_mat <-    matrix(nrow = Nsteps, ncol = Nquarter)
 I_new_plus1 <- list(data.frame(matrix(data = NA, nrow = Nsteps, ncol = Nquarter)))
+
 # Attributable infections variables:
 Lambda_quart<-lapply(1:Nquarter,
                      function(x) data.frame(matrix(NA,
@@ -82,6 +77,7 @@ set.seed(13)
 for (z in 1:loops){
   for (t in 1:(Nsteps-1)){
     for(i in 1:Nquarter){
+      #browser()
       Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum( betas[, i] * I_prev_vect[t, ] )
       LambdaR[t, i] <- I_prev_vect[t, i] * gamma
       
@@ -165,7 +161,7 @@ setwd(save.plot.path)
 ggsave(filename = 'Sim-m5-tplus1.png',
        plot = sim1_plus1,
        width = 26,
-       height = 16,
+       height = 20,
        units = 'cm',
        dpi = 300)
 setwd(wd.path)
