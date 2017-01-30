@@ -9,21 +9,15 @@ rm(list = ls())
 
 library(RCurl) # https compatability for Githib download
 
-# garbage collection in case I had previously loaded large JAGS outputs and they
-# are still lingering in memory
-gc() 
-
 
 # LOAD --------------------------------------------------------------------
-
-
 water_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/water-matrix.csv")
 border_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/border-matrix.csv")
 betas_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/betas-matrix.csv")
 
 water <- read.csv(text = water_url)
 border <- read.csv(text = border_url)
-betas <- read.csv(text = betas_url)
+betas <- read.csv(betas_url)
 
 # Convert to vector to lm()
 water_vec <-as.vector(t(water))
