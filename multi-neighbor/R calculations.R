@@ -25,41 +25,32 @@ library(CholeraDataDK)
 
 # LOAD data ---------------------------------------------------------------
 load(file = "int_hpd.Rdata")
+load(file = "param_ci.Rdata")
+gamma <- 1/5
 #load(file = "sim-model-5-data.Rdata") # update as more MCMCs are run
-
-
-
-b <- F
-m3 <- F
-m6 <- T
-ifelse(m3, load("sim-model-3-data.Rdata"), load(file = "sim-model-5-data-b.Rdata"))
-ifelse(b, jags_m5_ls <- jags_m5_ls_b, NA)
-ifelse(m6, load("sim-model-6-data.Rdata"), NA)
+load(file = "sim-model-5-data.Rdata")
 rm(I_it_daily, N_it, weekly_avg, phi, Nsteps)
-
-
-
 
 # DATA SHAPING ------------------------------------------------------------
 # Get the lower and upper CIs into correct shape for this analysis
-lower_ci <- matrix(int_hpd[1:(Nquarter*Nquarter), 1],
-                             nrow = Nquarter, ncol = Nquarter)
-colnames(lower_ci) <- q_names
-rownames(lower_ci) <- q_names
-upper_ci <- matrix(int_hpd[1:(Nquarter*Nquarter), 2],
-                              nrow = Nquarter, ncol = Nquarter)
-colnames(upper_ci) <- q_names
-rownames(upper_ci) <- q_names
-
+# lower_ci <- matrix(int_hpd[1:(Nquarter*Nquarter), 1],
+#                              nrow = Nquarter, ncol = Nquarter)
+# colnames(lower_ci) <- q_names
+# rownames(lower_ci) <- q_names
+# upper_ci <- matrix(int_hpd[1:(Nquarter*Nquarter), 2],
+#                               nrow = Nquarter, ncol = Nquarter)
+# colnames(upper_ci) <- q_names
+# rownames(upper_ci) <- q_names
+# 
 
 # R-INTERNAL --------------------------------------------------------------
-B_int_low <- diag(lower_ci)
-B_int_hi <- diag(upper_ci)
+B_int_low <- diag(lo_hpd)
+B_int_hi <- diag(hi_hdp)
 
 
-x <- as.matrix(betas) # convert to matrix for diag() function to work
-B_int <- diag(x) # extract diagonals
-rm(x)
+B_int <- betas %>%
+  as.matrix() %>% # convert to matrix for diag() function to work
+  diag()
 
 R_int <- data.frame(B_int / gamma )
 colnames(R_int) <- "R_value"
@@ -74,10 +65,10 @@ R_int$quarter <- factor(R_int$quarter, levels = R_int$quarter[order(R_int$R_valu
 # Defined as: The estimated number of infectious cases casused in all other
 # quarters by a single infecious case in the target quarter
 
-diag(lower_ci) <- NA
-diag(upper_ci) <- NA
-B_ext_low <- rowSums(lower_ci, na.rm = T)
-B_ext_hi <- rowSums(upper_ci, na.rm = T)
+diag(lo_hpd) <- NA
+diag(hi_hdp) <- NA
+B_ext_low <- rowSums(lo_hpd, na.rm = T)
+B_ext_hi <- rowSums(hi_hdp, na.rm = T)
 
 
 x <- as.matrix(betas)

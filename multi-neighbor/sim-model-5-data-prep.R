@@ -63,23 +63,53 @@ mcmc_names <- names(y[1, ]) # name the rows
 
 # Convert to matrix format for easier reading
 betas_temp <- mcmc_median[1:81]
-betas <- data.frame(matrix(betas_temp, nrow = 9, ncol = 9))
+mkDf <- function(x){
+  dimx <- sqrt(length(x))
+  data.frame(matrix(x, nrow = dimx, ncol = dimx))
+}
+betas <- mkDf(betas_temp)
 rm(betas_temp)
 
 # Re-order based on alphabetical. When I ran model_5 the data was ordered
 # incorrecly (not alphabetically by quarter). All other time I use quarter data
 # it's arranged alphabetically, so here I re-order the output of model 5 to be
 # the same
-rownames(betas) <- q_names_old
-colnames(betas) <- q_names_old
-betas <- betas[order(rownames(betas)), order(colnames(betas))]
+
+matNames <- function(x, names_m) {
+  rownames(x) <- names_m
+  colnames(x) <- names_m
+  x
+}
+matOrderFun <- function(x) {
+  x[order(rownames(x)), order(colnames(x))]
+}
+betas <- matNames(betas, q_names_old)
+betas <- matOrderFun(betas)
 
 
 phi <- mcmc_median['phi']
 
-# 95% HDI
-int_hpd <- data.frame(HPDinterval(y, 0.95))
 
+# 95% HDP -----------------------------------------------------------------
+
+int_hpd <- data.frame(HPDinterval(y, 0.95))
+hi_hdp_tmp <- int_hpd$upper[1:81]
+lo_hpd_tmp <- int_hpd$lower[1:81]
+hi_hdp <- hi_hdp_tmp %>%
+  mkDf() %>%
+  matNames(q_names_old)%>%
+  matOrderFun()%>%
+  as.matrix()
+
+lo_hpd <- lo_hpd_tmp %>%
+  mkDf() %>%
+  matNames(q_names_old)%>%
+  matOrderFun() %>%
+  as.matrix()
+rm(lo_hpd_tmp, hi_hdp_tmp)
+
+phi_hdp <- int_hpd %>%
+  slice(82)
 
 # INITIALIZE EMPTY DF -----------------------------------------------------
 
@@ -95,5 +125,6 @@ rm(combined, dataList, N_i_daily, mcmc_median, q_names_old, y)
 gc()
 save(int_hpd, file = 'data/Rdata/int_hpd.Rdata')
 rm(int_hpd)
+save(lo_hpd, hi_hdp, phi_hdp, file = "data/Rdata/param_ci.Rdata")
 save(list = ls(), file = 'data/Rdata/sim-model-5-data.Rdata' )
-
+save(betas, file = "RCodes/online-data/betas-matrix.csv")
