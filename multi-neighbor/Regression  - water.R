@@ -6,18 +6,25 @@
 # Intro -------------------------------------------------------------------
 graphics.off()
 rm(list = ls())
-
+getwd()
 library(RCurl) # https compatability for Githib download
 
 
 # LOAD --------------------------------------------------------------------
 water_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/water-matrix.csv")
 border_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/border-matrix.csv")
-betas_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/betas-matrix.csv")
 
 water <- read.csv(text = water_url)
 border <- read.csv(text = border_url)
-betas <- read.csv(betas_url)
+betas <- read.csv("Rcodes/online-data/betas-matrix.csv", row.names = 1)
+
+
+#re-order matrices
+matOrderFun <- function(x) {
+  x[order(rownames(x)), order(colnames(x))]
+}
+water <- matOrderFun(water)
+border <- matOrderFun(border)
 
 # Convert to vector to lm()
 water_vec <-as.vector(t(water))
