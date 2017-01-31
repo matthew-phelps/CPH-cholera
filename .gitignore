@@ -11,6 +11,3 @@ multi-neighbor/Run-model-2.R
 Data/Rdata/
 Data/GIS/georeferenced_raster/
 Data/GIS/rendered_1854/
-Data/GIS/coastlines-split-3857/
-Data/GIS/land/
-Data/GIS/germany-shp/
