@@ -3,21 +3,14 @@
 # Output datasets: quarter.csv
 
 ## intro
-rm(list = ls())
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
-
-setwd(wd.path)
-rm(list = ls())
 library(plyr)
 library (MASS) # used for fiting distributions
-library (ggplot2)
 library (stats)
 library (reshape) # for renaming variables
 library(tidyverse)
 
-load("Rdata/cholera_by_street.Rdata")
+source("Data-1_cholera_by_street.R")
+
 
 
 
@@ -81,7 +74,7 @@ all(daily_cases_secondary == daily_cases)
 
 # Normalize incidence by population ---------------------------------------
 # Merge census and cholera data 
-census <- read.csv ("Census - quarter.csv", sep=",", header=T, stringsAsFactors=F)
+census <- read.csv ("Data/Census - quarter.csv", sep=",", header=T, stringsAsFactors=F)
 quarter <- merge(quarter, census, by.x="quarter", by.y="Quarter", all.x = T)
 quarter <- dplyr::arrange(quarter, quarter, start.date)
 
@@ -135,72 +128,14 @@ quarter$R <- quarter$est.pop.1853 - (quarter$S + quarter$sick.total.week)
 
 
 # SAVE --------------------------------------------------------------------
-save(quarter, file = "Rdata/quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
-save(quarter_secondary, file = "Rdata/quarter_eng_secondary.Rdata")
-write.csv(quarter,
-          file = "quarter_eng.csv",
-          row.names = F)
 
+# No longer saving intermetidate steps - rather source this file when output is
+# needed
 
+# save(quarter, file = "Data/Rdata/quarter_eng.Rdata") # not saving as CSV so as to discourage ppl corrupting data along the chain
+# save(quarter_secondary, file = "Data/Rdata/quarter_eng_secondary.Rdata")
+# write.csv(quarter,
+#           file = "quarter_eng.csv",
+#           row.names = F)
 
-# Prepare 1 grouping of of combined quarter NOT based on topography ----------------------------------------
-
-
-# These are quarters to be combined
-combined_lower <- ddply(quarter[which(quarter$quarter == "Vester" | 
-                                        quarter$quarter ==  "Snarens"|
-                                        quarter$quarter == "Strand" |
-                                        quarter$quarter == "Frimands"),],
-                        .(week.id), summarize,
-                        sick.total.week = sum(sick.total.week),
-                        dead.total.week = sum(dead.total.week),
-                        est.pop.1853 = sum(est.pop.1853),
-                        cum.sick = sum(cum.sick),
-                        S = sum(S),
-                        R = sum(R))
-combined_upper <- ddply(quarter[which(quarter$quarter == "Noerre" | 
-                                        quarter$quarter == "Klaedebo"),],
-                        .(week.id), summarize,
-                        sick.total.week = sum(sick.total.week),
-                        dead.total.week = sum(dead.total.week),
-                        est.pop.1853 = sum(est.pop.1853),
-                        cum.sick = sum(cum.sick),
-                        S = sum(S),
-                        R = sum(R))
-
-combined_lower$quarter <- "Combined_lower"
-combined_lower$quarterID <- 99
-combined_lower <- combined_lower[, c(8,1,2,3,4,9,5,6,7)]
-
-combined_upper$quarter <- "Combined_upper"
-combined_upper$quarterID <- 88
-combined_upper <- combined_upper[, c(8,1,2,3,4,9,5,6,7)]
-
-
-
-
-# Remove columns from original data from in order to bind with Cominbed df
-temp_names <- colnames(combined_lower)
-quarter <- quarter[(temp_names)]
-
-combined <- rbind(combined_upper,
-                  combined_lower,
-                  quarter[which(quarter$quarter== "Nyboder" |
-                                  quarter$quarter== "St. Annae Oester" |
-                                  quarter$quarter== "St. Annae Vester" |
-                                  quarter$quarter== "Kjoebmager" |
-                                  quarter$quarter== "Rosenborg" |
-                                  quarter$quarter== "Oester" |
-                                  quarter$quarter== "Christianshavn"), ])
-
-# renumber Quarter ID so it's sequential from 1:8
-combined <- dplyr::arrange(combined, quarter, week.id)
-x1 <- with(combined, paste(quarterID))
-combined <- within(combined, quarterID <- match(x1, unique(x1)))
-rm(x1, combined_lower, temp_names)
-
-
-
-# SAVE --------------------------------------------------------------------
-save(combined, file = "Rdata/quarter_combined.Rdata")
 

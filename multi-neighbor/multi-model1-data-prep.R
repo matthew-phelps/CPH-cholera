@@ -8,20 +8,14 @@
 # Intro -------------------------------------------------------------------
 
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
-
-setwd(wd.path)
-rm(list = ls())
-library(dplyr)
+library(tidyverse)
 library(plyr)
-library(ggplot2)
 
 
-load("Data_4.Rdata")
-load(file = "quarter_combined.Rdata")
-load("case_summary_combined.Rdata")
+source("Data-5-interpolation.R")
+# load("Data/Rdata/Data_4.Rdata")
+# load(file = "Data/Rdata/quarter_combined.Rdata")
+# load("Data/Rdata/case_summary_combined.Rdata")
 rm(day_sum)
 # Only using 10 replicates for now, so restrict data for easier handling:
 I_multi_replicate <- I_multi_replicate[1:12]
@@ -33,10 +27,12 @@ I_multi_replicate <- I_multi_replicate[1:12]
 check <- I_multi_replicate %>%
   group_by(quarter) %>%
   dplyr::summarise(cum_cases = sum(rep1))
-case_summary_combined$cases == check$cum_cases
-rm(check, case_summary_combined)
+check2 <- case_summary_combined$cases == check$cum_cases
+stopifnot(all(check2))
+rm(check, check2, case_summary_combined)
+
 ######
-levels(I_multi_replicate$quarter)
+#levels(I_multi_replicate$quarter)
 sel <- I_multi_replicate$quarter == "St. Annae Oester" | I_multi_replicate$quarter == "St. Annae Vester" | I_multi_replicate$quarter == "Nyboder" | I_multi_replicate$quarter == "Kjoebmager" |
   I_multi_replicate$quarter == "Rosenborg" | I_multi_replicate$quarter == "Combined_upper" |
 I_multi_replicate$quarter == "Combined_lower" | I_multi_replicate$quarter == "Oester" | 
@@ -112,12 +108,12 @@ rm(list = setdiff(ls(), c("I_reps",
                           "N_pop",
                           "Nquarter"))) #http://goo.gl/88L5C2
 
-# Plot to check output
-plot(I_reps[[2]][, 1], type = "l")
-lines(I_reps[[2]][, 2], col = "red")
-lines(I_reps[[1]][, 3], col = "green")
-lines(I_reps[[2]][, 4], col = "blue")
-# Save --------------------------------------------------------------------
+# # Plot to check output
+# plot(I_reps[[2]][, 1], type = "l")
+# lines(I_reps[[2]][, 2], col = "red")
+# lines(I_reps[[1]][, 3], col = "green")
+# lines(I_reps[[2]][, 4], col = "blue")
+# # Save --------------------------------------------------------------------
 
 
 

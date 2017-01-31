@@ -6,22 +6,10 @@
 
 # Intro -------------------------------------------------------------------
 
-graphics.off()
-rm(list = ls())
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\Rdata",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
-
-setwd(wd.path)
-rm(list = ls())
-
 library(plyr)
-
+source("Data-3-combine quarters.R")
 
 # COMBINED quarters -------------------------------------------------------
-rm(list = ls())
-load(file = "quarter_combined.Rdata")
-
 
 ### Prepare data to send to Stan
 Nsteps <- 16
@@ -52,4 +40,4 @@ dataList <- list(Nquarter=Nquarter,
 
 # SAVE --------------------------------------------------------------------
 rm(i, t)
-save(list = ls(), file = 'Data_3.Rdata')
+# save(list = ls(), file = 'Data_3.Rdata')

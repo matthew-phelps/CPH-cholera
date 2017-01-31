@@ -5,25 +5,15 @@
 
 
 # Intro -------------------------------------------------------------------
-
-graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\data\\Rdata",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
-
-setwd(wd.path)
-rm(list = ls())
-library(dplyr)
+library(tidyverse)
 library(plyr)
 library(zoo) # For interpolation functions
 library(data.table)
-library(ggplot2)
 library(grid)
 
 
 # LOAD DATA ---------------------------------------------------------------
-
-load(file = "Data_3.Rdata")
+source("Data-4-prepare-JAGS.R")
 I_it <- data.frame(t(I_it))
 colnames(I_it) <- q_names[,1]
 I_it$day_index <- seq(from = 7, to = (Nsteps )* 7, length.out = Nsteps)
@@ -122,74 +112,28 @@ for (k in 1:n){
 
 colnames(I_multi_replicate)[3:(n+3)] <- paste("rep", 1:(n+1), sep = "") # http://goo.gl/v2XXAO
 
-
 # VERIFY DATA MUNGING -----------------------------------------------------
 
 # All statements should evaluate to TRUE if everything worked correctly
-sum(I_multi_replicate$rep2[which(I_multi_replicate$quarter == "Christianshavn") ]) == combined$cum.sick[which(combined$quarter == "Christianshavn" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Kjoebmager") ]) == combined$cum.sick[which(combined$quarter == "Kjoebmager" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Nyboder") ]) == combined$cum.sick[which(combined$quarter == "Nyboder" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Oester") ]) == combined$cum.sick[which(combined$quarter == "Oester" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Rosenborg") ]) == combined$cum.sick[which(combined$quarter == "Rosenborg" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "St. Annae Oester") ]) == combined$cum.sick[which(combined$quarter == "St. Annae Oester" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "St. Annae Vester") ]) == combined$cum.sick[which(combined$quarter == "St. Annae Vester" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Combined_upper") ]) == combined$cum.sick[which(combined$quarter == "Combined_upper" & combined$week.id == 15)]
-sum(I_multi_replicate$rep1[which(I_multi_replicate$quarter == "Combined_lower") ]) == combined$cum.sick[which(combined$quarter == "Combined_lower" & combined$week.id == 15)]
+
+checkReps <- function(name){
+  sum(I_multi_replicate$rep2[which(I_multi_replicate$quarter == paste(name)) ]) == combined$cum.sick[which(combined$quarter == name & combined$week.id == 15)]
+}
+
+check_vec <- NA
+for (i in 1:nrow(q_names)){
+  check_vec[i] <- (checkReps(paste(q_names[i,1])))
+}
+
+# Stop if summations of replicates do not equal summations of original data
+stopifnot(all(check_vec))
+rm(check_vec, checkReps, dayCount_fn)
 
 
-# PLOT REPLICATE --------------------------------------------------------------------
-panel_data <- combined
-panel_data$day_index <- (combined$week.id +1) * 7
-panel_data <- dplyr::rename(panel_data, quarter = quarter)
+# CLEAN -----------------------------------------------------
 
-
-# Reshape to long format again:
-
-panel_plot <- ggplot() +
-  geom_line(data = I_multi_replicate,
-            aes(x = day_index, y = rep1,
-                group = quarter),
-            color = "red",
-            size = 1.2) +
-  geom_line(data = panel_data,
-            size = 1.2,
-            color = 'black',
-            linetype = 1,
-            alpha = 0.3,
-            aes(x = day_index, y = sick.total.week/7,
-                group = quarter)) +
-  geom_point(data = panel_data,
-             size = 3.2,
-             color = "black",
-             aes(x = day_index, y = sick.total.week/7,
-                 group = quarter)) +
-  facet_wrap(~quarter)
-panel_plot
-
-
-
-ggsave(filename = 'C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\replicate_panel.tiff',
-       plot = panel_plot,
-       width = 26,
-       height = 20,
-       units = 'cm',
-       dpi = 300)
-
-
-
-
-# AVERGAES ----------------------------------------------------------------
-# Just to check that things are behaving as they should
-day_avg <- data.frame(avg = rowMeans(I_multi_replicate[,3:(n+3)]))
-day_avg$quarter <- I_daily_long$variable
-day_avg$day_index <- I_daily_long$day_index
-
-
-
-# CLEAN UP ----------------------------------------------------------------
-
-rm(I_it_long, panel_plot, panel_data, S_it,
-   I_it, combined, N_i, i, n, quarterID, day_avg,
+rm(I_it_long, S_it,
+   I_it, N_i, i, n, quarterID,
    I_daily_long, I_daily, I_daily_replicate,
    I_daily_replicate_ls, replicate_list, j, k,
    days_list_1)
@@ -198,7 +142,7 @@ rm(I_it_long, panel_plot, panel_data, S_it,
 
 # SAVE OUTPUT -------------------------------------------------------------
 
-
-save(list = ls(), file = "Data_4.Rdata")
+# 
+# save(list = ls(), file = "Data_4.Rdata")
 
 

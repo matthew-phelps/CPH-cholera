@@ -2,34 +2,26 @@
 # DESC: Simple analysis for 1853
 # Output: Simple statistics on outbreak
 ## intro
-rm(list = ls())  
+ 
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Data",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
 
 
-setwd(wd.path)
+
 library(plyr)
 library(rgdal)
 library(rgeos)
 library(tidyverse)
-library(dplyr)
-
 
 
 # LOAD DATA ---------------------------------------------------------------
+source("Data-2_cholera_by_quarter.R")
+source("Data-3-combine quarters.R")
+rm(daily_cases, daily_cases_secondary)
 
-load(file = "Rdata/quarter_combined.Rdata")
-load(file = "Rdata/quarter_eng.Rdata")
-load(file = "Rdata/quarter_eng_secondary.Rdata")
 qu_ls <- split(combined, f = combined$quarter)
 q_names <- names(qu_ls)
 
-
-
 # Simple numbers ----------------------------------------------------------
-
 sick <- sum(combined$sick.total.week)
 dead <- sum(combined$dead.total.week)
 CFR <- dead/sick
@@ -169,9 +161,6 @@ comb_summary$cum_incidence = comb_summary$cum.sick / comb_summary$est.pop.1853
 
 
 
-# SAVE --------------------------------------------------------------------
-
-save(case_summary_combined, file = "Rdata/case_summary_combined.Rdata")
 
 # POPULATION DENSITY ------------------------------------------------------
 # 

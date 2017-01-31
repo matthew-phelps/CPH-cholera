@@ -4,13 +4,6 @@
 # level data in next step
 
 ## intro
-rm(list = ls())
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
-
-setwd(wd.path)
-
 library (reshape) # for renaming variables
 library(tidyverse)
 #library (gdata) # reading excel files
@@ -19,7 +12,7 @@ library(tidyverse)
 # Read in data ------------------------------------------------------------
 
 
-street.data <- read.csv ("Cholera by street CPH_eng.csv", sep=",")
+street.data <- read.csv ("Data/Cholera by street CPH_eng.csv", sep=",")
 head(street.data)
 
 # convert to date format
@@ -76,8 +69,8 @@ street.data <- street.data %>%
   bind_rows() %>%
   dplyr::arrange(quarter, street, start.date)
 
-
-save(street.data, file = "Rdata/cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
+rm(missing, day0, i, x, sickSum)
+# save(street.data, file = "Data/Rdata/cholera_by_street.Rdata") # save as an R object so it doesn't get confused with the csv/xls files
 
 
 
