@@ -9,3 +9,5 @@ jags_m3_ls.Rdata
 jags_m2_ls.Rdata
 multi-neighbor/Run-model-2.R
 Data/Rdata/
+Data/GIS/georeferenced_raster/
+Data/GIS/rendered_1854/
