@@ -3,15 +3,8 @@
 # output datasets: many plots
 
 ## intro
-rm(list = ls())  
-graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data")
 
-setwd(wd.path)
-
-library (ggplot2)
+library (tidyverse)
 library(rasterVis)
 library(rgdal)
 library(maptools)
