@@ -14,8 +14,8 @@ library(tidyverse)
 
 
 # LOAD DATA ---------------------------------------------------------------
-source("Data-2_cholera_by_quarter.R")
 source("Data-3-combine quarters.R")
+source("Data-2_cholera_by_quarter.R")
 rm(daily_cases, daily_cases_secondary)
 
 qu_ls <- split(combined, f = combined$quarter)
@@ -83,6 +83,15 @@ case_summary
 sum(case_summary$cases)
 total_reported_cases_everywhere <- sum(case_summary$cases)
 case_summary$AR = case_summary$cases / case_summary$pop
+
+
+# Case summary secondary - so we can see what each hospital contributed
+case_summary_2nd <- quarter_secondary %>%
+  group_by(quarter_secondary) %>%
+  dplyr::summarize(cases = sum(sick.total.week),
+                   deaths = sum(dead.total.week),
+                   hosp_poor = max(outside)) 
+case_summary_2nd
 
 # Cases outside the city walls:
 in_out_cases <- case_summary %>%
