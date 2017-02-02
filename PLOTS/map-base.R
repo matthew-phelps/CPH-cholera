@@ -17,24 +17,12 @@ source("Spatial-data-1.R")
 water@data
 proj4string(quarter_shp)
 proj4string(water)
-# Get spatial data into a form that ggplot2 can handle
-# mapdf is what ggplot will use
-quarter_df <- as.data.frame(quarter_shp)
-quarter_tidy <-tidy(quarter_shp, region = "quarter")
-mapdf <- left_join(quarter_tidy, quarter_df, by = c("id" = "quarter"))
-mapdf <- mapdf[ order(mapdf$order),]
-
-
-
-
-wall_fort <- tidy(wall, region = "id")
-water_fort <- tidy(water, region = "grp")
 
 # BASE MAP------------------------------------------
 base_map <- ggplot() +
   geom_polygon(data = mapdf,
                aes(x = long, y = lat, group = id),
-               fill = "white", color = "grey") +
+               fill = "grey92", color = "grey") +
   
   theme(axis.title.x = element_blank(), # remove x,y, label
         axis.title.y = element_blank(),
@@ -51,8 +39,8 @@ base_map <- base_map + coord_quickmap()
 # Get x/y range to set map to later after new layers added
 xrng <- ggplot_build(base_map)$layout$panel_ranges[[1]]$x.range
 yrng <- ggplot_build(base_map)$layout$panel_ranges[[1]]$y.range
-
-
+xrng[2] <- xrng[2] - 200
+yrng[2] <- yrng[2] - 200
 # ADD LAYERS --------------------------------------------------------------
 base_map <- base_map + geom_path(data = wall_fort,
                                  aes(x = long, y = lat,
@@ -63,7 +51,7 @@ base_map <- base_map + geom_polygon(data = water_fort,
                                  aes(x = long, y = lat,
                                      group = group),
                                  fill = "#99CCFF",
-                                 alpha = 0.8)
+                                 alpha = 0.7)
 
 # LEGEND ------------------------------------------------------------------
 # https://goo.gl/8035ro
@@ -77,8 +65,69 @@ base_map <- base_map + coord_cartesian(xlim = c(xrng),
   theme(aspect.ratio = 1)
 
 
-# CITY WALLS --------------------------------------------------------------
+# HOSPITAL LAYER FUNCTION -------------------------------------------------
 
+add_hosp <- function(old_map, hosp_tidy)
+  old_map + geom_point(data = hosp_tidy,
+                       aes(x = coords.x1, y = coords.x2),
+                       size = 3,
+                       color = "darkblue")
+
+
+# INCIDENCE RATE FN -------------------------------------------------------
+inc_rate_map <- function(mapdf){
+  base_map + geom_polygon(data = mapdf,
+                          aes(x = long, y = lat, group = id,
+                              fill = inc_rate*100),
+                          color = "grey")+
+    scale_fill_gradientn(name = "Attack rate \nper 100 people",
+                         colours = brewer.pal(9, "Reds"),
+                         limits=c(0,10)) +
+    theme(legend.position = c(0.15,0.15))
+}
+
+
+# CFR FN ------------------------------------------------------------------
+cfr_map <- function(mapdf){
+  x_loc <- (xrng[2] - xrng[1]) /2 + xrng[1]
+  base_map + geom_polygon(data = mapdf,
+                          aes(x = long, y = lat, group = id,
+                              fill = cfr*100),
+                          color = "grey")+
+    scale_fill_gradientn(name = "CFR",
+                         colours = brewer.pal(9, "Reds"),
+                         limits = c(50,80)) +
+    theme(legend.position = c(0.1,0.15))
+}
+
+
+
+
+# PIPE FN -----------------------------------------------------------------
+pipe_map <- function(pipes_tidy){
+  base_map + geom_path(data = pipes_tidy,
+                       aes(x = long, y = lat,
+                           group = group),
+                       color = "black")
+}
+
+
+
+
+# FIRST CASE --------------------------------------------------------------
+first_case_map <- function(mapdf){
+  base_map + geom_polygon(data = mapdf,
+                          aes(x = long, y = lat, group = id,
+                              fill = start),
+                          color = "grey")+
+    scale_fill_gradientn(name = "Start week",
+                         colours = brewer.pal(3, "Greens")) +
+    theme(legend.position = c(0.1,0.15))
+}
+
+
+# CLEAN -------------------------------------------------------------------
+rm(hosp_df, pipes, hosp, quarter_shp, wall, water)
 
 
 

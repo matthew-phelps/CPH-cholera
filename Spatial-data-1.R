@@ -1,7 +1,8 @@
 # Author: Matthew Phelps
 # DESC: Prepare spatial data for plotting
 
-
+library(rgdal)
+library(sp)
 source("Data-3-combine quarters.R")
 
 
@@ -10,19 +11,26 @@ source("Data-3-combine quarters.R")
 start <- combined %>%
   group_by(quarter) %>%
   dplyr::summarize(start = 1 + week.id[min(which(sick.total.week >0))])
-combined <- left_join(combined, start, by="quarter")
+case_summary_combined <- left_join(case_summary_combined, start, by="quarter")
 
 
 # QUARTER POLYGONS ------------------------------------------------------
 
 # Load shapefile
+oldw <- getOption("warn")
+options(warn = -1)
 quarter_shp <- readOGR(dsn = "Data/GIS", layer = "CPH_Quarters3", stringsAsFactors = F)
-
+options(warn = oldw)
 
 # Not sure why, byt readOGR assigns incorrect projection (I think) to obj. Need
 # to overwrite assigned projection here, despite Warning message. This is NOT a
 # reprojection. This sort of explains the difference: https://goo.gl/jN066m
+# Supress warnings for this call only
+oldw <- getOption("warn")
+options(warn = -1)
 proj4string(quarter_shp) <- "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"
+options(warn = oldw)
+
 
 # housekeeping
 colnames(quarter_shp@data)[2] <- "quarter"
@@ -55,8 +63,8 @@ quarter_shp <- spTransform(quarter_shp, CRSobj = "+init=epsg:3857")
 # proj4string(quarter_shp)
 
 # Save if I need output for QGIS
-writeOGR(obj = quarter_shp, dsn = "Data/GIS", layer = "CPH_Quarters_4",
-          driver = "ESRI Shapefile", overwrite_layer = TRUE)
+# writeOGR(obj = quarter_shp, dsn = "Data/GIS", layer = "CPH_Quarters_4",
+#           driver = "ESRI Shapefile", overwrite_layer = TRUE)
 
 
 # CITY WALL & WATER POLYLINE ------------------------------------------------------
@@ -65,5 +73,33 @@ water <- readOGR(dsn = "Data/GIS", layer = "cph_water_area", stringsAsFactors = 
 pipes <- readOGR(dsn = "Data/GIS", layer = "Mads_Pipes", stringsAsFactors = F)
 hosp <- readOGR(dsn = "Data/GIS", layer = "cph_hosp_poorhouses", stringsAsFactors = F)
 
+
 # proj4string(hosp)
 hosp <- spTransform(hosp, CRSobj = "+init=epsg:3857")
+hosp_df <- as.data.frame(hosp@data)
+
+oldw <- getOption("warn")
+options(warn = -1)
+hosp_tidy <- tidy(hosp)
+options(warn = oldw)
+
+# SPATIAL DATA -> GGPLOT DATA ---------------------------------------------
+# Get spatial data into a form that ggplot2 can handle
+quarter_df <- as.data.frame(quarter_shp)
+quarter_tidy <-tidy(quarter_shp, region = "quarter")
+mapdf <- left_join(quarter_tidy, quarter_df, by = c("id" = "quarter"))
+mapdf <- mapdf[ order(mapdf$order),]
+
+wall_fort <- tidy(wall, region = "id")
+water_fort <- tidy(water, region = "grp")
+
+pipes <- spTransform(pipes, CRSobj = "+init=epsg:3857")
+pipes@data$id <- as.numeric(as.factor(pipes@data$Company))
+pipes_df <- as.data.frame(pipes@data)
+pipes_tidy <- tidy(pipes, region = id)
+
+
+
+#  CLEAN ------------------------------------------------------------------
+rm(oldw, start)
+
