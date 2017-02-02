@@ -58,7 +58,7 @@ base_map <- base_map + geom_polygon(data = water_fort,
 
 base_map <- base_map + ggsn::scalebar(mapdf,
                                       location = "topleft",
-                                      dist = 0.5, height = 0.01, st.size = 4,
+                                      dist = 0.5, height = 0.01, st.size = 2,
                                       model = WGS84)
 base_map <- base_map + coord_cartesian(xlim = c(xrng),
                            ylim = c(yrng)) +
