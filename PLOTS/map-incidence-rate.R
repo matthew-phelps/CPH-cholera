@@ -14,7 +14,7 @@ hosp_tidy <- tidy(hosp)
 
 inc_rate_map <- base_map + geom_polygon(data = mapdf,
                         aes(x = long, y = lat, group = id,
-                            fill = (cum.sick/est.pop.1853)*100),
+                            fill = inc_rate*100),
                         color = "grey")+
   scale_fill_gradientn(name = "Cumulative infections \nper 100 people",
                                 colours = brewer.pal(9, "Reds")) +
@@ -23,7 +23,7 @@ inc_rate_map
 
 hosp_map <- inc_rate_map + geom_point(data = hosp_tidy,
                                       aes(x = coords.x1, y = coords.x2),
-                                      size = 4,
+                                      size = 3,
                                       color = "black")
 hosp_map
 z

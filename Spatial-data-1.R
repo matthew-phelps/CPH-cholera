@@ -13,22 +13,11 @@ start <- combined %>%
 combined <- left_join(combined, start, by="quarter")
 
 
-# Total morb & mort rate for each quarter
-comb_summary <- combined %>%
-  dplyr::filter(week.id == 15) %>%
-  dplyr::select(-week.id, -sick.total.week, -dead.total.week) %>%
-  dplyr::arrange(quarter)
-comb_summary$cum_incidence = comb_summary$cum.sick / comb_summary$est.pop.1853 * 1000
-
-
 # QUARTER POLYGONS ------------------------------------------------------
-# 
-# load("Rdata/quarter_eng.Rdata")
-# quarter.sheet <- reshape::rename(quarter, replace = c("sick.total.week" = "I"))
 
-# shapefile
+# Load shapefile
 quarter_shp <- readOGR(dsn = "Data/GIS", layer = "CPH_Quarters3", stringsAsFactors = F)
-# plot(quarter_shp)
+
 
 # Not sure why, byt readOGR assigns incorrect projection (I think) to obj. Need
 # to overwrite assigned projection here, despite Warning message. This is NOT a
@@ -42,38 +31,32 @@ quarter_shp@data$cumSick_rt <- quarter_shp@data$cum_cases <- NULL
 quarter_shp@data$area_1 <- NULL
 
 
-# quarter_shp@data
-
-
-
-# Find area of all quarters:
-#https://goo.gl/No33KP
-
+# AREA CALCULATION --------------------------------------------------------
+# Find area of all quarters: https://goo.gl/No33KP
 # Projection defines units that "area" will be calculated in
-# proj4string(quarter_shp)
-
 quarter_shp@data$area <- sapply(slot(quarter_shp, "polygons"), slot, "area")
 
 
-# Join area data with disease data
-quarter_shp@data <- inner_join(quarter_shp@data, comb_summary,
+
+# JOIN DISEASE DATA -------------------------------------------------------
+quarter_shp@data <- inner_join(quarter_shp@data, case_summary_combined,
                                by = c("quarter"))
 
-quarter_shp@data$pop_density <- quarter_shp@data$est.pop.1853 / quarter_shp@data$area
-quarter_shp@data$infect_density <- quarter_shp@data$area / quarter_shp@data$cum.sick
+# Calculate new variables
+# quarter_shp@data$inc_rate <- quarter_shp@data$cases / quarter_shp@data$pop
+# quarter_shp@data$cfr <- quarter_shp@data$deaths / quarter_shp@data$cases
+quarter_shp@data$pop_density <- quarter_shp@data$pop / quarter_shp@data$area
+quarter_shp@data$infect_density <- quarter_shp@data$area / quarter_shp@data$cases
 
-
-#plot(quarter_shp@data$cum_incidence ~ quarter_shp@data$pop_density)
 
 # SHP OUTPUT ---------------------------------------------------------
-
 # Transform to EPSG:3857
 quarter_shp <- spTransform(quarter_shp, CRSobj = "+init=epsg:3857")
 # proj4string(quarter_shp)
 
 # Save if I need output for QGIS
-# writeOGR(obj = quarter_shp, dsn = "Data/GIS", layer = "CPH_Quarters_4",
-#          driver = "ESRI Shapefile", overwrite_layer = TRUE)
+writeOGR(obj = quarter_shp, dsn = "Data/GIS", layer = "CPH_Quarters_4",
+          driver = "ESRI Shapefile", overwrite_layer = TRUE)
 
 
 # CITY WALL & WATER POLYLINE ------------------------------------------------------

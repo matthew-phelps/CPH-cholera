@@ -25,6 +25,8 @@ mapdf <- left_join(quarter_tidy, quarter_df, by = c("id" = "quarter"))
 mapdf <- mapdf[ order(mapdf$order),]
 
 
+
+
 wall_fort <- tidy(wall, region = "id")
 water_fort <- tidy(water, region = "grp")
 
