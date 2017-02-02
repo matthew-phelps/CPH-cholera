@@ -90,7 +90,7 @@ case_summary_2nd <- quarter_secondary %>%
   group_by(quarter_secondary) %>%
   dplyr::summarize(cases = sum(sick.total.week),
                    deaths = sum(dead.total.week),
-                   hosp_poor = max(outside)) 
+                   hosp_poor = max(hosp_poor)) 
 case_summary_2nd
 
 # Cases outside the city walls:
