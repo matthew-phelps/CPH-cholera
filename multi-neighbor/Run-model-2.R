@@ -3,19 +3,6 @@
 
 # Intro -------------------------------------------------------------------
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
-       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
-
-ifelse(grepl("wrz741", getwd()),
-       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
-       model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
-ifelse(grepl("wrz741", getwd()),
-       fun.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
-       fun.path <-"/Users/Matthew/GitClones/RCodes")
-
-setwd(data.path)
-
 library(plyr)
 library(coda)
 library(parallel)
@@ -27,12 +14,9 @@ library(mcmcplots)
 options(mc.cores = 4)
 
 # LOAD -------------------------------------------------------
+load(file = "Data/Rdatamulti-model1-data-prep.Rdata")
+source("Functions/WAIC-function.R")
 
-load(file = "multi-model1-data-prep.Rdata")
-
-setwd(fun.path)
-source("WAIC-function.R")
-setwd(data.path)
 
 # SETUP JAGS-------------------------------------------------------------
 # Save in list form to pass to JAGS
@@ -51,13 +35,10 @@ for (reps in 1:num_reps){
 # RUN JAGS -----------------------------------------------------------------
 
 # JAGS
-# Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
-setwd(model.path)
-
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
-  jags_m2_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-2.stan',
+  jags_m2_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-2.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi'),
                                  modules = "glm",
@@ -76,8 +57,8 @@ for (reps in 1:num_reps){
 # mcmcplot(m2_mcmc)
 
 
-setwd(data.path)
-save(jags_m2_ls, file = "jags_m2_ls.Rdata")
+
+save(jags_m2_ls, file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
 
 #################################################
 #################################################
