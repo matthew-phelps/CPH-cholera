@@ -4,32 +4,42 @@
 # Intro -------------------------------------------------------------------
 rm(list = ls())
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
-       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
-
-ifelse(grepl("wrz741", getwd()),
-       model.path <- "/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
-       model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
-
-setwd(data.path)
 
 library(runjags)
 library(rjags)
 
 # LOAD --------------------------------------------------------------------
 
-load(file = "dic_m1.Rdata")
-load(file = "dic_m2.Rdata")
-load(file = "dic_m3.Rdata")
-load(file = "dic_m5.Rdata")
-load(file = "dic_m5_b.Rdata")
-load(file = "waic_m1b.Rdata")
-load(file = "waic_m3.Rdata")
-load(file = "waic_m5b.Rdata")
+load(file = "Data/Rdata/dic_m1.Rdata")
+load(file = "Data/Rdata/dic_m2.Rdata")
+load(file = "Data/Rdata/dic_m3.Rdata")
+load(file = "Data/Rdata/dic_m5.Rdata")
+load(file = "Data/Rdata/waic_m1_ls.Rdata")
+load(file = "Data/Rdata/waic_m2_ls.Rdata")
+load(file = "Data/Rdata/waic_m3_ls.Rdata")
+load(file = "Data/Rdata/waic_m5_ls.Rdata")
+
+dic_list <- list(dic_m1, dic_m2, dic_m3, dic_m5)
+waic_list <- list(waic_m1_ls, waic_m2_ls, waic_m3_ls, waic_m5_ls)
+
+print(dic_m5[[1]])
+
+getPenDic <- function(x) sum(x$deviance) + sum(x$penalty)
+modelDic <- function(z) mean(sapply(z, getPenDic))
+summaryDic <- function(y) sapply(y, modelDic)
+summaryDic(dic_list)
 
 
-waic <- data.frame(waic_m1b$waic)
+mean(dic_m1[[1]]$penalty)
+
+extDic <- function(x)
+
+exFun <- function(z)sapply(z, function(x) x[[1]])
+
+sapply(waic_list, exFun)
+print()
+
+waic <- data.frame(waic_m1_ls$waic)
 
 dic_m1
 dic_m2
