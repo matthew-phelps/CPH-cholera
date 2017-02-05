@@ -14,7 +14,7 @@ library(mcmcplots)
 options(mc.cores = 4)
 
 # LOAD -------------------------------------------------------
-load(file = "Data/Rdatamulti-model1-data-prep.Rdata")
+load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 source("Functions/WAIC-function.R")
 
 
@@ -60,15 +60,24 @@ for (reps in 1:num_reps){
 
 save(jags_m2_ls, file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
 
-#################################################
-#################################################
-#################################################
-#################################################
+
+
+
+
+# DIC ---------------------------------------------------------------------
+dic_m2 <- mclapply(jags_m2_ls, extract.runjags, "dic")
+
+save(dic_m2, file = "dic_m2.Rdata")
+dic_m2
+
+
+
+
 
 
 # WAIC --------------------------------------------------------------------
 
-if(!exists("jags_m2_ls")) load(file = "jags_m2_ls.Rdata")
+if(!exists("jags_m2_ls")) load(file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
 
 waic_m2_ls <- list()
 for(i in 1:reps){
@@ -85,14 +94,3 @@ for(i in 1:reps){
 
 save(waic_m2_ls, file = "waic_m2_ls.Rdata")
 
-
-# DIC ---------------------------------------------------------------------
-# 
-# 
-# 
-
-dic_m2 <- mclapply(jags_m2_ls, extract.runjags, "dic")
-
-
-save(dic_m2, file = "dic_m2.Rdata")
-dic_m2
