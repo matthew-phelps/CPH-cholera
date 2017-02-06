@@ -35,13 +35,9 @@ for (reps in 1:num_reps){
 }
 
 # RUN JAGS -----------------------------------------------------------------
-
 # JAGS
-# Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
-setwd(model.path)
-
 for (reps in 1:num_reps){
-  print(num_reps)
+  print(reps)
   print(Sys.time())
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m1_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-1.stan',
@@ -57,7 +53,6 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 
-setwd(data.path)
 save(jags_m1_ls, file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
 
 
