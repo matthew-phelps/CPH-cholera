@@ -26,7 +26,7 @@ model {
     S_it_daily[1, k] <- N_i_daily[k]
     
     # Asign 1 infected person into both
-    I_prev[1, i] <- ifelse(i==5 || i == 8 || i == 9, 1, 0)
+    I_prev[1, k] <- ifelse(k==5 || k == 8 || k == 9, 1, 0)
     #I_prev[1, i] <- ifelse(i==5,1,0)
     
     for (i in 1:Nquarter){

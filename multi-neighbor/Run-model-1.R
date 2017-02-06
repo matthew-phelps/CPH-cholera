@@ -33,7 +33,7 @@ for (reps in 1:num_reps){
                            Nsteps=Nsteps,
                            Nquarter = Nquarter)
 }
-dataList[[1]]
+
 # RUN JAGS -----------------------------------------------------------------
 
 # JAGS
@@ -41,6 +41,8 @@ dataList[[1]]
 setwd(model.path)
 
 for (reps in 1:num_reps){
+  print(num_reps)
+  print(Sys.time())
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m1_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-1.stan',
                                  method = 'rjparallel',
@@ -56,7 +58,7 @@ for (reps in 1:num_reps){
 }
 
 setwd(data.path)
-save(jags_m1_ls, file = "Data/Rdata/jags_m1_ls.Rdata")
+save(jags_m1_ls, file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
 
 
 # Get summary table
