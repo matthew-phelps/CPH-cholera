@@ -3,19 +3,7 @@
 
 # Intro -------------------------------------------------------------------
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
-       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
-
-ifelse(grepl("wrz741", getwd()),
-       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
-       model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
-ifelse(grepl("wrz741", getwd()),
-       fun.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
-       fun.path <-"/Users/Matthew/GitClones/RCodes")
-
-setwd(data.path)
-
+rm(list = ls())
 library(plyr)
 library(coda)
 library(parallel)
@@ -28,11 +16,8 @@ options(mc.cores = 4)
 
 # LOAD -------------------------------------------------------
 
-load(file = "multi-model1-data-prep.Rdata")
-
-setwd(fun.path)
-source("WAIC-function.R")
-setwd(data.path)
+load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
+source("Functions/WAIC-function.R")
 
 # SETUP JAGS-------------------------------------------------------------
 # Save in list form to pass to JAGS
@@ -51,12 +36,11 @@ for (reps in 1:num_reps){
 # RUN JAGS -----------------------------------------------------------------
 
 # JAGS
-# Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
-setwd(model.path)
-
 for (reps in 1:num_reps){
+  print(reps)
+  print(Sys.time())
   set.seed(13) # Not sure if this does anything in current set-up
-  jags_m4_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-2.stan',
+  jags_m4_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-2.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi'),
                                  modules = "glm",
@@ -69,8 +53,7 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 
-setwd(data.path)
-save(jags_m4_ls, file = "jags_m4_ls.Rdata")
+save(jags_m4_ls, file = "Data/Rdata/jags_m4_ls-new-inits.Rdata")
 
 # Get summary table
 jags_summary <- data.frame(add.summary(jags_m4_ls[[reps]])$summaries)
@@ -90,12 +73,14 @@ which.max(jags_summary$psrf)
 # WAIC --------------------------------------------------------------------
 
 
-load(file = "jags_m4_ls.Rdata")
+load(file = "Data/Rdata/jags_m4_ls.Rdata")
 
 
 
 waic_m4_ls <- list()
 for(i in 1:reps){
+  print(reps)
+  Sys.time()
   ll <- jags.samples(as.jags(jags_m4_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
   
   mean_lik <- apply(ll$mean$lik,c(1,2),mean)
@@ -107,7 +92,7 @@ for(i in 1:reps){
   waic_m4_ls[[i]] <-  get_waic(mean_lik, var_loglik)
 }
 
-save(waic_m4_ls, file = "waic_m4_ls.Rdata")
+save(waic_m4_ls, file = "Data/Rdata/waic_m4_ls.Rdata")
 
 
 # DIC ---------------------------------------------------------------------
@@ -116,5 +101,5 @@ dic_m4 <- list()
 
 dic_m4 <- mclapply(jags_m4_ls, extract.runjags, "dic")
 
-save(dic_m4, file = "dic_m4.Rdata")
+save(dic_m4, file = "Data/Rdata/dic_m4.Rdata")
 dic_m4

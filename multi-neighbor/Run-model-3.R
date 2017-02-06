@@ -65,6 +65,8 @@ which.max(jags_summary$psrf)
 load(file = "jags_m3_ls.Rdata")
 waic_m3_ls <- list()
 for(i in 1:reps){
+  print(reps)
+  Sys.time()
   ll <- jags.samples(as.jags(jags_m3_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
   
   mean_lik <- apply(ll$mean$lik,c(1,2),mean)
