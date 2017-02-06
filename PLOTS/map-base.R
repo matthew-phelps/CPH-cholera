@@ -14,9 +14,6 @@ library(mapproj) # for map projections
 #install.packages("http://cran.r-project.org/src/contrib/rgdal_1.1-3.tar.gz", repos = NULL, type="source", configure.args = "--with-gdal-config=/Library/Frameworks/GDAL.framework/Versions/1.11/unix/bin/gdal-config --with-proj-include=/Library/Frameworks/PROJ.framework/unix/include --with-proj-lib=/Library/Frameworks/PROJ.framework/unix/lib")
 
 source("Spatial-data-1.R")
-water@data
-proj4string(quarter_shp)
-proj4string(water)
 
 # BASE MAP------------------------------------------
 base_map <- ggplot() +
@@ -78,7 +75,7 @@ add_hosp <- function(old_map, hosp_tidy)
 inc_rate_map <- function(mapdf){
   base_map + geom_polygon(data = mapdf,
                           aes(x = long, y = lat, group = id,
-                              fill = inc_rate*100),
+                              fill = AR),
                           color = "grey")+
     scale_fill_gradientn(name = "Attack rate \nper 100 people",
                          colours = brewer.pal(9, "Reds"),
@@ -92,7 +89,7 @@ cfr_map <- function(mapdf){
   x_loc <- (xrng[2] - xrng[1]) /2 + xrng[1]
   base_map + geom_polygon(data = mapdf,
                           aes(x = long, y = lat, group = id,
-                              fill = cfr*100),
+                              fill = CFR),
                           color = "grey")+
     scale_fill_gradientn(name = "CFR",
                          colours = brewer.pal(9, "Reds"),
@@ -121,7 +118,9 @@ first_case_map <- function(mapdf){
                               fill = start),
                           color = "grey")+
     scale_fill_gradientn(name = "Start week",
-                         colours = brewer.pal(3, "Greens")) +
+                         colours = brewer.pal(3, "Greens"),
+                         limits = c(1,3),
+                         breaks = c(1,2,3)) +
     theme(legend.position = c(0.1,0.15))
 }
 

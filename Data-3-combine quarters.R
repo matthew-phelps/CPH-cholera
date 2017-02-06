@@ -73,8 +73,10 @@ case_summary_combined <- combined %>%
   dplyr::summarize(pop = max(est.pop.1853),
                    cases = sum(sick.total.week),
                    deaths = sum(dead.total.week))
-case_summary_combined$cfr <- case_summary_combined$deaths / case_summary_combined$cases
-case_summary_combined$inc_rate <- case_summary_combined$cases / case_summary_combined$pop
+case_summary_combined$AR <- case_summary_combined$cases / case_summary_combined$pop*100
+case_summary_combined$CFR <- case_summary_combined$deaths / case_summary_combined$cases*100
+case_summary_combined$AR <- round(case_summary_combined$AR, digits = 1)
+case_summary_combined$CFR <- round(case_summary_combined$CFR, digits = 1)
 
 rm(list = setdiff(ls(),c("combined", "case_summary_combined")))
 # SAVE --------------------------------------------------------------------

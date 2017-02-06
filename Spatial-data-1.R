@@ -51,8 +51,6 @@ quarter_shp@data <- inner_join(quarter_shp@data, case_summary_combined,
                                by = c("quarter"))
 
 # Calculate new variables
-# quarter_shp@data$inc_rate <- quarter_shp@data$cases / quarter_shp@data$pop
-# quarter_shp@data$cfr <- quarter_shp@data$deaths / quarter_shp@data$cases
 quarter_shp@data$pop_density <- quarter_shp@data$pop / quarter_shp@data$area
 quarter_shp@data$infect_density <- quarter_shp@data$area / quarter_shp@data$cases
 
@@ -60,7 +58,6 @@ quarter_shp@data$infect_density <- quarter_shp@data$area / quarter_shp@data$case
 # SHP OUTPUT ---------------------------------------------------------
 # Transform to EPSG:3857
 quarter_shp <- spTransform(quarter_shp, CRSobj = "+init=epsg:3857")
-# proj4string(quarter_shp)
 
 # Save if I need output for QGIS
 # writeOGR(obj = quarter_shp, dsn = "Data/GIS", layer = "CPH_Quarters_4",

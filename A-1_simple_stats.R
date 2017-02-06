@@ -128,17 +128,17 @@ in_out_cases$cases / total_reported_cases_everywhere
 ships$cases / total_reported_cases_everywhere
 
 
-
-# Case summary on analysis subset of data - with combined quarters
-case_summary_combined <- combined %>%
-  group_by(quarter) %>%
-  dplyr::summarize(pop = max(est.pop.1853),
-                   cases = sum(sick.total.week),
-                   deaths = sum(dead.total.week))
-                   
-
-case_summary_combined$AR <- case_summary_combined$cases / case_summary_combined$pop * 100
-case_summary_combined$CFR <- case_summary_combined$deaths / case_summary_combined$cases
+# 
+# # Case summary on analysis subset of data - with combined quarters
+# case_summary_combined <- combined %>%
+#   group_by(quarter) %>%
+#   dplyr::summarize(pop = max(est.pop.1853),
+#                    cases = sum(sick.total.week),
+#                    deaths = sum(dead.total.week))
+#                    
+# 
+# case_summary_combined$AR <- case_summary_combined$cases / case_summary_combined$pop * 100
+# case_summary_combined$CFR <- case_summary_combined$deaths / case_summary_combined$cases
 
 case_summary_combined$AR <- round(case_summary_combined$AR, digits = 1)
 case_summary_combined <- dplyr::arrange(case_summary_combined, quarter)

@@ -4,6 +4,8 @@
 
 ## intro
 
+library(cowplot) # multiplots: https://goo.gl/RK49b0
+
 source("PLOTS/map-base.R")
 source("Functions/multiplot function.R")
 
@@ -22,5 +24,7 @@ water_infra <- pipe_map(pipes_tidy) %>%
 
 
 # MULTIPLOT ---------------------------------------------------------------
+map_multi <- plot_grid(water_infra, case_first, case, cfr, labels = c("A", "B", "C", "D"), ncol = 2, nrow = 2)
 
-multiplot(water_infra, case_first, case, cfr, layout=matrix(c(1,2,3,4), nrow=2, byrow=TRUE))
+save_plot(map_multi, file = "Plot-output/map_multi.jpg",
+          base_height = 10)
