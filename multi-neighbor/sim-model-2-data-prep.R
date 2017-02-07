@@ -6,10 +6,6 @@
 # Intro -------------------------------------------------------------------
 
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
-setwd(wd.path)
 rm(list = ls())
 
 library(coda)
