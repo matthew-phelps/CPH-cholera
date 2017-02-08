@@ -4,7 +4,7 @@
 
 
 # Function ----------------------------------------------------------------
-
+source("Functions/WAIC-function.R")
 waicRep <- function(x) {
   waic_list <- list()
   for(i in 1:length(x)){
