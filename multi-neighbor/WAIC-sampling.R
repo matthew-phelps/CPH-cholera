@@ -1,7 +1,7 @@
 # Author: Matthew Phelps
 # Desc: WAIC sampling for all model runs
-
-
+library(runjags)
+library(rjags)
 
 # Function ----------------------------------------------------------------
 source("Functions/WAIC-function.R")
