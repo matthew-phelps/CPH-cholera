@@ -70,6 +70,17 @@ which.max(jags_summary$psrf)
 #################################################
 
 
+
+# DIC ---------------------------------------------------------------------
+if(!exists("jags_m1_ls")) load(file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
+dic_m1 <- list()
+cl <- makeCluster(5)
+dic_m1 <- parLapply(cl, jags_m1_ls, extract.runjags, "dic")
+stopCluster(cl)
+save(dic_m1, file = "Data/Rdata/dic_m1.Rdata")
+dic_m1
+
+
 # WAIC --------------------------------------------------------------------
 # if not loaded, load data
 if(!exists("jags_m1_ls")) load(file = "Data/Rdata/jags_m1_ls.Rdata")
@@ -90,19 +101,3 @@ for(i in 1:reps){
 save(waic_m1_ls, file = "Data/Rdata/waic_m1_ls.Rdata")
 
 
-
-# DIC ---------------------------------------------------------------------
-
-dic_m1 <- list()
-
-# Test lapply
-# lapply(jags_m1_ls, extract.runjags, "dic")
-
-dic_m1 <- mclapply(jags_m1_ls, extract.runjags, "dic")
-
-# 
-# for (i in 1:length(jags_m1_ls)){
-#   dic_m1[[i]] <- extract.runjags(jags_m1_ls[[i]], what = "dic")
-# }
-save(dic_m1, file = "Data/Rdata/dic_m1.Rdata")
-dic_m1
