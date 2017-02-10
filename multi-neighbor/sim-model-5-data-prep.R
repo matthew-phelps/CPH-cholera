@@ -6,21 +6,12 @@
 # Intro -------------------------------------------------------------------
 
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
-setwd(wd.path)
 rm(list = ls())
-
 library(coda)
 library(dplyr)
 library(runjags)
 
-
-
 # LOAD & PREP DATA ---------------------------------------------------------------
-
-
 load(file = "Data/Rdata/quarter_combined.Rdata")
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
@@ -50,14 +41,14 @@ weekly_avg <- dplyr::select(weekly_avg, c(quarter, week.id, avg))
 # MCMC PREP ---------------------------------------------------------------
 
 # Combine chains into 1
-z <- combine.MCMC(jags_m5_ls) # Combine different reps into one
+y <- jags_m5_ls %>%
+  combine.MCMC() %>%
+  combine.MCMC()
 rm(jags_m5_ls)
 gc()
-y <- combine.MCMC(z) # Combine different chains into 1 chain
-rm(z)
-gc()
-mcmc_median <- apply(y, MARGIN = 2, FUN = median)
+
 # Get median values for each parameter
+mcmc_median <- apply(y, MARGIN = 2, FUN = median)
 mcmc_names <- names(y[1, ]) # name the rows
 
 
@@ -127,4 +118,4 @@ save(int_hpd, file = 'data/Rdata/int_hpd.Rdata')
 rm(int_hpd)
 save(lo_hpd, hi_hdp, phi_hdp, file = "data/Rdata/param_ci.Rdata")
 save(list = ls(), file = 'data/Rdata/sim-model-5-data.Rdata' )
-write.csv(betas, file = "RCodes/online-data/betas-matrix.csv")
+write.csv(betas, file = "online-data/betas-matrix.csv")
