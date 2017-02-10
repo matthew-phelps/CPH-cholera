@@ -12,3 +12,6 @@ Data/Rdata/
 Data/GIS/georeferenced_raster/
 Data/GIS/rendered_1854/
 Plot-output/
+Output/S1.html
+*.pdf
+Output/S1.nb.html
