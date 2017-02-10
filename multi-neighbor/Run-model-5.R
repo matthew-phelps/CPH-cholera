@@ -19,7 +19,6 @@ options(mc.cores = 4)
 # LOAD -------------------------------------------------------
 
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
-source("WAIC-function.R")
 
 # JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
@@ -37,10 +36,12 @@ for (reps in 1:num_reps){
 
 # JAGS
 # Run the JAGS models for each iteration in a separate instance on AWS. Run 8 chains in each
-setwd(model.path)
+
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
-  jags_m5_ls[[reps]] <- run.jags(model = 'JAGS-multi-quarter-5.stan',
+  print(reps)
+  print(Sys.time())
+  jags_m5_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-5.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi'),
                                  modules = "glm",
@@ -53,7 +54,6 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 
-setwd(data.path)
 save(jags_m5_ls, file = "jags_m5_ls.Rdata")
 
 # Get summary table
