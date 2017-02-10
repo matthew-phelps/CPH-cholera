@@ -3,35 +3,24 @@
 
 # Intro -------------------------------------------------------------------
 rm(list = ls())
-graphics.off()
-
-ifelse(grepl("wrz741", getwd()),
-       out.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/Output/MCMC/",
-       out.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/MCMC/")
-ifelse(grepl("wrz741", getwd()),
-       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/rdata",
-       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/rdata")
-setwd(data.path)
-
-
-
-
 library(mcmcplots)
 library(runjags)
 library(coda)
 library(ggmcmc)
 # LOAD --------------------------------------------------------------------
 
-load("jags_m5_ls_b.Rdata") # Load the JAGS output to do diagnostics on
+load("Data/Rdata/jags_m5_ls.Rdata") # Load the JAGS output to do diagnostics on
 
 load("sim-model-5-data-b.Rdata") # Not sure why this is loaded 
 rm(I_it_daily, N_it, weekly_avg, y)
 gc()
+
 # Collapse chains within each imputation. Plot this to see if imputations are
 # diff from each other
-m5_mcmc_10 <- lapply(jags_m5_ls_b, combine.mcmc, collapse.chains = T)
+m5_mcmc_10 <- lapply(jags_m5_ls, combine.mcmc, collapse.chains = T)
 rm(jags_m5_ls_b)
 mcmcplot(m5_mcmc_10)
+
 # Collapse everything into one huge mcmc object
 m5_mcmc <- combine.mcmc(m5_mcmc)
 

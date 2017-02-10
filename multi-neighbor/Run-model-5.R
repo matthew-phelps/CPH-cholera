@@ -3,23 +3,7 @@
 
 # Intro -------------------------------------------------------------------
 graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       data.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata",
-       data.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/data/Rdata")
 
-ifelse(grepl("wrz741", getwd()),
-       model.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes/multi-neighbor",
-       model.path <-"/Users/Matthew/GitClones/RCodes/multi-neighbor")
-ifelse(grepl("wrz741", getwd()),
-       fun.path <- "C:/Users/wrz741/Google Drive/Copenhagen/DK Cholera/CPH/RCodes",
-       fun.path <-"/Users/Matthew/GitClones/RCodes")
-
-amazon <- F
-
-ifelse(amazon == T,
-       data.path <- "~/Dropbox/AWS-Rstudio",
-       data.path <- data.path)
-setwd(data.path)
 library(plyr)
 library(coda)
 library(parallel)
@@ -31,14 +15,12 @@ library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
 options(mc.cores = 4)
-rm(amazon)
 
 # LOAD -------------------------------------------------------
 
-load(file = "multi-model1-data-prep.Rdata")
-setwd(fun.path)
+load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 source("WAIC-function.R")
-setwd(data.path)
+
 # JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
 jags_m5_ls <- list()
@@ -80,30 +62,3 @@ jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)
 # Check that no prsf is higher than our 1.02 cutoff value
 max(jags_summary$psrf)
 which.max(jags_summary$psrf)
-
-
-#################################################
-
-load(file = "jags_m5_ls.Rdata")
-
-waic_m5_ls <- list()
-for(i in 1:reps){
-  ll <- jags.samples(as.jags(jags_m5_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
-  
-  mean_lik <- apply(ll$mean$lik,c(1,2),mean)
-  
-  var_loglik <- apply(ll$variance$llsim, c(1,2),mean)
-  # Remove first row because we start at t + 1
-  mean_lik <- mean_lik[2:nrow(mean_lik), ]
-  var_loglik <- var_loglik[2:nrow(var_loglik), ]
-  waic_m5_ls[[i]] <-  get_waic(mean_lik, var_loglik)
-}
-save(waic_m5_ls, file = "waic_m5_ls.Rdata")
-
-
-# DIC ---------------------------------------------------------------------
-
-dic_m5 <- list()
-dic_m5 <- mclapply(jags_m5_ls, extract.runjags, "dic")
-save(dic_m5, file = "dic_m5.Rdata")
-dic_m5
