@@ -6,16 +6,8 @@
 # Intro -------------------------------------------------------------------
 graphics.off()
 rm(list = ls())
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Data\\Rdata",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Data/Rdata")
-ifelse(grepl("wrz741", getwd()),
-       save.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH\\Output\\Results",
-       save.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH/Output/Results")
-setwd(wd.path)
 
-library(ggplot2)
-library(tidyr)
+library(tidyverse)
 require(grid)
 library(coda)
 library(CholeraDataDK)
@@ -23,23 +15,14 @@ library(plotrix)
 
 # LOAD data ---------------------------------------------------------------
 
-load(file = "Attributable-cases-tplus1.Rdata")
-load(file = "Proportion-attributable-tplus1.Rdata")
-# load(file = "Attributable-cases-tplus1-m3.Rdata")
-# load(file = "Proportion-attributable-tplus1-m3.Rdata")
-b <- T
-ifelse(b, load("sim-model-5-data-b.Rdata"), load("sim-model-5-data.Rdata"))
-
-
-#load(file = "sim-model-5-data-b.Rdata")
-
+load(file = "Data/Rdata/Attributable-cases-tplus1.Rdata")
+load(file = "Data/Rdata/Proportion-attributable-tplus1.Rdata")
+load("Data/Rdata/sim-model-5-data.Rdata")
 
 # SUM EXTERNAL CASES ------------------------------------------------------
-
 zx <- I_att_mean_plus1
 diag(zx) <- 0
 rowSums(zx)
-
 colSums(I_proportion_plus1)
 
 
@@ -79,9 +62,9 @@ text(y = ypos,
      xpd = T) # not sure but allows txt to overflow table
 title(main = "Mean cases atrributed to each neighborhood")
 # SAVE 
-setwd(save.path)
+
 dev.copy(png,
-         file = "R4 - Attrib-cases-absolute-tplus1.png",
+         file = "Plot-output/R4 - Attrib-cases-absolute-tplus1.png",
          width = 20,
          height = 20,
          res = 300,
@@ -126,9 +109,8 @@ title(main = "Proportion caused by each neighborhood")# not sure but allows txt 
 
 
 # SAVE 
-setwd(save.path)
 dev.copy(png,
-         file = "R5 - attribt-cases-proption-tplus1.png",
+         file = "Plot-output/R5 - attribt-cases-proption-tplus1.png",
          width = 20,
          height = 20,
          res = 300,
@@ -174,9 +156,8 @@ text(y = ypos,
      xpd = T) # not sure but allows txt to overflow table
 
 # SAVE 
-setwd(save.path)
 dev.copy(png,
-         file = "R1 - posterior table.png",
+         file = "Plot-output/R1 - posterior table.png",
          width = 20,
          height = 20,
          res = 300,
