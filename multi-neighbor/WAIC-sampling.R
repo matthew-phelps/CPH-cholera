@@ -2,13 +2,13 @@
 # Desc: WAIC sampling for all model runs
 library(runjags)
 library(rjags)
-
+rm(list=ls())
 # Function ----------------------------------------------------------------
 source("Functions/WAIC-function.R")
 waicRep <- function(x) {
   waic_list <- list()
   for(i in 1:length(x)){
-    ll <- jags.samples(as.jags(x[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
+    ll <- jags.samples(as.jags(x[[i]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
     
     mean_lik <- apply(ll$mean$lik,c(1,2),mean)
     
@@ -16,9 +16,10 @@ waicRep <- function(x) {
     # Remove first row because we start at t + 1
     mean_lik <- mean_lik[2:nrow(mean_lik), ]
     var_loglik <- var_loglik[2:nrow(var_loglik), ]
-    waic_m1_ls[[i]] <-  get_waic(mean_lik, var_loglik)
-    waic_list
+    waic_list[[i]] <-  get_waic(mean_lik, var_loglik)
+    
   }
+  waic_list
 }
 
 
@@ -37,17 +38,17 @@ load(file = "Data/Rdata/jags_m3_ls-new-inits.Rdata")
 waic_m3_ls <- waicRep(jags_m3_ls)
 rm(jags_m3_ls)
 
-load(file = "Data/Rdata/jags_m4_ls-new-inits.Rdata")
-waic_m4_ls <- waicRep(jags_m4_ls)
-rm(jags_m4_ls)
+# load(file = "Data/Rdata/jags_m4_ls-new-inits.Rdata")
+# waic_m4_ls <- waicRep(jags_m4_ls)
+# rm(jags_m4_ls)
 
-load(file = "Data/Rdata/jags_m5_ls-new-inits.Rdata")
+load(file = "Data/Rdata/jags_m5_ls.Rdata")
 waic_m5_ls <- waicRep(jags_m5_ls)
 rm(jags_m5_ls)
 
 
 waic_list <- list(waic_m1_ls, waic_m2_ls, waic_m3_ls,
-                  waic_m4_ls, waic_m5_ls)
+                  waic_m4_ls)
 
 
 # SAVE --------------------------------------------------------------------
