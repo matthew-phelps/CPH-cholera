@@ -10,7 +10,9 @@ library(coda)
 library(CholeraDataDK)
 
 # LOAD data ---------------------------------------------------------------
-source("Data-4-prepare-JAGS.R")
+source("Data-5-interpolation.R")
+# TODO: put I_multi_replicate into a list of 10 t,i indexed data.frames
+
 Nweeks <- Nsteps
 load("Data/Rdata/sim-model-5-data.Rdata")
 
@@ -32,8 +34,7 @@ quarter_sums <- quarter_sums[quarter_sums$week.id == 15, c(1, 3)]
 
 
 # GLOBAL VARIABLES -------------------------------------------------------------------
-
-loops <- 1000 # Has to be the same for both full sum and t+1 sim
+loops <- 10
 gamma <- 1/5
 
 
@@ -63,44 +64,53 @@ I_prev_vect[1, c(5, 8, 9)] <- 1 # Init St.A.V & Ø + Nyb with cases
 S_plus1_mat[1, ] <- N_it[, 1] # init all S
 
 # T + 1: SIMULATION -----------------------------------------------------
-# "I_it_daily" is the daily "observed" incidence.
-ptm <- proc.time()
+# "I_it_daily" is the daily "observed" incidence. <- But this is just ONE of the
+# realizations of the epidemics!! Need to simulate from all realizations
 
-sim_t_plus_one <- function(){
-  set.seed(13)
-  for (z in 1:loops){
-    for (t in 1:(Nsteps-1)){
-      for(i in 1:Nquarter){
-        #browser()
-        Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum( betas[, i] * I_prev_vect[t, ] )
-        LambdaR[t, i] <- I_prev_vect[t, i] * gamma
-        
-        # Number of infections caused by quarter i at time t
-        Lambda_quart[[i]][t, ] <- ((S_plus1_mat[t, i] / N_it[i]) * ( betas[, i] * I_prev_vect[t, ])) * phi
-        
-        R_temp <- LambdaR[t, i]
-        R_new[t, i] <- min(R_temp, I_prev_vect[t, i]) # no more recovereds than infected
-        
-        I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i] * phi ) )
-        I_prev_vect[t + 1, i] <- max(0, (I_prev_vect[t, i] + I_it_daily[t, i] / phi  - R_new[t, i]))
-        
-        S_temp <- (S_plus1_mat[t, i]) -    (I_it_daily[t, i]) / (phi) # Should be I_it_daily instead?
-        S_plus1_mat[t + 1, i] <- max(0, S_temp)
-        
-      }
+
+# Function Def ------------------------------------------------------------
+sim_fun <- function(){
+  for (t in 1:(Nsteps-1)){
+    for(i in 1:Nquarter){
+      # browser()
+      Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum( betas[, i] * I_prev_vect[t, ] )
+      LambdaR[t, i] <- I_prev_vect[t, i] * gamma
+      
+      # Number of infections caused by quarter i at time t
+      Lambda_quart[[i]][t, ] <- ((S_plus1_mat[t, i] / N_it[i]) * ( betas[, i] * I_prev_vect[t, ])) * phi
+      
+      R_temp <- LambdaR[t, i]
+      R_new[t, i] <- min(R_temp, I_prev_vect[t, i]) # no more recovereds than infected
+      
+      I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i] * phi ) )
+      I_prev_vect[t + 1, i] <- max(0, (I_prev_vect[t, i] + I_it_daily[t, i] / phi  - R_new[t, i]))
+      
+      S_temp <- (S_plus1_mat[t, i]) -    (I_it_daily[t, i]) / (phi) # Should be I_it_daily instead?
+      S_plus1_mat[t + 1, i] <- max(0, S_temp)
+      
     }
-    # For each quarter: store sum of infections attributed to each quarter over
-    # all time-steps
-    
-    I_attr[[z]] <- sapply(Lambda_quart, colSums, na.rm=T)
-    I_attr[[z]] <- round(I_attr[[z]], digits = 1)
-    I_new_plus1[[z]] <- data.frame(I_new)
-    I_new_plus1[[z]]$sim_sum <- z
   }
-  out <- list(I_attr = I_attr, I_new_plus1 = I_new_plus1)
+list(I_new = I_new, Lambda_quart = Lambda_quart )
 }
 
-sim1 <- sim_t_plus_one()
+
+# SIM ---------------------------------------------------------------------
+sim_t_plus_one <- function(loops){
+  set.seed(13)
+  for (z in 1:loops){
+    out <- sim_fun()
+    # For each quarter: store sum of infections attributed to each quarter over
+    # all time-steps
+    # browser()
+    I_attr[[z]] <- sapply(out$Lambda_quart, colSums, na.rm=T)
+    I_attr[[z]] <- round(I_attr[[z]], digits = 1)
+    I_new_plus1[[z]] <- data.frame(out$I_new)
+    I_new_plus1[[z]]$sim_sum <- z
+  }
+  list(I_attr = I_attr, I_new_plus1 = I_new_plus1)
+}
+
+sim1 <- sim_t_plus_one(loops = loops)
 
 
 # T + 1 : DATA RESHAPE --------------------------------------------------------------
