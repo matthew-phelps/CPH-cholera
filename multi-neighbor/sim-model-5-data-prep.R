@@ -18,9 +18,7 @@ load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
 load(file = "Data/Rdata/jags_m5_ls.Rdata")
 
 N_i_daily <- N_pop
-I_it_daily <- I_reps[[1]]
-Nsteps <- dataList[[1]]$Nsteps
-Nquarter <- nrow(N_i_daily)
+I_it_daily <- I_reps
 q_names <- N_pop$quarter
 q_names_old <- colnames(dataList[[1]]$I_incidence)
 
@@ -112,10 +110,11 @@ N_it[, 1] <- unique(combined$est.pop.1853)
 
 # SAVE --------------------------------------------------------------------
 # If in future we sample from posterior, keep "y" object that I remove below 
-rm(combined, dataList, N_i_daily, mcmc_median, q_names_old, y)
+rm(combined, dataList, N_i_daily, mcmc_median, q_names_old, y, matNames, matOrderFun, mkDf)
 gc()
 save(int_hpd, file = 'data/Rdata/int_hpd.Rdata')
 rm(int_hpd)
 save(lo_hpd, hi_hdp, phi_hdp, file = "data/Rdata/param_ci.Rdata")
+rm(lo_hpd, hi_hdp, phi_hdp)
 save(list = ls(), file = 'data/Rdata/sim-model-5-data.Rdata' )
 write.csv(betas, file = "online-data/betas-matrix.csv")
