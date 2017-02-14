@@ -11,22 +11,27 @@ knitr::opts_chunk$set(echo = FALSE)
 
 #1 Model
 ## 1.1 Model structure  
-We created five models, each with differining levels of allowed complexity. Each model was based upon the following construction:
+We constructed a series of nested models with differing assumptions about the internal force of infection within a quarter ($\beta$) and the external force of infection between quarters ($\alpha$).  
+
+From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for all quarters, (2) an individual $\beta_{i}$ for each quarter and a single $\alpha$ for all quarters, (3) an individual $\beta_{i}$ for each quarter and a single $\alpha_{i}$ for each quarter, (4) an individual $\beta_{i}$ for each quarter and single symmetric $\alpha_{j,i}$ for each quarter pair ($\alpha_{j,i} = \alpha_{i,j}$), (5) an individual $\beta_{i}$ for each quarter and a single asymmetric $\alpha_{i,j}$ for each quarter pair.  
+
+Each model was based upon the following construction:
 $$^{new}\textrm{I}_{i,t+1}\sim Poisson(\lambda_{i,t})$$
 $$\lambda_{i,t} = \frac{S_{i,t}}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}I_{j,t}\alpha_{j,i} )$$
 
 where:  
-$^{new}\textrm{I}_{i,t}$ = the number of new infectious cases in each quarter $i$ at each timepoint $t$  
-$I_{i,t}$ = the total number of infectious cases in each quarter $i$ at each timepoint $t$
-$S_{i,t}$ = the number of susceptible people in each quarter $i$ at each timepoint $t$  
+$^{new}\textrm{I}_{i,t}$ = the number of new infectious cases in each quarter $i$ at time $t$  
+$I_{i,t}$ = the total number of infectious cases in each quarter $i$ at time $t$  
+$S_{i,t}$ = the number of susceptible people in each quarter $i$ at time $t$  
 $N_{i}$ = the total poulation of quarter $i$  
 $\beta_{i}$ = the force of internal infection in quarter $i$  
+$\alpha_{j,i}$ = the force of infection from quarter $j$ to quarter $i$.  
 
 
 The total number of cases $I_{i,t}$ was updated via:
 $$I_{i,t+1} = I_{i,t} + \frac{^{new}\textrm{I}_{i,t}}{\phi} - R_{i,t}$$  
 where:  
-$\phi$ = the fraction of infectious cases that are reported  
+$\phi$ = the fraction of cases that are reported  
 $R_{i,t}$ = the number of people who recovered or died from infection.
 
 The number of recovered individuals $R_{i,t}$ was updated via:  
@@ -37,9 +42,4 @@ $\gamma$ = the average duration of infectiousness (fixed at 5 days).
 The number of suceptibles $S_{i,t}$ was updated via:
 $$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$
 
-## 1.2 Model priors  
 
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```

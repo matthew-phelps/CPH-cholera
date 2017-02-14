@@ -1,10 +1,10 @@
 # Author: Matthew Phelps
 # DESC: Prepare spatial data for plotting
-
+rm(list = ls())
 library(rgdal)
 library(sp)
 source("Data-3-combine quarters.R")
-
+source("multi-neighbor/R calculations.R")
 
 # QUARTER SUMMARY DATA FRAME ---------------------------------------------------------
 # Date of first infected case in each quarter
@@ -47,13 +47,23 @@ quarter_shp@data$area <- sapply(slot(quarter_shp, "polygons"), slot, "area")
 
 
 # JOIN DISEASE DATA -------------------------------------------------------
-quarter_shp@data <- inner_join(quarter_shp@data, case_summary_combined,
-                               by = c("quarter"))
+quarter_shp@data <- quarter_shp@data %>%
+  inner_join(case_summary_combined, by = "quarter") %>%
+  mutate(pop_density = pop / area,
+         infect_density = area/cases)
 
-# Calculate new variables
-quarter_shp@data$pop_density <- quarter_shp@data$pop / quarter_shp@data$area
-quarter_shp@data$infect_density <- quarter_shp@data$area / quarter_shp@data$cases
-
+# Join reproductive number data
+R_ext <- R_ext %>%
+  dplyr::select(quarter, R_value) %>%
+  dplyr::mutate(quarter = as.character(quarter)) %>%
+  dplyr::rename(R_ext = R_value)
+R_int <- R_int %>%
+  dplyr::select(quarter, R_value) %>%
+  dplyr::mutate(quarter = as.character(quarter)) %>%
+  dplyr::rename(R_int = R_value)
+quarter_shp@data <- quarter_shp@data %>%
+  inner_join(R_ext, by = "quarter") %>%
+  inner_join(R_int, by = "quarter")
 
 # SHP OUTPUT ---------------------------------------------------------
 # Transform to EPSG:3857
@@ -98,5 +108,5 @@ pipes_tidy <- tidy(pipes, region = id)
 
 
 #  CLEAN ------------------------------------------------------------------
-rm(oldw, start)
+rm(oldw, start, list = rm_list)
 

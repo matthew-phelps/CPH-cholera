@@ -3,9 +3,10 @@
 library(runjags)
 library(rjags)
 library(parallel)
-# Function ----------------------------------------------------------------
 
+# Function ----------------------------------------------------------------
 SampleDIC_rep <- function(x, cl_num){
+  # Sample DIC from all epidemic relizations using multiple cores
   cl <- makeCluster(cl_num)
   dic_samp <- parLapply(cl, x, extract.runjags, "dic")
   stopCluster(cl)
@@ -17,10 +18,10 @@ SampleDIC_rep <- function(x, cl_num){
 load(file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
 DIC_m1_ls <- SampleDIC_rep(jags_m1_ls, 6)
 rm(jags_m1_ls)
-# 
-# load(file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
-# DIC_m2_ls <- SampleDIC_rep(jags_m2_ls, 6)
-# rm(jags_m2_ls)
+
+load(file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
+DIC_m2_ls <- SampleDIC_rep(jags_m2_ls, 6)
+rm(jags_m2_ls)
 
 load(file = "Data/Rdata/jags_m3_ls-new-inits.Rdata")
 DIC_m3_ls <- SampleDIC_rep(jags_m3_ls, 6)
@@ -35,7 +36,7 @@ DIC_m5_ls <- SampleDIC_rep(jags_m5_ls, 6)
 rm(jags_m5_ls)
 
 
-DIC_list <- list(DIC_m1_ls, DIC_m3_ls,
+DIC_list <- list(DIC_m1_ls, DIC_m2_ls, DIC_m3_ls,
                   DIC_m4_ls, DIC_m5_ls)
 
 

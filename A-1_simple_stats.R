@@ -2,10 +2,6 @@
 # DESC: Simple analysis for 1853
 # Output: Simple statistics on outbreak
 ## intro
- 
-graphics.off()
-
-
 
 library(plyr)
 library(rgdal)

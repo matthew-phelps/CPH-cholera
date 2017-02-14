@@ -54,7 +54,7 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 
-save(jags_m5_ls, file = "jags_m5_ls.Rdata")
+save(jags_m5_ls, file = "Data/Rdata/jags_m5_ls.Rdata")
 
 # Get summary table
 jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)

@@ -1,0 +1,59 @@
+---
+title: "Regression - hyrdualic"
+
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+```
+
+```{r load, include=FALSE}
+library(RCurl) # https compatability for Githib download
+library(pander)
+
+betas <- read.csv("online-data/betas-matrix.csv", row.names = 1)
+
+water_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/water-matrix.csv")
+border_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/border-matrix.csv")
+water <- read.csv(text = water_url)
+border <- read.csv(text = border_url)
+
+```
+
+```{r datastep, include=FALSE}
+#re-order matrices
+matOrderFun <- function(x) {
+  x[order(rownames(x)), order(colnames(x))]
+}
+water <- matOrderFun(water)
+border <- matOrderFun(border)
+
+# Convert to vector to lm()
+`water-connection` <-as.vector(t(water))
+`shared-border` <- as.vector(t(border))
+
+# Make diagnols of beta "NA" since we are not looking at internal transmission
+diag(betas) <- NA
+betas_vec <- as.vector(t(betas))
+```
+
+```{r check data, include = FALSE}
+
+hist(log(betas_vec))
+qqnorm(log(betas_vec))
+qqline(log(betas_vec)) # Not ideally normally distributed, but not entirely off
+
+```
+```{r regression, include = FALSE}
+lm_border <- lm(log(betas_vec) ~ `shared-border`)
+lm_pipes <- lm(log(betas_vec) ~ `water-connection`)
+summary(lm_border)
+summary(lm_pipes)
+
+lm_full <- lm(log(betas_vec) ~ `water-connection` + `shared-border`)
+```
+```{r output, echo=FALSE}
+pander(lm_full)
+```

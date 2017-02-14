@@ -1,8 +1,6 @@
 # Author: Matthew Phelps
 # Desc: Linear regression with water variables as covariates
 
-
-
 # Intro -------------------------------------------------------------------
 graphics.off()
 rm(list = ls())
@@ -16,7 +14,7 @@ border_url <- getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-chole
 
 water <- read.csv(text = water_url)
 border <- read.csv(text = border_url)
-betas <- read.csv("Rcodes/online-data/betas-matrix.csv", row.names = 1)
+betas <- read.csv("online-data/betas-matrix.csv", row.names = 1)
 
 
 #re-order matrices

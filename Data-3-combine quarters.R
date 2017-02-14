@@ -8,7 +8,7 @@ library(tidyverse)
 source("Data-2_cholera_by_quarter.R")
 
 # Prepare 1 grouping of of combined quarter NOT based on topography ----------------------------------------
-
+week_date <- daily_cases$week 
 
 # These are quarters to be combined
 combined_lower <- ddply(quarter[which(quarter$quarter == "Vester" | 
@@ -78,7 +78,7 @@ case_summary_combined$CFR <- case_summary_combined$deaths / case_summary_combine
 case_summary_combined$AR <- round(case_summary_combined$AR, digits = 1)
 case_summary_combined$CFR <- round(case_summary_combined$CFR, digits = 1)
 
-rm(list = setdiff(ls(),c("combined", "case_summary_combined")))
+rm(list = setdiff(ls(),c("combined", "case_summary_combined", "quarter", "week_date")))
 # SAVE --------------------------------------------------------------------
 # save(combined, file = "Rdata/quarter_combined.Rdata")
 

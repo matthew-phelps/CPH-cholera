@@ -11,10 +11,6 @@ model {
   mu ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
   
-  # Effect of hydraulic connection hyperprior
-  # mu_2 ~ dnorm(0, 0.001)
-  # tau_2 ~ dgamma(0.001, 0.001)
-  
   # Effect of hydraulic connection
   log_eta ~ dnorm(0, 0.001)
   eta <- exp(log_eta)
@@ -28,7 +24,7 @@ model {
     # First time-step
     S_it_daily[1, i] <- N_i_daily[i];
     
-    I_prev[1, i] <- ifelse(i==1,1,0) # 1 infected at t=1 for quarter 1
+    I_prev[1, i] <- ifelse(i==5 || i == 8 || i == 9,1,0)
     
     for (j in 1:Nquarter){
       # Betas - force of infection (foi). Diagnols are internal foi,
@@ -36,9 +32,8 @@ model {
       # For each, draw log_beta from normal with hyperprior params
       log_beta[i, j] ~ dnorm(mu, tau);
 
-      # If there is a water-pipe connection b/w neighborhoods, foi = foi * eta
+      # If there is a water-pipe connection b/w neighborhoods, foi = foi + eta
       beta[i, j] <- exp(log_beta[i, j])
-      #beta[i, j] <- b_temp[i,j]
       foi[i, j] <- ifelse(water[i, j]==1, eta + beta[i, j], beta[i, j]);
     } 
   }
@@ -49,13 +44,9 @@ model {
     for (i in 1:Nquarter){
       lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(foi[, i] * (I_prev[t, ])))
       lambdaR[t, i] <- I_prev[t, i] * gamma_b
-      # dpois(lambdaR[t, i]) took too long to fit, so just use lambdaR
-      R_temp[t, i] <- lambdaR[t, i] 
-      
-      # Recovered cannot be greater than prevalence, so if R_temp > I_prev, 
-      # R_new <- I_prev 
+      R_temp[t, i] <- lambdaR[t, i]
       R_new[t, i] <- min(I_prev[t, i], R_temp[t, i])
-      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] - R_new[t, i])
+      I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i]/phi - R_new[t, i])
       S_it_daily[t+1, i] <- S_it_daily[t, i] - (I_incidence[t, i] / phi)
     }
   }
@@ -63,10 +54,11 @@ model {
   # Likelihood function
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
-      I_incidence[t+1, i] ~ dpois(lambdaI[t, i])
+      I_incidence[t+1, i] ~ dpois(lambdaI[t, i] * phi)
       # This log-density function is not documented in the JAGS manual. Found via
       # the 6th response on this forum: https://goo.gl/UisKKW
       llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
+      lik[t + 1, i] <- exp(llsim[t + 1, i])
     }
   }
   #data# Nsteps

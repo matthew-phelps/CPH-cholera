@@ -55,7 +55,6 @@ model {
       # the 6th response on this forum: https://goo.gl/UisKKW
       llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
       lik[t + 1, i] <- exp(llsim[t + 1, i])
-      
     }
   }
   #data# Nsteps
