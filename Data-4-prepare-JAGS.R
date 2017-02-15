@@ -16,7 +16,7 @@ Nsteps <- 16
 quarterID <- as.numeric(combined$quarterID)
 n <- as.numeric(length(quarterID))
 Nquarter <- length(table(quarterID))
-q_names <-as.data.frame(unique(combined$quarter))
+
 
 S_it <- matrix(0, Nquarter, Nsteps)
 I_it <- matrix(0, Nquarter, Nsteps)
@@ -28,7 +28,7 @@ for (i in 1:Nquarter){
     N_i[i, t] <- (combined$est.pop.1853[which(combined$quarterID==i)])[t]
   }
 }
-row.names(I_it) <- q_names[, 1]
+row.names(I_it) <- q_names
 
 
 dataList <- list(Nquarter=Nquarter,
@@ -38,6 +38,6 @@ dataList <- list(Nquarter=Nquarter,
                  Nsteps=Nsteps)
 
 
-# SAVE --------------------------------------------------------------------
-rm(i, t)
-# save(list = ls(), file = 'Data_3.Rdata')
+# Clean
+rm(i, t, week_date)
+
