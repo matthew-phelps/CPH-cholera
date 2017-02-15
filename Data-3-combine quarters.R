@@ -77,8 +77,15 @@ case_summary_combined$AR <- case_summary_combined$cases / case_summary_combined$
 case_summary_combined$CFR <- case_summary_combined$deaths / case_summary_combined$cases*100
 case_summary_combined$AR <- round(case_summary_combined$AR, digits = 1)
 case_summary_combined$CFR <- round(case_summary_combined$CFR, digits = 1)
+q_names <- combined$quarter %>%
+  unique() %>%
+  data.frame() %>%
+  `colnames<-` ("value")
 
-rm(list = setdiff(ls(),c("combined", "case_summary_combined", "quarter", "week_date")))
+q_names <- as.character(q_names$value)
+
+rm(list = setdiff(ls(),c("combined", "case_summary_combined", "quarter",
+                         "week_date", "q_names")))
 # SAVE --------------------------------------------------------------------
 # save(combined, file = "Rdata/quarter_combined.Rdata")
 
