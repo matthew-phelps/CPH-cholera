@@ -76,7 +76,7 @@ sim_t_plus_one <- function(loops){
   for (z in 1:loops){
     for (t in 1:(Nsteps-1)){
       for(i in 1:Nquarter){
-        # if(t==15) browser()
+        # browser()
         Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum(betas[, i] * I_prev_vect[t, ])
         LambdaR[t, i] <- I_prev_vect[t, i] * gamma
         
@@ -127,7 +127,7 @@ I_obs_lng <- gather(I_obs_df, quarter, I_obs, 1:9)
 
 sim1_plus1 <- ggplot() + 
   geom_line(data = I_simulated_plus1, 
-            alpha = 0.1,
+            alpha = 0.01,
             aes(x = day, y = I_simulated,
                 group = interaction(quarter, sim_num),
                 color = quarter)) +

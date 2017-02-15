@@ -42,7 +42,7 @@ for (reps in 1:num_reps){
   print(reps)
   print(Sys.time())
   jags_m5_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-5.stan',
-                                 method = 'rjparallel',
+                                 method = 'parallel',
                                  monitor = c("beta", 'phi'),
                                  modules = "glm",
                                  data = dataList[[reps]],
@@ -54,7 +54,7 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 
-save(jags_m5_ls, file = "Data/Rdata/jags_m5_ls.Rdata")
+save(jags_m5_ls, file = "Data/Rdata/jags_m5_ls-new.Rdata")
 
 # Get summary table
 jags_summary <- data.frame(add.summary(jags_m5_ls[[reps]])$summaries)

@@ -59,11 +59,8 @@ mkDf <- function(x){
 betas <- mkDf(betas_temp)
 rm(betas_temp)
 
-# Re-order based on alphabetical. When I ran model_5 the data was ordered
-# incorrecly (not alphabetically by quarter). All other time I use quarter data
-# it's arranged alphabetically, so here I re-order the output of model 5 to be
-# the same
-
+# Re-order based on alphabetical. Should already by alphabetical, but just in
+# case
 matNames <- function(x, names_m) {
   rownames(x) <- names_m
   colnames(x) <- names_m
@@ -72,7 +69,7 @@ matNames <- function(x, names_m) {
 matOrderFun <- function(x) {
   x[order(rownames(x)), order(colnames(x))]
 }
-betas <- matNames(betas, q_names_old)
+betas <- matNames(betas, q_names)
 betas <- matOrderFun(betas)
 
 
@@ -112,9 +109,9 @@ N_it[, 1] <- unique(combined$est.pop.1853)
 # If in future we sample from posterior, keep "y" object that I remove below 
 rm(combined, dataList, N_i_daily, mcmc_median, q_names_old, y, matNames, matOrderFun, mkDf)
 gc()
-save(int_hpd, file = 'data/Rdata/int_hpd.Rdata')
+save(int_hpd, file = 'Data/Rdata/int_hpd.Rdata')
 rm(int_hpd)
-save(lo_hpd, hi_hdp, phi_hdp, file = "data/Rdata/param_ci.Rdata")
+save(lo_hpd, hi_hdp, phi_hdp, file = "Data/Rdata/param_ci.Rdata")
 rm(lo_hpd, hi_hdp, phi_hdp)
-save(list = ls(), file = 'data/Rdata/sim-model-5-data.Rdata' )
-write.csv(betas, file = "online-data/betas-matrix.csv")
+save(list = ls(), file = 'Data/Rdata/sim-model-5-data.Rdata' )
+write.csv(betas, file = "Data/Rdata/betas-matrix.csv")
