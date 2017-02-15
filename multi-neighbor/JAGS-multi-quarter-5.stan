@@ -2,29 +2,39 @@
 # I values between the weekly observed values.
 
 model {
-  # Gamma
+  # Infectious period is exponential dist
   gamma_b ~ dexp(5)
   
   # One hyperprior for entire city
-  mu ~ dnorm(0, 0.001)
-  tau ~ dgamma(0.001, 0.001)
+  mu1 ~ dnorm(0, 0.001)
+  tau1 ~ dgamma(0.001, 0.001)
+  mu2 ~ dnorm(0, 0.001)
+  tau2 ~ dgamma(0.001, 0.001)
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
   phi<- exp(logit_phi) / (1 + exp(logit_phi))
   
   for (i in 1:Nquarter){
-    # First time-step
-    S_it_daily[1, i] <- N_i_daily[i];
+    # First time-step. Entire population is suscetpible
+    S_it_daily[1, i] <- N_i_daily[i]
     
+    # Seed 3 infectious cases at first timesetp
     I_prev[1, i] <- ifelse(i==5 || i == 8 || i == 9,1,0)
     
     for (j in 1:Nquarter){
+  
       # For each force of infection (foi), draw log_beta from
       # normal with hyperprior params
-      log_beta[i, j] ~ dnorm(mu, tau);
-      # Exponentiate into Beta 
-      beta[i, j] <- exp(log_beta[i, j]);
+      log_beta_1[i, j] ~ dnorm(mu1, tau1) 
+      log_beta_2[i, j] ~ dnorm(mu2, tau2) 
+      
+      beta_1[i, j] <- exp(log_beta_1[i, j])
+      beta_2[i, j] <- exp(log_beta_2[i, j])
+      
+      # Only store the appropriate beta. This does not seem efficient since we
+      #always draw a beta_1 and beta_2, even though only 1 will be used
+      beta[i, j] <- ifelse(i==j, beta_1[i, j], beta_2[i, j])
     } 
   }
    

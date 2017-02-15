@@ -1,9 +1,9 @@
 # 1 beta (citywide) + 1 alpha for city
 model {
-  # Gamma
+  # Infectious period is exponential dist
   gamma_b ~ dexp(5)
   
-  # One hyperprior for entire city
+  
   mu1 ~ dnorm(0, 0.001)
   tau1 ~ dgamma(0.001, 0.001)
   mu2 ~ dnorm(0, 0.001)
@@ -25,12 +25,12 @@ model {
     # First time-step
     S_it_daily[1, k] <- N_i_daily[k]
     
-    # Asign 1 infected person into both
+    # Seed 3 infectious cases 
     I_prev[1, k] <- ifelse(k==5 || k == 8 || k == 9, 1, 0)
-    #I_prev[1, i] <- ifelse(i==5,1,0)
     
     for (i in 1:Nquarter){
-      # All external transmission coefficients are the same
+      
+      # Internal transmission on diags, external on off-daigs
       beta[k, i] <- ifelse(k==i, beta_1, beta_2)
     } 
   }

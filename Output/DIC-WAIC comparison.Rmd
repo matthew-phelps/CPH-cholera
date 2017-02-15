@@ -12,7 +12,6 @@ knitr::opts_knit$set(root.dir = normalizePath('..'))
 ```{r load, echo=FALSE, include=FALSE}
 library(pander)
 library(dplyr)
-panderOptions("big.mark", ",")
 load(file = "Data/Rdata/DIC_ls.Rdata")
 load(file = "Data/Rdata/waic_ls.Rdata")
 mod_names <- c("model 1", "model 2", "model 3",

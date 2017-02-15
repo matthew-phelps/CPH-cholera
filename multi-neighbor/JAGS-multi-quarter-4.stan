@@ -4,17 +4,21 @@ model {
   # Gamma
   gamma_b ~ dexp(5)
   
-  # One hyperprior for entire city
-  mu ~ dnorm(0, 0.001)
-  tau ~ dgamma(0.001, 0.001)
+  # One hyperprior for internal, one for external
+  mu1 ~ dnorm(0, 0.001)
+  tau1 ~ dgamma(0.001, 0.001)
+  mu2 ~ dnorm(0, 0.001)
+  tau2 ~ dgamma(0.001, 0.001)
   
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
   phi<- exp(logit_phi) / (1 + exp(logit_phi))
+  
+  # Symetric external transmission coefficients
   for(i in 1:Nquarter){
     for (j in 1:Nquarter){
-      log_beta_2[i, j] ~ dnorm(mu, tau)
+      log_beta_2[i, j] ~ dnorm(mu2, tau2)
       beta_2[i, j] <- exp(log_beta_2[i, j])
     }
   }
@@ -28,7 +32,7 @@ model {
     #I_prev[1, i] <- ifelse(i==5,1,0)
     
     # An independent internal transmission coefficient
-    log_beta_1[i] ~ dnorm(mu, tau)
+    log_beta_1[i] ~ dnorm(mu1, tau1)
     beta_1[i] <- exp(log_beta_1[i])
     
     # Symetric alphas - each pair of quarters has one alpha, but order doesn't

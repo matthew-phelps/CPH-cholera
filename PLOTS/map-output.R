@@ -10,13 +10,16 @@ source("PLOTS/map-base.R")
 
 
 case <- inc_rate_map(mapdf) %>%
-  add_hosp(hosp_tidy)
+  add_hosp(hosp_tidy) %>%
+  add_map_lab(centroids) %>%
 
 cfr <- cfr_map(mapdf) %>%
-  add_hosp(hosp_tidy)
+  add_hosp(hosp_tidy) %>%
+  add_map_lab(centroids)
 
 case_first <- first_case_map(mapdf) %>%
-  add_hosp(hosp_tidy)
+  add_hosp(hosp_tidy) %>%
+  add_map_lab(centroids)
 
 water_infra <- pipe_map(pipes_tidy) %>%
   add_hosp(hosp_tidy)

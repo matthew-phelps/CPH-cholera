@@ -39,11 +39,23 @@ quarter_shp@data$cumSick_rt <- quarter_shp@data$cum_cases <- NULL
 quarter_shp@data$area_1 <- NULL
 
 
+
+# CENTROIDS FOR LABELING --------------------------------------------------
+
+quart_names <- quarter_shp@data$quarter
+
+centroids <- quarter_shp %>%
+  coordinates()%>%
+  data.frame() %>%
+  `colnames<-` (c("lab_long", "lab_lat")) %>%
+  mutate(quarter = quart_names)
+
+rm(quart_names)
+
 # AREA CALCULATION --------------------------------------------------------
 # Find area of all quarters: https://goo.gl/No33KP
 # Projection defines units that "area" will be calculated in
 quarter_shp@data$area <- sapply(slot(quarter_shp, "polygons"), slot, "area")
-
 
 
 # JOIN DISEASE DATA -------------------------------------------------------

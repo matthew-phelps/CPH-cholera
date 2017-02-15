@@ -1,14 +1,15 @@
 # Multible Betas (1 for each quarter) + 1 alpha for each quarter
  
 model {
-  # Gamma
+  # Infectious period is exponential dist
   gamma_b ~ dexp(5)
   
-  # One hyperprior for entire city
-  mu ~ dnorm(0, 0.001)
-  tau ~ dgamma(0.001, 0.001)
+  # One hyperprior for internal, one for external
+  mu1 ~ dnorm(0, 0.001)
+  tau1 ~ dgamma(0.001, 0.001)
+  mu2 ~ dnorm(0, 0.001)
+  tau2 ~ dgamma(0.001, 0.001)
 
-  
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
   phi<- exp(logit_phi) / (1 + exp(logit_phi))
@@ -19,14 +20,13 @@ model {
     
     # Asign 1 infected person into both
     I_prev[1, i] <- ifelse(i==5 || i == 8 || i == 9,1,0)
-    #I_prev[1, i] <- ifelse(i==5,1,0)
     
     # An independent internal transmission coefficient
-    log_beta_1[i] ~ dnorm(mu, tau)
+    log_beta_1[i] ~ dnorm(mu1, tau1)
     beta_1[i] <- exp(log_beta_1[i])
     
     # Each quarter has 1 alpha
-    log_beta_2[i] ~ dnorm(mu, tau)
+    log_beta_2[i] ~ dnorm(mu2, tau2)
     beta_2[i] <- exp(log_beta_2[i])
     for (j in 1:Nquarter){
       #  1 alpha for each quarter

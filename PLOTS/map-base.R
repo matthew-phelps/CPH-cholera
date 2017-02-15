@@ -51,7 +51,7 @@ base_map <- base_map + geom_polygon(data = water_fort,
                                     fill = "#99CCFF",
                                     alpha = 0.7)
 
-
+base_map
 # https://goo.gl/8035ro
 
 base_map <- base_map + ggsn::scalebar(mapdf,
@@ -63,12 +63,25 @@ base_map <- base_map + coord_cartesian(xlim = c(xrng),
   theme(aspect.ratio = 1)
 
 
+
+
 add_hosp <- function(old_map, hosp_tidy){
   old_map + geom_point(data = hosp_tidy,
                        aes(x = coords.x1, y = coords.x2),
                        size = 3,
                        color = "darkblue")
 }
+
+
+# add_hosp_legend <- function(old_map, hosp_tidy){
+#   get_y <- function(x){
+#     ((max(x) - min(x)) / 2) + min(x)
+#   }
+#   old_map + geom_point(data = hosp_tidy,
+#                        aes(x = 1401630, y = 7496379),
+#                        size = 3,
+#                        color = "green")
+# }
 
 
 inc_rate_map <- function(mapdf){
@@ -175,9 +188,11 @@ R_int_map <- function(mapdf, Log = FALSE){
   }
 }
 
-
-
-
+add_map_lab <- function(old_map, centroids){
+  old_map + geom_text(data = centroids,
+                      aes(label = quarter,
+                          x = lab_long, y = lab_lat))
+}
 # CLEAN -------------------------------------------------------------------
 rm(hosp_df, pipes, hosp, quarter_shp, wall, water)
 
