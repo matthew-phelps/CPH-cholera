@@ -12,11 +12,6 @@ knitr::opts_knit$set(root.dir = normalizePath('..'))
 ```{r load, include=FALSE}
 library(tidyverse)
 library(pander)
-panderOptions("big.mark", ",")
-panderOptions('table.alignment.default',
-  function(df)
-     ifelse(sapply(df, is.character), 'left', 'right'))
-
 source("Data-3-combine quarters.R")
 
 case_summary <- case_summary_combined %>%
@@ -24,7 +19,8 @@ case_summary <- case_summary_combined %>%
          Population = pop,
          Cases = cases,
          Deaths = deaths,
-         `Attack Rate (per 1,000)` = AR)
+         `Attack Rate (per 1,000)` = AR,
+         `CFR (%)` = CFR)
 
 case_summary$Quarter[case_summary$Quarter=="Combined_lower"] <- "Combined lower"
 case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
@@ -34,6 +30,8 @@ case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
 
 ```{r table, echo=FALSE}
 
-
-pander(case_summary)
+panderOptions('table.alignment.default',
+  function(df)
+     ifelse(sapply(df, is.character), 'left', 'right'))
+pander(case_summary, big.mark=",", split.cells = 10)
 ```

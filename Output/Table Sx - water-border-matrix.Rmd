@@ -1,0 +1,27 @@
+---
+title: "Table Sx"
+
+output: pdf_document
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+
+```
+```{r load, echo=FALSE, include=FALSE}
+library(pander)
+library(dplyr)
+panderOptions("big.mark", ",")
+
+load("Data/Rdata/hydraulic-covariates.Rdata")
+```
+
+```{r water table}
+panderOptions('table.alignment.default',
+  function(df)
+     ifelse(sapply(df, is.numeric), 'right', 'left'))
+
+pander(wat, split.table = Inf)
+pander(bord, split.table = Inf, split.cells = (10))
+```

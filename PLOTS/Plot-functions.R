@@ -103,4 +103,15 @@ R_non_log <- function(R, pd = position_dodge(0.4)) {
                                      vjust = 1.0))
 }
 
-
+# sim plus 1
+sim1_plus1 <- ggplot() + 
+  geom_line(data = I_simulated_plus1, 
+            alpha = 0.1,
+            aes(x = day, y = I_simulated,
+                group = interaction(quarter, sim_num),
+                color = quarter)) +
+  geom_line(data = combined, aes(x = (week.id+1) * 7,
+                                 y = sick.total.week/7, group = quarter)) +
+  facet_wrap(~quarter) +
+  theme_minimal() +
+  theme(legend.position = "none")
