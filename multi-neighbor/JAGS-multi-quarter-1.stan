@@ -39,8 +39,7 @@ model {
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
       lambdaI[t, i] <-  (S_it_daily[t, i]  / N_i_daily[i]) * (sum(beta[, i] * (I_prev[t, ])))
-      lambdaR[t, i] <- I_prev[t, i] * gamma_b
-      R_temp[t, i] <- lambdaR[t, i]
+      R_temp[t, i] <- I_prev[t, i] * gamma_b
       R_new[t, i] <- min(I_prev[t, i], R_temp[t, i])
       I_prev[t+1, i] <- (I_prev[t, i] + I_incidence[t, i] / phi - R_new[t, i])
       S_it_daily[t+1, i] <- S_it_daily[t, i] - (I_incidence[t, i] / phi)
