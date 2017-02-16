@@ -104,7 +104,8 @@ R_non_log <- function(R, pd = position_dodge(0.4)) {
 }
 
 # sim plus 1
-sim1_plus1 <- ggplot() + 
+sim1_plus1 <- function(I_simulated_plus1){
+  ggplot() + 
   geom_line(data = I_simulated_plus1, 
             alpha = 0.1,
             aes(x = day, y = I_simulated,
@@ -115,3 +116,4 @@ sim1_plus1 <- ggplot() +
   facet_wrap(~quarter) +
   theme_minimal() +
   theme(legend.position = "none")
+}

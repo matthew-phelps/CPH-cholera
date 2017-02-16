@@ -31,7 +31,7 @@ load(file = "Data/Rdata/jags_m4_ls-new-inits.Rdata")
 DIC_m4_ls <- SampleDIC_rep(jags_m4_ls, 6)
 rm(jags_m4_ls)
 
-load(file = "Data/Rdata/jags_m5_ls.Rdata")
+load(file = "Data/Rdata/jags_m5_ls-new.Rdata")
 DIC_m5_ls <- SampleDIC_rep(jags_m5_ls, 6)
 rm(jags_m5_ls)
 
