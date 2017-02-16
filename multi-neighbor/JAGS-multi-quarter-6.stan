@@ -3,13 +3,14 @@
 # *non-reported cases are not infectious
 
 model {
-  # Gamma - rate of recovery from infectious state
+  # Infectious period is exponential dist
   gamma_b ~ dexp(5)
   
-  # Force of infection hyperprior
-  # One hyperprior for entire city
-  mu ~ dnorm(0, 0.001)
-  tau ~ dgamma(0.001, 0.001)
+  # One hyperprior for internal on for external transmission
+  mu1 ~ dnorm(0, 0.001)
+  tau1 ~ dgamma(0.001, 0.001)
+  mu2 ~ dnorm(0, 0.001)
+  tau2 ~ dgamma(0.001, 0.001)
   
   # Effect of hydraulic connection
   log_eta ~ dnorm(0, 0.001)
@@ -30,10 +31,17 @@ model {
       # Betas - force of infection (foi). Diagnols are internal foi,
       # off-diag are between-neighborhood foi.
       # For each, draw log_beta from normal with hyperprior params
-      log_beta[i, j] ~ dnorm(mu, tau);
+      log_beta_1[i, j] ~ dnorm(mu1, tau1) 
+      log_beta_2[i, j] ~ dnorm(mu2, tau2) 
+      
+      beta_1[i, j] <- exp(log_beta_1[i, j])
+      beta_2[i, j] <- exp(log_beta_2[i, j])
+      
+      # Only store the appropriate beta. This does not seem efficient since we
+      #always draw a beta_1 and beta_2, even though only 1 will be used
+      beta[i, j] <- ifelse(i==j, beta_1[i, j], beta_2[i, j])
 
       # If there is a water-pipe connection b/w neighborhoods, foi = foi + eta
-      beta[i, j] <- exp(log_beta[i, j])
       foi[i, j] <- ifelse(water[i, j]==1, eta + beta[i, j], beta[i, j]);
     } 
   }
