@@ -25,7 +25,7 @@ model {
     log_beta_1[i] ~ dnorm(mu1, tau1)
     beta_1[i] <- exp(log_beta_1[i])
     
-    # Each quarter has 1 alpha
+    # Each quarter has 1 external coefficient
     log_beta_2[i] ~ dnorm(mu2, tau2)
     beta_2[i] <- exp(log_beta_2[i])
     for (j in 1:Nquarter){

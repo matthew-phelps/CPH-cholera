@@ -9,13 +9,11 @@ library(parallel)
 library(runjags)
 library(rjags)
 library(mcmcplots)
-# library(ggmcmc)
-# library(ggplot2)
 options(mc.cores = 4)
 
 # LOAD -------------------------------------------------------
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
-source("Functions/WAIC-function.R")
+
 
 
 # SETUP JAGS-------------------------------------------------------------
@@ -56,42 +54,4 @@ for (reps in 1:num_reps){
 #add.summary(jags_m2_ls[[reps]])
 # m2_mcmc <- combine.mcmc(jags_m2_ls[[reps]], collapse.chains = F)
 # mcmcplot(m2_mcmc)
-
-
-
-save(jags_m2_ls, file = "Data/Rdata/jags_m2_ls-new-inits-mac.Rdata")
-
-
-
-
-
-# DIC ---------------------------------------------------------------------
-dic_m2 <- mclapply(jags_m2_ls, extract.runjags, "dic")
-
-save(dic_m2, file = "dic_m2.Rdata")
-dic_m2
-
-
-
-
-
-
-# WAIC --------------------------------------------------------------------
-
-if(!exists("jags_m2_ls")) load(file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
-
-waic_m2_ls <- list()
-for(i in 1:reps){
-  ll <- jags.samples(as.jags(jags_m2_ls[[reps]]), c('lik', 'llsim'), type=c('mean','variance'), 10000)
-  
-  mean_lik <- apply(ll$mean$lik,c(1,2),mean)
-  
-  var_loglik <- apply(ll$variance$llsim, c(1,2),mean)
-  # Remove first row because we start at t + 1
-  mean_lik <- mean_lik[2:nrow(mean_lik), ]
-  var_loglik <- var_loglik[2:nrow(var_loglik), ]
-  waic_m2_ls[[i]] <-  get_waic(mean_lik, var_loglik)
-}
-
-save(waic_m2_ls, file = "waic_m2_ls.Rdata")
-
+save(jags_m2_ls, file = "Data/Rdata/jags_m2_ls-new.Rdata")
