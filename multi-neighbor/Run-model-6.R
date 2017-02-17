@@ -13,9 +13,8 @@ library(mcmcplots)
 options(mc.cores = 5)
 
 # LOAD -------------------------------------------------------
-water_url <- RCurl::getURL("https://raw.githubusercontent.com/matthew-phelps/CPH-cholera/master/online-data/water-matrix.csv")
 
-water_temp <- read.csv(text = water_url)
+water_temp <- read.csv("Data/water-matrix.csv")
 water_temp[is.na(water_temp)] <- 0
 water <- as.matrix(water_temp)
 rm(water_temp)
@@ -75,7 +74,7 @@ for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
   print(Sys.time())
-  jags_m6_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS-multi-quarter-6.stan',
+  jags_m6_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS/JAGS-multi-quarter-6.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi', 'eta'),
                                  modules = "glm",
@@ -85,13 +84,7 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 4e4,
-                                 thin = 2,
+                                 thin = 1,
                                  plots = T)
 }
-
-
-# add.summary(jags_m6_ls[[reps]])
-# m6_mcmc <- combine.mcmc(jags_m6_ls[[reps]], collapse.chains = F)
-# mcmcplot(m6_mcmc)
-
-save(jags_m6_ls, file = "Data/Rdata/jags_m6_ls.Rdata")
+save(jags_m6_ls, file = "Data/Rdata/jags_m6_ls-new.Rdata")
