@@ -49,4 +49,4 @@ for (reps in 1:num_reps){
                                  thin = 1,
                                  plots = T)
 }
-save(jags_m3_ls, file = "Data/Rdata/jags_m3_ls-new-inits.Rdata")
+save(jags_m3_ls, file = "Data/Rdata/jags_m3_ls-new.Rdata")

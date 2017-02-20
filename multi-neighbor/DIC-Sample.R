@@ -19,7 +19,7 @@ load(file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
 DIC_m1_ls <- SampleDIC_rep(jags_m1_ls, 6)
 rm(jags_m1_ls)
 
-load(file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
+load(file = "Data/Rdata/jags_m2_ls-new.Rdata")
 DIC_m2_ls <- SampleDIC_rep(jags_m2_ls, 6)
 rm(jags_m2_ls)
 

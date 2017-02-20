@@ -32,23 +32,23 @@ load(file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
 waic_m1_ls <- waicRep(jags_m1_ls)
 rm(jags_m1_ls)
 
-load(file = "Data/Rdata/jags_m2_ls-new-inits.Rdata")
+load(file = "Data/Rdata/jags_m2_ls-new.Rdata")
 waic_m2_ls <- waicRep(jags_m2_ls)
 rm(jags_m2_ls)
 
-load(file = "Data/Rdata/jags_m3_ls-new-inits.Rdata")
+load(file = "Data/Rdata/jags_m3_ls-new.Rdata")
 waic_m3_ls <- waicRep(jags_m3_ls)
 rm(jags_m3_ls)
 
-load(file = "Data/Rdata/jags_m4_ls-new-inits.Rdata")
+load(file = "Data/Rdata/jags_m4_ls-new.Rdata")
 waic_m4_ls <- waicRep(jags_m4_ls)
 rm(jags_m4_ls)
 
-load(file = "Data/Rdata/jags_m5_ls.Rdata")
+load(file = "Data/Rdata/jags_m5_ls-new.Rdata")
 waic_m5_ls <- waicRep(jags_m5_ls)
 rm(jags_m5_ls)
 
-load(file = "Data/Rdata/jags_m6_ls.Rdata")
+load(file = "Data/Rdata/jags_m6_ls-new.Rdata")
 waic_m6_ls <- waicRep(jags_m6_ls)
 rm(jags_m6_ls)
 
