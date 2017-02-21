@@ -19,7 +19,7 @@ case_summary <- case_summary_combined %>%
          Population = pop,
          Cases = cases,
          Deaths = deaths,
-         `Attack Rate (per 1,000)` = AR,
+         `Attack Rate (per 100)` = AR,
          `CFR (%)` = CFR)
 
 case_summary$Quarter[case_summary$Quarter=="Combined_lower"] <- "Combined lower"

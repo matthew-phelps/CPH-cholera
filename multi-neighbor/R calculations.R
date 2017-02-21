@@ -62,3 +62,9 @@ R_ext$quarter <- factor(R_ext$quarter, levels = R_ext$quarter[order(R_int$R_valu
 # DATA SHAPING ------------------------------------------------------------
 R <- rbind(R_int, R_ext)
 rm_list <-ls()
+
+R_ext[which.min(R_ext$R_value), ]
+R_ext[which.max(R_ext$R_value), ]
+
+R_int[which.min(R_int$R_value), ]
+R_ext[which.max(R_int$R_value), ]

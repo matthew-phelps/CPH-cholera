@@ -15,12 +15,12 @@ library(runjags)
 load(file = "Data/Rdata/quarter_combined.Rdata")
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
-load(file = "Data/Rdata/jags_m5_ls.Rdata")
+load(file = "Data/Rdata/jags_m5_ls-new.Rdata")
 
 N_i_daily <- N_pop
 I_it_daily <- I_reps
 q_names <- N_pop$quarter
-q_names_old <- colnames(dataList[[1]]$I_incidence)
+# q_names_old <- colnames(dataList[[1]]$I_incidence)
 
 
 
@@ -83,13 +83,13 @@ hi_hdp_tmp <- int_hpd$upper[1:81]
 lo_hpd_tmp <- int_hpd$lower[1:81]
 hi_hdp <- hi_hdp_tmp %>%
   mkDf() %>%
-  matNames(q_names_old)%>%
+  matNames(q_names)%>%
   matOrderFun()%>%
   as.matrix()
 
 lo_hpd <- lo_hpd_tmp %>%
   mkDf() %>%
-  matNames(q_names_old)%>%
+  matNames(q_names)%>%
   matOrderFun() %>%
   as.matrix()
 rm(lo_hpd_tmp, hi_hdp_tmp)
