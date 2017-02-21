@@ -7,20 +7,17 @@
 library(cowplot) # multiplots: https://goo.gl/RK49b0
 
 source("PLOTS/map-base.R")
-
+source("PLOTS/map-layers.R")
 
 case <- inc_rate_map(mapdf) %>%
-  add_hosp(hosp_tidy) %>%
-  add_map_lab(centroids) %>%
+  add_hosp(hosp_tidy)
 
 cfr <- cfr_map(mapdf) %>%
-  add_hosp(hosp_tidy) %>%
-  add_map_lab(centroids)
-
+  add_hosp(hosp_tidy)
+  
 case_first <- first_case_map(mapdf) %>%
-  add_hosp(hosp_tidy) %>%
-  add_map_lab(centroids)
-
+  add_hosp(hosp_tidy)
+  
 water_infra <- pipe_map(pipes_tidy) %>%
   add_hosp(hosp_tidy)
 
