@@ -3,7 +3,7 @@ title: "DIC-WAIC comparison"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE, cache=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_knit$set(root.dir = normalizePath('..'))
 
@@ -17,8 +17,7 @@ mod_names <- c("model 1", "model 2", "model 3",
                "model 4", "model 5", "model 6")
 
 # Until model 6 is fully run:
-mod_names2 <- c("model 1", "model 2", "model 3",
-               "model 4", "model 5")
+
 ```
 
 DIC and WAIC values for each model. Table ranked from lowest to highest by value. Model 1 is least complex, model 5 is most complex
@@ -50,12 +49,12 @@ waic_summary <- function(x) sapply(x, mean_waic_model)
 waic1 <- waic_list %>%
   waic_summary %>%
   data.frame() %>%
-  `colnames<-`(mod_names2)
+  `colnames<-`(mod_names)
 
 waic_mean <- waic1 %>%
   colMeans() %>%
   data.frame() %>%
-  dplyr::mutate(model = mod_names2) %>%
+  dplyr::mutate(model = mod_names) %>%
   `colnames<-` (c("WAIC", "model")) %>%
   arrange(WAIC) %>%
   dplyr::select(model, WAIC)
