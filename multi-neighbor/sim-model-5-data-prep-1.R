@@ -1,9 +1,3 @@
-# Author: Matthew Phelps
-#Desc: Prepare data from JAGS for simulations
-# Dependicies: model-1-JAGS
-
-
-# Intro -------------------------------------------------------------------
 
 graphics.off()
 rm(list = ls())
@@ -12,28 +6,9 @@ library(dplyr)
 library(runjags)
 
 # LOAD & PREP DATA ---------------------------------------------------------------
-load(file = "Data/Rdata/quarter_combined.Rdata")
+source("Data-3-combine quarters.R")
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
-load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
 load(file = "Data/Rdata/jags_m5_ls-new.Rdata")
-
-N_i_daily <- N_pop
-I_it_daily <- I_reps
-q_names <- N_pop$quarter
-# q_names_old <- colnames(dataList[[1]]$I_incidence)
-
-
-
-# WEEKLY AVG --------------------------------------------------------------
-
-# Find daily avg incidence each week. Plot daily avg incidence at weekly
-# time-steps to use as our "observed" data.
-
-weekly_avg <- combined
-weekly_avg$week.id <- 1:16
-weekly_avg$avg <- weekly_avg$sick.total.week/7
-weekly_avg <- dplyr::select(weekly_avg, c(quarter, week.id, avg))
-
 
 
 # MCMC PREP ---------------------------------------------------------------
@@ -97,21 +72,13 @@ rm(lo_hpd_tmp, hi_hdp_tmp)
 phi_hdp <- int_hpd %>%
   slice(82)
 
-# INITIALIZE EMPTY DF -----------------------------------------------------
-
-
-N_it <- matrix(NA, Nquarter, 1)
-N_it[, 1] <- unique(combined$est.pop.1853)
-
-
-
 # SAVE --------------------------------------------------------------------
 # If in future we sample from posterior, keep "y" object that I remove below 
-rm(combined, dataList, N_i_daily, mcmc_median, q_names_old, y, matNames, matOrderFun, mkDf)
+rm(mcmc_median, y, matNames, matOrderFun, mkDf)
 gc()
 save(int_hpd, file = 'Data/Rdata/int_hpd.Rdata')
 rm(int_hpd)
 save(lo_hpd, hi_hdp, phi_hdp, file = "Data/Rdata/param_ci.Rdata")
 rm(lo_hpd, hi_hdp, phi_hdp)
-save(list = ls(), file = 'Data/Rdata/sim-model-5-data.Rdata' )
+save(list = ls(), file = 'Data/Rdata/sim-model-5-data1.Rdata' )
 write.csv(betas, file = "Data/Rdata/betas-matrix.csv")
