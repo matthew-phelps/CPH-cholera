@@ -20,7 +20,7 @@ mod_names <- c("model 1", "model 2", "model 3",
 
 ```
 
-DIC and WAIC values for each model. Table ranked from lowest to highest by value. Model 1 is least complex, model 5 is most complex
+DIC and WAIC values for each model. Table ranked from lowest to highest by value. Model 1 is least complex, model 6 is most complex
 ```{r dic}
 # Produce DIC summary - output is penalized deviance
 getPenDic <- function(x) sum(x$deviance) + sum(x$penalty)

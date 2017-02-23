@@ -4,7 +4,7 @@
 
 
 # LOAD & PREP DATA ---------------------------------------------------------------
-load(file = 'Data/Rdata/sim-model-5-data-1.Rdata')
+load(file = 'Data/Rdata/sim-model-1-data-1.Rdata')
 N_i_daily <- N_pop
 q_names <- N_pop$quarter
 
