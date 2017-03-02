@@ -1,0 +1,143 @@
+combChains <- function(x, testing=testing){
+  # Combine chains into 1
+  if(testing){
+    y <- x %>%
+      combine.MCMC(return.samples = 100) %>%
+      combine.MCMC()
+  } else {
+    y <- x %>%
+      combine.MCMC() %>%
+      combine.MCMC()
+  }
+  gc()
+  y
+}
+
+
+getMedian <- function(x){
+  # Get median values for each parameter
+  mcmc_median <- apply(x, MARGIN = 2, FUN = median)
+  mcmc_names <- names(x[1, ]) # name the rows
+  return(list(mcmc_median = mcmc_median, mcmc_names = mcmc_names))
+}
+
+getIntervals <- function(mcmc){
+  int_hpd <- data.frame(HPDinterval(mcmc, 0.95))
+  hi_hpd <- int_hpd$upper
+  lo_hpd <- int_hpd$lower
+  return(list(int_hpd = int_hpd, hi_hpd = hi_hpd, lo_hpd=lo_hpd))
+}
+
+
+
+mkDfMcmc <- function(mcmc_object) data.frame(as.matrix(mcmc_object, iters = FALSE))
+mkDf <- function(x){
+  # browser()
+  dimx <- sqrt(length(x))
+  data.frame(matrix(x, nrow = dimx, ncol = dimx))
+}
+
+mkBetas <- function(mcmc_median){
+  # Convert to matrix format for easier reading
+  betas_temp <- mcmc_median[1:81]
+  mkDf(betas_temp)
+}
+
+checkOrder <- function(betas, q_names){
+  # Re-order based on alphabetical. Should already by alphabetical, but just in
+  # case
+  matNames <- function(x, q_names) {
+    rownames(x) <- q_names
+    colnames(x) <- q_names
+    x
+  }
+  matOrderFun <- function(x) {
+    x[order(rownames(x)), order(colnames(x))]
+  }
+  betas %>%
+    matNames(q_names) %>%
+    matOrderFun()
+}
+mcmcPrep <- function(x, q_names, testing = FALSE){
+  # Produce mcmc data frame and hpd for each parameter
+  mcmc_obj <- combChains(x, testing = testing)
+  
+  int_hpd <- getIntervals(mcmc_obj)
+  mcmc_df <- mkDfMcmc(mcmc_object = mcmc_obj)
+  median_val <- getMedian(mcmc_df)
+  betas_median <- median_val$mcmc_median %>%
+    mkBetas() %>%
+    checkOrder(q_names = q_names)
+  phi_median <- median_val$mcmc_median['phi']
+  gamma_median <- median_val$mcmc_median['gamma']
+  return(list(mcmc_df = mcmc_df,
+              betas_median=betas_median,
+              int_hpd=int_hpd,
+              phi_median=phi_median,
+              gamma_median=gamma_median))
+}
+
+
+
+
+smMcmc <- function(x){
+  # Make vector of which MCMC draws result in parameter combinations that fall
+  # within the 95% hpd for all parameters
+  
+  # Delete TRUE rows
+  testHi <- function(x, hi_hpd) ifelse(x > hi_hpd, T, F)
+  testLo <- function(x, lo_hpd) ifelse(x < lo_hpd, T, F)
+  xrow <- nrow(x$mcmc_df)
+  hi_hpd <- x$int_hpd$hi_hpd
+  lo_hpd <- x$int_hpd$lo_hpd
+  
+  # Split mcmc df into two parts because memory constraints
+  inx_hi_1 <- x$mcmc_df %>%
+    slice(1:(xrow/2)) %>%
+    mapply(testHi, ., hi_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  gc()
+  
+  inx_hi_2 <- x$mcmc_df %>%
+    slice(((xrow/2)+1):xrow) %>%
+    mapply(testHi, .,  hi_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  gc()
+  inx_hi <- c(inx_hi_1, inx_hi_2)
+  
+  x_small <- x$mcmc_df[inx_hi, ]
+  rm(x)
+  gc()
+  
+  # Remove any MCMC that produce results below 95%hpd for any parameter
+  inx_lo <- x_small %>%
+    mapply(testLo, ., lo_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  gc()
+  mcmc_95hpd <- x_small[inx_lo, ]
+  rm(x_small)
+  
+  # If mcmc is not reduced enough, take only the first 50k 
+  mcmc_95hpd <- mcmc_95hpd %>%
+    slice(1:50000)
+  gc()
+  # For betas, turn each mcmc row into a matrix
+  # browser()
+  betas_95hpd <- mcmc_95hpd %>%
+    dplyr::select(-82, -83) %>%
+    apply(1, mkDf)
+  
+  
+  phi_95hpd <- mcmc_95hpd %>%
+    dplyr::select(82)
+  
+  gamma_95hpd <- mcmc_95hpd %>%
+    dplyr::select(83)
+  
+  return(list(betas_95hpd = betas_95hpd,
+              phi_95hpd = phi_95hpd,
+              gamma_95hpd = gamma_95hpd))
+}

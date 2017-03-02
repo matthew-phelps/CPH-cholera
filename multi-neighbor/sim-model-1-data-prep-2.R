@@ -1,12 +1,13 @@
 # Author: Matthew Phelps
 #Desc: Prepare data from JAGS for simulations
-
+source("Data-3-combine quarters.R")
 
 
 # LOAD & PREP DATA ---------------------------------------------------------------
 load(file = 'Data/Rdata/sim-model-1-data-1.Rdata')
+load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 N_i_daily <- N_pop
-q_names <- N_pop$quarter
+
 
 
 # OBSERVED INCIDENCE DATA -------------------------------------------------
@@ -45,6 +46,6 @@ N_it[, 1] <- unique(combined$est.pop.1853)
 
 # SAVE --------------------------------------------------------------------
 # If in future we sample from posterior, keep "y" object that I remove below 
-rm(N_i_daily)
+rm(N_i_daily, i, addDay, nameReplace, tidyReps)
 gc()
 
