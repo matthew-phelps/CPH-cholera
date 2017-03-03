@@ -47,5 +47,5 @@ N_it[, 1] <- unique(combined$est.pop.1853)
 # SAVE --------------------------------------------------------------------
 # If in future we sample from posterior, keep "y" object that I remove below 
 rm(N_i_daily, i, addDay, nameReplace, tidyReps)
-gc()
+
 
