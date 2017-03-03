@@ -11,49 +11,27 @@ require(grid)
 source("Data-4-prepare-JAGS.R")
 Nweeks <- Nsteps
 source("multi-neighbor/sim-model-1-data-prep-2.R")
-source("multi-neighbor/simulation.R")
+source("multi-neighbor/SimulationAndPlots.R")
 
 
 # GLOBAL VARIABLES -------------------------------------------------------------------
-gamma <- 1/5
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
-sim1 <- simPlusOne(loops=300, gamma = gamma, I_reps = I_reps, N_it = N_it)
+sim1 <- SimPlusOne(loops=1000, 
+                   I_reps = I_reps, N_it = N_it,
+                   betas_95hpd = mcmc_out$betas_95hpd,
+                   phi_95hpd = mcmc_out$phi_95hpd,
+                   gamma_95hpd = mcmc_out$gamma_95hpd)
 
-# T + 1 : DATA RESHAPE --------------------------------------------------------------
-# Simulated daily incidence to long format:
-
-I_simulated_plus1 <- sim1$I_new_plus1 %>%
-  bind_rows() %>%
-  `colnames<-` (c(q_names, "sim_num")) %>%
-  mutate(day = 1:112) %>%
-  gather(quarter, I_simulated, 1:9)
-I_simulated_plus1[is.na(I_simulated_plus1)] <- 0
-
-
-# T + 1: PLOT PANEL QUARTERS-------------------------------------------------------------
-sim1_plus1 <- ggplot() + 
-  geom_line(data = I_simulated_plus1, 
-            alpha = 0.01,
-            aes(x = day, y = I_simulated,
-                group = interaction(quarter, sim_num),
-                color = quarter)) +
-  geom_line(data = I_reps_plot,
-            alpha = 0.1,
-            aes(x = day,
-                y = I_new, 
-                group = interaction(quarter, rep))) +
-  facet_wrap(~quarter) +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  ggtitle("model 1: 1-step-ahead")
-sim1_plus1
-
+# Data reshape for plotting
+sim_data <- SimDataToPlot(sim1)
+sim1_plot <- SimPlot(sim_data, I_reps_plot)
+sim1_plot + ggtitle("model 1: 1-step-ahead")
 
 # SSAVe -------------------------------------------------------------------
-ggsave(filename = 'Plot-output/Sim-m1-tplus1.png',
-       plot = sim1_plus1,
+ggsave(filename = 'Plot-output/Sim-m1-tplus1.jpg',
+       plot = sim1_plot,
        width = 26,
        height = 20,
        units = 'cm',
@@ -81,3 +59,26 @@ for (i in 1:Nquarter){
 save(I_att_mean, file = "Attributable-cases-t0.Rdata")
 save(I_proportion, file = "Proportion-attributable-t0.Rdata")
 
+
+# FULL SIMULATION ---------------------------------------------------------
+
+
+sim2 <- SimFromZero(loops=5, 
+                    I_reps = I_reps, N_it = N_it,
+                    betas_95hpd = mcmc_out$betas_95hpd,
+                    phi_95hpd = mcmc_out$phi_95hpd,
+                    gamma_95hpd = mcmc_out$gamma_95hpd)
+
+sim2$I_new_plus1
+
+sim2_plot <- sim2 %>%
+  SimDataToPlot() %>%
+  SimPlot(., I_reps_plot, alpha_sim = 0.01)
+sim2_plot <- sim2_plot + ggtitle("model 1: Full Sim")
+
+ggsave(filename = 'Plot-output/Sim-m1-full.jpg',
+       plot = sim2_plot,
+       width = 26,
+       height = 20,
+       units = 'cm',
+       dpi = 150)
