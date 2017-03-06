@@ -14,7 +14,7 @@ SimPlusOne <- function(loops, I_reps=I_reps, N_it=N_it,
   I_new_plus1 <-  list(data.frame(matrix(data = NA, nrow = Nsteps, ncol = Nquarter)))
   store_prev <-   list()
   store_S <-      list() 
-  
+  # store_param <- list(beta=list(), phi=0, gamma=0)
   # Starting values
   I_prev_vect[1, ] <- I_reps[[1]][1,]
   I_prev_vect[1, c(5, 8, 9)] <- 1 # Init St.A.V & Ø + Nyb with cases
@@ -44,8 +44,12 @@ SimPlusOne <- function(loops, I_reps=I_reps, N_it=N_it,
       }
     }
     # For each quarter: store sum of infections attributed to each quarter over
-    # all time-steps
-    #  browser()
+    # all time-steps. Also store parameters used in iteration so R values cane
+    # be reconstructed
+    # browser()
+    # store_param$beta[[z]] <- betas_95hpd[[z]]
+    # store_param$phi[z] <- phi_95hpd[z, ]
+    # store_param$gamma[z] <- gamma_95hpd[z, ]
     store_prev[[z]] <- I_prev_vect
     store_S[[z]] <- S_plus1_mat
     I_new_plus1[[z]] <- data.frame(I_new)
@@ -134,13 +138,15 @@ SimDataToPlot <- function(simulation_data){
 }
 
 SimPlot <- function(simulation_data, observed_data,
-                    alpha_sim = 0.01, alpha_data = 0.1, color = "red"){
-  ggplot() + 
+                    alpha_sim = 0.01, alpha_data = 0.1,
+                    color = "blue",
+                    ci = NULL){
+  plot_obj <- ggplot() + 
     geom_line(data = simulation_data, 
               alpha = alpha_sim,
+              color = color,
               aes(x = day, y = I_simulated,
-                  group = interaction(quarter, sim_num),
-                  color = color)) +
+                  group = interaction(quarter, sim_num))) +
     geom_line(data = observed_data,
               alpha = alpha_data,
               aes(x = day,
@@ -149,6 +155,19 @@ SimPlot <- function(simulation_data, observed_data,
     facet_wrap(~quarter) +
     theme_minimal() +
     theme(legend.position = "none")
+  
+  # Add 95% CI if provided
+  if(!is.null(ci)){
+    plot_obj <- plot_obj + 
+      geom_line(data = ci,
+                color = "red",
+                aes(x = day, y = `97.5%`)) +
+      geom_line(data = ci,
+                color = "red",
+                aes(x = day, y = `2.5%`)) +
+      facet_wrap(~quarter)
+  }
+  return(plot_obj)
 }
 
 
@@ -175,11 +194,40 @@ SimPlotReps <- function(simulation_data, observed_data,
 
 
 
-SimAndData <- function(num_sims){
+SimAndData <- function(num_sims, seed = NULL){
+  # wrapper for the sim function and the data prep function 
   sim_tim <- SimFromZero(loops=num_sims, 
                          I_reps = I_reps, N_it = N_it,
                          betas_95hpd = mcmc_out$betas_95hpd,
                          phi_95hpd = mcmc_out$phi_95hpd,
-                         gamma_95hpd = mcmc_out$gamma_95hpd)
+                         gamma_95hpd = mcmc_out$gamma_95hpd, seed = seed)
   sim_tim<- SimDataToPlot(sim_tim)
+}
+
+
+SimCI <- function(sim_output){
+  ## Calculate 95% CI on simulation output data, then get data into form for
+  ## ggplot
+  
+  # If not outbreaks generated:
+  stopifnot(length(sim_output$I_new_plus1) > 0)
+  # Shape data for 95%CI calculation
+  x <-sim_output %>%
+    SimDataToPlot() %>%
+    spread(key = sim_num, value = I_simulated)
+  
+  # Calculate 95%CI
+  ci <- x %>%
+    dplyr::select(., -quarter, -day)%>%
+    t() %>% # need to apply fun to collums, not rows
+    as_tibble() %>%
+    sapply(., quantile, probs=c(0.025, 0.975)) %>%
+    t() %>%
+    as_tibble()
+  
+  # Add names back to Ci output
+  ci <- ci %>%
+    add_column(quarter = x$quarter,
+               day = x$day)
+  return(ci)
 }
