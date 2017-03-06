@@ -42,7 +42,7 @@ for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   jags_m4_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS/JAGS-multi-quarter-2.stan',
                                  method = 'rjparallel',
-                                 monitor = c("beta", 'phi'),
+                                 monitor = c("beta", 'phi', 'gamma'),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  n.chains = 4,

@@ -39,7 +39,7 @@ for (reps in 1:num_reps){
   print(Sys.time())
   jags_m3_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS/JAGS-multi-quarter-3.stan',
                                  method = 'rjparallel',
-                                 monitor = c("beta", 'phi'),
+                                 monitor = c("beta", 'phi', 'gamma'),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  n.chains = 4,
