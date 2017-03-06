@@ -17,14 +17,12 @@ options(mc.cores = 4)
 # LOAD -------------------------------------------------------
 
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
-source("Functions/WAIC-function.R")
 
-
-# SETUP JAGS-------------------------------------------------------------
+# JAGS -------------------------------------------------------------
 # Save in list form to pass to JAGS
 jags_m1_ls <- list()
 dataList <- list()
-
+num_reps <- length(I_reps)
 for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[reps]],
