@@ -30,7 +30,8 @@ getIntervals <- function(mcmc){
 
 
 
-mkDfMcmc <- function(mcmc_object) data.frame(as.matrix(mcmc_object, iters = FALSE))
+mkDfMcmc <- function(mcmc_object) data.frame(as.matrix(mcmc_object, iters = TRUE))
+
 mkDf <- function(x){
   # browser()
   dimx <- sqrt(length(x))
@@ -63,8 +64,11 @@ mcmcPrep <- function(x, q_names, testing = FALSE){
   mcmc_obj <- combChains(x, testing = testing)
   
   int_hpd <- getIntervals(mcmc_obj)
+  # browser()
   mcmc_df <- mkDfMcmc(mcmc_object = mcmc_obj)
-  median_val <- getMedian(mcmc_df)
+  median_val <- mcmc_df %>%
+    dplyr::select(-ITER) %>%
+    getMedian()
   betas_median <- median_val$mcmc_median %>%
     mkBetas() %>%
     checkOrder(q_names = q_names)
@@ -87,12 +91,15 @@ smMcmc <- function(x){
   # Delete TRUE rows
   testHi <- function(x, hi_hpd) ifelse(x > hi_hpd, T, F)
   testLo <- function(x, lo_hpd) ifelse(x < lo_hpd, T, F)
-  xrow <- nrow(x$mcmc_df)
+  xrow <- x$mcmc_df %>%
+    dplyr::select(-ITER) %>%
+    nrow()
   hi_hpd <- x$int_hpd$hi_hpd
   lo_hpd <- x$int_hpd$lo_hpd
-  
+  # browser()
   # Split mcmc df into two parts because memory constraints
   inx_hi_1 <- x$mcmc_df %>%
+    dplyr::select(-ITER) %>%
     slice(1:(xrow/2)) %>%
     mapply(testHi, ., hi_hpd) %>%
     rowSums() %>%
@@ -100,6 +107,7 @@ smMcmc <- function(x){
   gc()
   
   inx_hi_2 <- x$mcmc_df %>%
+    dplyr::select(-ITER) %>%
     slice(((xrow/2)+1):xrow) %>%
     mapply(testHi, .,  hi_hpd) %>%
     rowSums() %>%
@@ -113,6 +121,7 @@ smMcmc <- function(x){
   
   # Remove any MCMC that produce results below 95%hpd for any parameter
   inx_lo <- x_small %>%
+    dplyr::select(-ITER) %>%
     mapply(testLo, ., lo_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
@@ -127,7 +136,7 @@ smMcmc <- function(x){
   # For betas, turn each mcmc row into a matrix
   # browser()
   betas_95hpd <- mcmc_95hpd %>%
-    dplyr::select(-82, -83) %>%
+    dplyr::select(-ITER, -phi, -gamma_b) %>%
     apply(1, mkDf)
   
   
