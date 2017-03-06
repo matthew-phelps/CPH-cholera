@@ -1,91 +1,51 @@
 # Author: Matthew Phelps
 #Desc: Prepare data from JAGS for simulations
-# Dependicies: model-1-JAGS
-
-
-# Intro -------------------------------------------------------------------
-
-graphics.off()
-ifelse(grepl("wrz741", getwd()),
-       wd.path <- "C:\\Users\\wrz741\\Google Drive\\Copenhagen\\DK Cholera\\CPH",
-       wd.path <-"/Users/Matthew/Google Drive/Copenhagen/DK Cholera/CPH")
-setwd(wd.path)
-rm(list = ls())
-
-library(coda)
-library(dplyr)
-library(runjags)
-
+source("Data-3-combine quarters.R")
 
 
 # LOAD & PREP DATA ---------------------------------------------------------------
-
-
-load(file = "Data/Rdata/quarter_combined.Rdata")
-load(file = "Data/Rdata/multi-model-1-dataList.Rdata")
-load(file = "Data/Rdata/jags_m3_ls.Rdata")
-zx <- jags_m3_ls # Rename variable here so easier when switching b/w scripts
-
-
-N_i_daily <- dataList[[1]]$N_i_daily
-I_it_daily <- dataList[[1]]$I_incidence
-Nsteps <- dataList[[1]]$Nsteps
-Nquarter <- dataList[[1]]$Nquarter
-q_names <- colnames(dataList[[1]]$I_incidence)
+load(file = 'Data/Rdata/sim-model-3-data-1.Rdata')
+load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
+N_i_daily <- N_pop
 
 
 
-# WEEKLY AVG --------------------------------------------------------------
+# OBSERVED INCIDENCE DATA -------------------------------------------------
+# Data into format for ggplot
+addDay <- function(x){
+  x1 <- data.frame(x)
+  x1$day <- 1:112
+  x1
+}
+tidyReps <- function(x) x %>% gather(quarter, I_new,1:9)
 
-# Find daily avg incidence each week. Plot daily avg incidence at weekly
-# time-steps to use as our "observed" data.
-
-weekly_avg <- combined
-weekly_avg$week.id <- 1:16
-weekly_avg$avg <- weekly_avg$sick.total.week/7
-weekly_avg <- select(weekly_avg, c(quarter, week.id, avg))
-
-
-
-# MCMC PREP ---------------------------------------------------------------
-
-# Combine chains into 1
-z <- combine.MCMC(zx) # Combine different reps into one
-y <- combine.MCMC(z) # Combine different chains into 1 chain
-mcmc_median <- apply(y, MARGIN = 2, FUN = median)
-# Get median values for each parameter
-mcmc_names <- names(y[1, ]) # name the rows
+I_reps_plot <- I_reps %>%
+  lapply(addDay) %>%
+  lapply(tidyReps)
 
 
-# Convert to matrix format for easier reading
-betas_temp <- mcmc_median[1:18]
+nameReplace <- function(x){
+  x$quarter[x$quarter=="St..Annae.Oester"] <- "St. Annae Oester"
+  x$quarter[x$quarter=="St..Annae.Vester"] <- "St. Annae Vester"
+  x
+}
+I_reps_plot <- lapply(I_reps_plot, nameReplace)
 
-betas <- data.frame(matrix(NA, nrow = 9, ncol = 9)) # external beta
-for(i in 1:nrow(betas)){
-  betas[i, ] <- betas_temp[i + 9]
+
+# Turn list into one long df
+for (i in 1:length(I_reps_plot)){
+  I_reps_plot[[i]]$rep <- paste(i)
 }
 
-diag(betas) <- betas_temp[1:9] # internal betas
-rm(betas_temp)
-rownames(betas) <- q_names
-colnames(betas) <- q_names
 
-phi <- mcmc_median["phi"]
-gamma <- mcmc_median['gamma_b']
-
-# 95% HDI
-int_hpd <- data.frame(HPDinterval(y, 0.95))
-
+I_reps_plot <- do.call(rbind.data.frame, I_reps_plot)
 
 # INITIALIZE EMPTY DF -----------------------------------------------------
-
-
 N_it <- matrix(NA, Nquarter, 1)
 N_it[, 1] <- unique(combined$est.pop.1853)
 
-
 # SAVE --------------------------------------------------------------------
-rm(combined, dataList, N_i_daily, mcmc_median, z, zx, i, jags_m3_ls)
+# If in future we sample from posterior, keep "y" object that I remove below 
+rm(N_i_daily, i, addDay, nameReplace, tidyReps)
 
-save(list = ls(), file = 'data/Rdata/sim-model-3-data.Rdata' )
 

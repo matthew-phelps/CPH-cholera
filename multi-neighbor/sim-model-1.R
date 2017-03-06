@@ -69,15 +69,30 @@ sim2 <- SimFromZero(loops=5,
                     phi_95hpd = mcmc_out$phi_95hpd,
                     gamma_95hpd = mcmc_out$gamma_95hpd)
 
-sim2$I_new_plus1
+# Generate 95% CI around simulation
+ci <- SimCI(sim2)
 
+# Plot simulation results 
 sim2_plot <- sim2 %>%
   SimDataToPlot() %>%
-  SimPlot(., I_reps_plot, alpha_sim = 0.01)
+  SimPlot(., I_reps_plot, color = "blue", alpha_sim = 0.05, ci = ci)
 sim2_plot <- sim2_plot + ggtitle("model 1: Full Sim")
+sim2_plot
 
 ggsave(filename = 'Plot-output/Sim-m1-full.jpg',
        plot = sim2_plot,
+       width = 26,
+       height = 20,
+       units = 'cm',
+       dpi = 150)
+
+
+# Check how the timing of the epidemic between different simulations relates to noen another
+sim2_timing <- SimAndData(10) %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 1: Full Sim")
+
+ggsave(filename = 'Plot-output/Sim-m1-full-timing.jpg',
+       plot = sim2_timing,
        width = 26,
        height = 20,
        units = 'cm',

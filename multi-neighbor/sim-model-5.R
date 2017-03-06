@@ -18,7 +18,7 @@ source("multi-neighbor/SimulationAndPlots.R")
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
-sim1 <- SimPlusOne(loops=500, 
+sim1 <- SimPlusOne(loops=5, 
                    I_reps = I_reps, N_it = N_it,
                    betas_95hpd = mcmc_out$betas_95hpd,
                    phi_95hpd = mcmc_out$phi_95hpd,
@@ -62,32 +62,24 @@ save(I_proportion, file = "Proportion-attributable-t0.Rdata")
 
 # FULL SIMULATION ---------------------------------------------------------
 
-sim2 <- SimFromZero(loops=5, 
+sim2 <- SimFromZero(loops=1000, 
                     I_reps = I_reps, N_it = N_it,
                     betas_95hpd = mcmc_out$betas_95hpd,
                     phi_95hpd = mcmc_out$phi_95hpd,
                     gamma_95hpd = mcmc_out$gamma_95hpd)
-x <- sim2$I_new_plus1
-z <- sim2$I_new_plus1[[1]]
 
+# Generate 95% CI around simulation
+ci <- SimCI(sim2)
 
-QuarterExtract <- function(x){
-  browser()
-  x[[1]]
-}
-
-sim2$I_new_plus1 %>%
-  lapply(QuarterExtract) 
-
-
-day1 <- 
-sim2_plot <- sim2 %>%
+# Plot simulation results 
+sim5_plot <- sim2 %>%
   SimDataToPlot() %>%
-  SimPlot(., I_reps_plot, alpha_sim = 0.01)
-sim2_plot <- sim2_plot + ggtitle("model 1: Full Sim")
+  SimPlot(., I_reps_plot, color = "blue", alpha_sim = 0.05, ci = ci)
+sim5_plot <- sim2_plot + ggtitle("model 5: Full Sim")
+sim5_plot
 
 ggsave(filename = 'Plot-output/Sim-m5-full.jpg',
-       plot = sim2_plot,
+       plot = sim5_plot,
        width = 26,
        height = 20,
        units = 'cm',
@@ -96,12 +88,14 @@ ggsave(filename = 'Plot-output/Sim-m5-full.jpg',
 
 
 
+# Check how the timing of the epidemic between different simulations relates to noen another
+sim5_timing <- SimAndData(10, seed = 14) %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 1: Full Sim")
+sim5_timing
 
-OutbreaksOnly(10) %>%
-  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Full Sim")
-
-
-
-sim_tim<- SimDataToPlot(sim_tim)
-SimPlot(sim_tim, I_reps_plot, alpha_sim = 1)
-
+ggsave(filename = 'Plot-output/Sim-m5-full-timing.jpg',
+       plot = sim5_timing,
+       width = 26,
+       height = 20,
+       units = 'cm',
+       dpi = 150)
