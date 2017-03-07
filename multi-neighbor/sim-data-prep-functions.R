@@ -148,6 +148,5 @@ smMcmc <- function(x){
   
   return(list(betas_95hpd = betas_95hpd,
               phi_95hpd = phi_95hpd,
-              gamma_95hpd = gamma_95hpd,
-              ITER = mcmc_95hpd$ITER))
+              gamma_95hpd = gamma_95hpd))
 }
