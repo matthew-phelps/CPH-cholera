@@ -4,7 +4,7 @@
 rm(list = ls())
 library(tidyverse)
 require(grid)
-
+library(plotly)
 
 # LOAD data ---------------------------------------------------------------
 source("Data-4-prepare-JAGS.R")
@@ -85,16 +85,3 @@ ggsave(filename = 'Plot-output/Sim-m5-full.jpg',
        dpi = 150)
 
 
-
-
-# Check how the timing of the epidemic between different simulations relates to noen another
-sim5_timing <- SimAndData(10, seed = 14) %>%
-  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 1: Full Sim")
-sim5_timing
-
-ggsave(filename = 'Plot-output/Sim-m5-full-timing.jpg',
-       plot = sim5_timing,
-       width = 26,
-       height = 20,
-       units = 'cm',
-       dpi = 150)

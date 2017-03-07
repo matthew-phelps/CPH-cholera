@@ -21,10 +21,14 @@ sim_m2 <- SimPlusOne(loops=200,
                    phi_95hpd = mcmc_out$phi_95hpd,
                    gamma_95hpd = mcmc_out$gamma_95hpd)
 
+ci <- SimCI(sim_m2)
+
 # Data reshape for plotting
-sim_data <- SimDataToPlot(sim_m2)
-sim1_plot <- SimPlot(sim_data, I_reps_plot)
-sim1_plot + ggtitle("model 2: 1-step-ahead")
+sim_plot <- sim_m2 %>%
+  SimDataToPlot() %>%
+  SimPlot(., I_reps_plot, alpha_sim = 0.01, ci = ci)
+sim_plot + ggtitle("model 2: one-step-ahead")
+sim_plot
 
 # SSAVe -------------------------------------------------------------------
 ggsave(filename = 'Plot-output/Sim-m2-tplus1.jpg',
@@ -58,7 +62,7 @@ save(I_proportion, file = "Proportion-attributable-t0.Rdata")
 # FULL SIMULATION ---------------------------------------------------------
 
 
-sim_m2_0 <- SimFromZero(loops=200, 
+sim_m2_0 <- SimFromZero(loops=2000, 
                     I_reps = I_reps, N_it = N_it,
                     betas_95hpd = mcmc_out$betas_95hpd,
                     phi_95hpd = mcmc_out$phi_95hpd,
@@ -70,11 +74,11 @@ ci <- SimCI(sim_m2_0)
 # Plot simulation results 
 sim2_plot <- sim_m2_0 %>%
   SimDataToPlot() %>%
-  SimPlot(., I_reps_plot, color = "blue", alpha_sim = 0.05, ci = ci)
+  SimPlot(., I_reps_plot, color = "blue", alpha_sim = 0.01, ci = ci)
 sim2_plot <- sim2_plot + ggtitle("model 2: Full Sim")
 sim2_plot
 
-ggsave(filename = 'Plot-output/Sim-m1-full.jpg',
+ggsave(filename = 'Plot-output/Sim-m2-full.jpg',
        plot = sim2_plot,
        width = 26,
        height = 20,

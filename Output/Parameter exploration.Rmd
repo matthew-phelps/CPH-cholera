@@ -1,0 +1,56 @@
+---
+title: "Exploring parameters"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+```
+
+```{r load, include=FALSE}
+library(tidyverse)
+require(grid)
+library(plotly)
+
+source("Data-4-prepare-JAGS.R")
+Nweeks <- Nsteps
+source("multi-neighbor/sim-model-5-data-prep-2.R")
+source("multi-neighbor/SimulationAndPlots.R")
+
+```
+Find a combination of parameters that best re-creates the data. Draw from the
+posterio and observe which simulation best matches
+```{r find params}
+sim5_timing <- SimFromZero(10,
+                           I_reps = I_reps, N_it = N_it,
+                           betas_95hpd = mcmc_out$betas_95hpd,
+                           phi_95hpd = mcmc_out$phi_95hpd,
+                           gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+
+
+sim_plot <- sim5_timing %>%
+  SimDataToPlot() %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Examin")
+
+ggplotly(sim_plot)
+```
+
+Take the parameters that provided the best result above, and simulate using only those parameters to see how much "natural" stochasticity there is in the timing of the outbreak.
+```{r, sim params}
+# EXTRACT PARAMETERS -------------------------------------------------------
+param <- sim5_timing$store_param
+best_param <- lapply(param, function(x) x[[6]])
+
+sim5_timing <- SimFromZeroPointValue(10,
+                           I_reps = I_reps, N_it = N_it,
+                           betas_95hpd = best_param$beta,
+                           phi_95hpd = best_param$phi,
+                           gamma_95hpd = best_param$gamma,
+                           seed = 14)
+sim_plot <- sim5_timing %>%
+  SimDataToPlot() %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 1: Full Sim")
+
+ggplotly(sim_plot)
+```
