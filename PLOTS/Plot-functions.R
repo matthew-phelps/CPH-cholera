@@ -53,7 +53,7 @@ quarter_panel_incidence <- function(combined) {
 R_log_scale <- function(R,  pd = position_dodge(0.4)) {
   ggplot(data = R) +
     geom_hline(yintercept = 1, linetype = 3, color = "black") +
-    geom_point(aes(x = quarter, y = R_value, shape = R_type, color = R_type),
+    geom_point(aes(x = quarter, y = R_median, shape = R_type, color = R_type),
                position = pd,
                size = 1.9) +
     geom_errorbar(aes(x = quarter, ymin = lower, ymax = upper, color = R_type),
@@ -89,7 +89,7 @@ R_log_scale <- function(R,  pd = position_dodge(0.4)) {
 R_non_log <- function(R, pd = position_dodge(0.4)) {
   ggplot(data = R) +
     geom_hline(yintercept = 1, linetype = 3, color = "light grey") +
-    geom_point(aes(x = quarter, y = R_value, shape = R_type, color = R_type),
+    geom_point(aes(x = quarter, y = R_median, shape = R_type, color = R_type),
                position = pd,
                size = 1.9) +
     geom_errorbar(aes(x = quarter, ymin = lower, ymax = upper, color = R_type),
