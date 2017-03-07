@@ -1,7 +1,6 @@
 # Author: Matthew Phelps
 # Desc: Simulations from t = 0 and for t + 1 for multi-neighborhood model
 
-graphics.off()
 rm(list = ls())
 library(tidyverse)
 require(grid)
@@ -18,7 +17,7 @@ source("multi-neighbor/SimulationAndPlots.R")
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
-sim1 <- SimPlusOne(loops=5, 
+sim1 <- SimPlusOne(loops=50, 
                    I_reps = I_reps, N_it = N_it,
                    betas_95hpd = mcmc_out$betas_95hpd,
                    phi_95hpd = mcmc_out$phi_95hpd,
@@ -27,8 +26,8 @@ sim1 <- SimPlusOne(loops=5,
 # Data reshape for plotting
 sim_data <- SimDataToPlot(sim1)
 sim1_plot <- SimPlot(sim_data, I_reps_plot)
-sim1_plot + ggtitle("model 1: 1-step-ahead")
-
+sim1_plot + ggtitle("model 5: 1-step-ahead")
+sim1_plot
 # SSAVe -------------------------------------------------------------------
 ggsave(filename = 'Plot-output/Sim-m1-tplus1-gamma.png',
        plot = sim1_plus1,

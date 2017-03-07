@@ -26,7 +26,7 @@ SimPlusOne <- function(loops, I_reps=I_reps, N_it=N_it,
   
   for (z in 1:loops){
     for (t in 1:(Nsteps-1)){
-      browser()
+      # browser()
       for(i in 1:Nquarter){
         # browser()
         Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum(betas_95hpd[[z]][, i] * I_prev_vect[t, ])

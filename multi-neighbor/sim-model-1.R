@@ -1,7 +1,7 @@
 # Author: Matthew Phelps
 # Desc: Simulations from t = 0 and for t + 1 for multi-neighborhood model
 
-graphics.off()
+
 rm(list = ls())
 library(tidyverse)
 require(grid)
@@ -16,7 +16,7 @@ source("multi-neighbor/SimulationAndPlots.R")
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
-sim1 <- SimPlusOne(loops=1000, 
+sim1 <- SimPlusOne(loops=200, 
                    I_reps = I_reps, N_it = N_it,
                    betas_95hpd = mcmc_out$betas_95hpd,
                    phi_95hpd = mcmc_out$phi_95hpd,
@@ -61,7 +61,7 @@ save(I_proportion, file = "Proportion-attributable-t0.Rdata")
 # FULL SIMULATION ---------------------------------------------------------
 
 
-sim2 <- SimFromZero(loops=5, 
+sim2 <- SimFromZero(loops=200, 
                     I_reps = I_reps, N_it = N_it,
                     betas_95hpd = mcmc_out$betas_95hpd,
                     phi_95hpd = mcmc_out$phi_95hpd,
