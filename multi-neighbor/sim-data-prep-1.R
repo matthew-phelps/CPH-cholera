@@ -8,7 +8,7 @@ library(runjags)
 # LOAD & PREP DATA ---------------------------------------------------------------
 source("Data-3-combine quarters.R")
 source("multi-neighbor/sim-data-prep-functions.R")
-
+source("functions/CalculateRFun.R")
 
 # MODEL 1 ---------------------------------------------------------------
 load(file = "Data/Rdata/jags_m1_ls-new.Rdata")
@@ -17,7 +17,6 @@ rm(jags_m1_ls)
 gc()
 mcmc_out <- smMcmc(x)
 rm(x)
-gc()
 R_list <- RCalc(betas = mcmc_out$betas_95hpd,
                 lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,
                 q_names = q_names, order = TRUE)
@@ -35,8 +34,6 @@ x$int_hpd$int_hpd
 gc()
 mcmc_out <- smMcmc(x)
 rm(x)
-gc()
-
 R_list <- RCalc(betas = mcmc_out$betas_95hpd,
                 lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,
                 q_names = q_names, order = TRUE)

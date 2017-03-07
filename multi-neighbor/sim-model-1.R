@@ -10,11 +10,9 @@ require(grid)
 # LOAD data ---------------------------------------------------------------
 source("Data-4-prepare-JAGS.R")
 Nweeks <- Nsteps
-source("multi-neighbor/sim-model-1-data-prep-2.R")
+source("multi-neighbor/sim-model-1-data-prep.R")
 source("multi-neighbor/SimulationAndPlots.R")
 
-
-# GLOBAL VARIABLES -------------------------------------------------------------------
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
