@@ -1,5 +1,5 @@
 ---
-title: "Exploring parameters"
+title: "Individual simulations"
 output: html_document
 ---
 
@@ -20,29 +20,28 @@ source("multi-neighbor/SimulationAndPlots.R")
 
 ```
 Find a combination of parameters that best re-creates the data. Draw from the
-posterio and observe which simulation best matches
+joint posterior and observe which simulation best matches
 ```{r find params}
-sim5_timing <- SimFromZero(10,
+sim5_param <- SimFromZero(10,
                            I_reps = I_reps, N_it = N_it,
                            betas_95hpd = mcmc_out$betas_95hpd,
                            phi_95hpd = mcmc_out$phi_95hpd,
                            gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
 
-
-sim_plot <- sim5_timing %>%
+sim_plot <- sim5_param %>%
   SimDataToPlot() %>%
-  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Examin")
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Pick params")
 
 ggplotly(sim_plot)
 ```
 
 Take the parameters that provided the best result above, and simulate using only those parameters to see how much "natural" stochasticity there is in the timing of the outbreak.
 ```{r, sim params}
-# EXTRACT PARAMETERS -------------------------------------------------------
-param <- sim5_timing$store_param
+# SIMULATE FROM PARAM POINT VALUES -------------------------------------------------------
+param <- sim5_param$store_param
 best_param <- lapply(param, function(x) x[[6]])
 
-sim5_timing <- SimFromZeroPointValue(10,
+sim5_timing <- SimFromZeroPointValue(25,
                            I_reps = I_reps, N_it = N_it,
                            betas_95hpd = best_param$beta,
                            phi_95hpd = best_param$phi,
@@ -50,7 +49,60 @@ sim5_timing <- SimFromZeroPointValue(10,
                            seed = 14)
 sim_plot <- sim5_timing %>%
   SimDataToPlot() %>%
-  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 1: Full Sim")
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Param point values")
 
 ggplotly(sim_plot)
+```
+
+Look at fake parameters to see space
+```{r src, include=FALSE}
+source("multi-neighbor/sim-model-1-data-prep.R")
+```
+
+```{r, sim params}
+# SIMULATE FROM PARAM POINT VALUES -------------------------------------------------------
+
+
+
+best_param$phi <- mcmc_out$phi_95hpd[6, ]
+best_param$gamma <- mcmc_out$gamma_95hpd[6, ]
+
+betas <- 0.5
+alphas <- 0.004
+best_param$beta <- matrix(alphas, ncol=9, nrow = 9)
+diag(best_param$beta) <- betas
+
+sim1 <- SimFromZeroPointValue(25,
+                           I_reps = I_reps, N_it = N_it,
+                           betas_95hpd = best_param$beta,
+                           phi_95hpd = best_param$phi,
+                           gamma_95hpd = best_param$gamma,
+                           seed = 14)
+plot1 <- sim1 %>%
+  SimDataToPlot() %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("test model: Param point values")
+
+
+
+betas <- 0.5
+alphas <- 0.003
+best_param$beta <- matrix(alphas, ncol=9, nrow = 9)
+diag(best_param$beta) <- betas
+
+sim2 <- SimFromZeroPointValue(25,
+                           I_reps = I_reps, N_it = N_it,
+                           betas_95hpd = best_param$beta,
+                           phi_95hpd = best_param$phi,
+                           gamma_95hpd = best_param$gamma,
+                           seed = 14)
+plot2 <- sim2 %>%
+  SimDataToPlot() %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("test model: Param point values")
+
+
+
+
+
+plot1
+plot2
 ```
