@@ -17,7 +17,7 @@ From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for a
 
 Each model was based upon the following construction:
 $$^{new}\textrm{I}_{i,t+1}\sim Poisson(\lambda_{i,t})$$
-$$\lambda_{i,t} = \frac{S_{i,t}}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}I_{j,t}\alpha_{j,i} )$$
+$$\lambda_{i,t} = \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}I_{j,t}\alpha_{j,i} )$$
 
 where:  
 $^{new}\textrm{I}_{i,t}$ = the number of new infectious cases in each quarter $i$ at time $t$  

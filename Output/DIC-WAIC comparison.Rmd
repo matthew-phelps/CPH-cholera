@@ -26,6 +26,7 @@ DIC and WAIC values for each model. Table ranked from lowest to highest by value
 getPenDic <- function(x) sum(x$deviance) + sum(x$penalty)
 modelDic <- function(z) (sapply(z, getPenDic))
 summaryDic <- function(y) sapply(y, modelDic)
+
 dic1 <- DIC_list %>%
   summaryDic() %>%
   data.frame() %>%
@@ -46,6 +47,18 @@ dic_mean$std <- sapply(dic1, sd)
 ```{r waic}
 mean_waic_model <- function(x) (sapply(x, function(x) x$waic))
 waic_summary <- function(x) sapply(x, mean_waic_model)
+# waic_list$waic_m1_ls[[2]]$p_waic <- get this number!
+
+
+getP_waic_model <- function(x) sapply(x, function(x) x$p_waic)
+getP_waic <- function(x) sapply(x, getP_waic_model)
+
+
+p_waic <- waic_list %>%
+  getP_waic() %>%
+  colMeans()
+
+
 waic1 <- waic_list %>%
   waic_summary %>%
   data.frame() %>%
@@ -59,15 +72,15 @@ waic_mean <- waic1 %>%
   arrange(WAIC) %>%
   dplyr::select(model, WAIC)
 waic_mean$std <- sapply(waic1, sd)
-
+waic_mean$p_waic <- p_waic
 
 ```
 
 ```{r table}
 
 panderOptions('table.alignment.default',
-  function(df)
-     ifelse(sapply(df, is.character), 'left', 'right'))
+              function(df)
+                ifelse(sapply(df, is.character), 'left', 'right'))
 pander(dic_mean)
 pander(waic_mean)  
 ```
