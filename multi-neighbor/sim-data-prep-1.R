@@ -47,11 +47,9 @@ save(R_model2, file = 'Data/Rdata/r-values-model-2.Rdata')
 load(file = "Data/Rdata/jags_m3_ls-new.Rdata")
 x <- mcmcPrep(jags_m3_ls, q_names, testing = FALSE)
 rm(jags_m3_ls)
-x$int_hpd$int_hpd
 gc()
 mcmc_out <- smMcmc(x)
 rm(x)
-gc()
 
 R_list <- RCalc(betas = mcmc_out$betas_95hpd,
                 lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,

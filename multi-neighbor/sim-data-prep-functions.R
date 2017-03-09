@@ -1,5 +1,6 @@
 combChains <- function(x, testing=testing){
-  # Combine chains into 1
+  # Combine models into 1 obj, each with 4 chains, then collapse 4 chains
+  # together
   if(testing){
     y <- x %>%
       combine.MCMC(return.samples = 100) %>%
