@@ -33,7 +33,7 @@ SimPlusOne <- function(loops, I_reps=I_reps, N_it=N_it,
         LambdaR[t, i] <- I_prev_vect[t, i] * gamma_95hpd[z, ]
         R_new[t, i] <- min(LambdaR[t, i], I_prev_vect[t, i]) # no more recovereds than infected
         
-        I_data <- I_reps[[rand_realization[z]]][t, i] # Observed data
+        I_data <- I_reps[[rand_realization[z]]][t, i] # Observed new cases data
         
         I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i] * phi_95hpd[z, ] ) )
         I_prev_vect[t + 1, i] <- max(0, (I_prev_vect[t, i] + I_data / phi_95hpd[z, ]  - R_new[t, i]))
@@ -129,8 +129,8 @@ SimFromZero <- function(loops, I_reps=I_reps, N_it=N_it,
 }
 
 SimFromZeroPointValue <- function(loops, I_reps=I_reps, N_it=N_it,
-                        betas_95hpd, phi_95hpd,
-                        gamma_95hpd, seed=NULL){
+                                  betas_95hpd, phi_95hpd,
+                                  gamma_95hpd, seed=NULL){
   # Simulate from t = 0 using a single set of parameter values
   # Does not store simulations where epidemic did not catch, but stores record
   # of number of simulations that did not catch
@@ -193,7 +193,7 @@ SimFromZeroPointValue <- function(loops, I_reps=I_reps, N_it=N_it,
   
   list(I_new_plus1 = I_new_plus1,
        store_prev = store_prev, store_S = store_S)
-       # store_param = store_param)
+  # store_param = store_param)
 }
 
 
@@ -210,34 +210,57 @@ SimDataToPlot <- function(simulation_data){
 SimPlot <- function(simulation_data, observed_data,
                     alpha_sim = 0.01, alpha_data = 0.1,
                     color = "blue",
-                    ci = NULL){
-  plot_obj <- ggplot() + 
+                    ci = NULL, ribbon = FALSE,
+                    rib_col = "red", rib_alpha = 0.3){
+  # Adding a CI ribbon wil cause the actual simulation lines to NOT be plotted
+  
+  if(!ribbon){
+    plot_obj <- ggplot() + 
     geom_line(data = simulation_data, 
               alpha = alpha_sim,
               color = color,
               aes(x = day, y = I_simulated,
                   group = interaction(quarter, sim_num))) +
+    facet_wrap(~quarter)
+  }
+ 
+  # Add 95% CI if provided
+  if(!is.null(ci) & !ribbon){
+    plot_obj <- plot_obj + 
+      geom_line(data = ci,
+                color = "red",
+                linetype = "dashed",
+                aes(x = day, y = `97.5%`)) +
+      geom_line(data = ci,
+                color = "red",
+                linetype = "dashed",
+                aes(x = day, y = `2.5%`)) +
+      facet_wrap(~quarter)
+  } else if(!is.null(ci) && ribbon){
+    plot_obj <- ggplot() + 
+      geom_ribbon(data = ci,
+                  aes(x = day,
+                      ymin=`2.5%`, ymax =`97.5%`),
+                  alpha = rib_alpha,
+                  fill = rib_col) +
+      facet_wrap(~quarter)
+  }
+  
+  
+  plot_obj <- plot_obj +
     geom_line(data = observed_data,
               alpha = alpha_data,
               aes(x = day,
                   y = I_new, 
                   group = interaction(quarter, rep))) +
+    geom_vline( xintercept = 40, linetype = 2,
+                color = "black", alpha = 0.3, size = 0.6) +
     facet_wrap(~quarter) +
     theme_minimal() +
+    theme(panel.grid = element_blank())
     theme(legend.position = "none")
-  
-  # Add 95% CI if provided
-  if(!is.null(ci)){
-    plot_obj <- plot_obj + 
-      geom_line(data = ci,
-                color = "red",
-                aes(x = day, y = `97.5%`)) +
-      geom_line(data = ci,
-                color = "red",
-                aes(x = day, y = `2.5%`)) +
-      facet_wrap(~quarter)
-  }
-  return(plot_obj)
+ 
+return(plot_obj)
 }
 
 
