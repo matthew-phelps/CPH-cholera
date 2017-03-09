@@ -84,8 +84,10 @@ q_names <- combined$quarter %>%
 
 q_names <- as.character(q_names$value)
 
-rm(list = setdiff(ls(),c("combined", "case_summary_combined", "quarter",
-                         "week_date", "q_names")))
+rm(combined_upper, cumSick, daily_cases, daily_cases_secondary, quarter_secondary)
+
+# rm(list = setdiff(ls(),c("combined", "case_summary_combined", "quarter",
+                         # "week_date", "q_names")))
 # SAVE --------------------------------------------------------------------
 # save(combined, file = "Rdata/quarter_combined.Rdata")
 
