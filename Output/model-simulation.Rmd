@@ -1,0 +1,118 @@
+---
+title: "Model simulations"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+
+```
+
+
+```{r load, include=FALSE}
+library(tidyverse)
+require(grid)
+library(plotly)
+library(ggthemes)
+source("multi-neighbor/SimulationAndPlots.R")
+
+# source("Data-4-prepare-JAGS.R")
+# Nweeks <- Nsteps
+n_sim <- 2000
+
+```
+
+## One-step-ahead: Model 1 vs Model 5
+```{r model1, include=FALSE}
+source("multi-neighbor/sim-model-1-data-prep.R")
+
+model_1_sim <- SimPlusOne(loops=n_sim, 
+                   I_reps = I_reps, N_it = N_it,
+                   betas_95hpd = mcmc_out$betas_95hpd,
+                   phi_95hpd = mcmc_out$phi_95hpd,
+                   gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+
+model_1_ci <- SimCI(model_1_sim)
+# Plot simulation results 
+sim1_plot <- model_1_sim %>%
+  SimDataToPlot() %>%
+  SimPlot(., observed_data = I_reps_plot, color = "blue", alpha_sim = 0.005,
+          alpha_data = 0.1, ci = model_1_ci, ribbon = TRUE, rib_alpha = 0.4)
+# sim1_plot <- sim1_plot + ggtitle("model 1: one-step-ahead")
+```
+
+
+```{r model5, include=FALSE}
+source("multi-neighbor/sim-model-5-data-prep-2.R")
+
+model_5_sim <- SimPlusOne(loops=n_sim, 
+                   I_reps = I_reps, N_it = N_it,
+                   betas_95hpd = mcmc_out$betas_95hpd,
+                   phi_95hpd = mcmc_out$phi_95hpd,
+                   gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+
+model_5_ci <- SimCI(model_5_sim)
+# Plot simulation results 
+sim5_plot <- model_5_sim %>%
+  SimDataToPlot() %>%
+  SimPlot(., I_reps_plot, color = "blue",
+          alpha_data = 0.1, ci = model_5_ci, ribbon = TRUE,
+          rib_col = "darkgreen", rib_alpha = 0.4)
+
+```
+
+```{r plot1, fig.width=4.5, fig.height=4.5}
+sim1_plot
+sim5_plot
+```
+
+
+
+```{r model1-full}
+source("multi-neighbor/sim-model-1-data-prep.R")
+
+model_1_sim <- SimFromZero(loops=n_sim, 
+                   I_reps = I_reps, N_it = N_it,
+                   betas_95hpd = mcmc_out$betas_95hpd,
+                   phi_95hpd = mcmc_out$phi_95hpd,
+                   gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+
+model_1_ci <- SimCI(model_1_sim)
+# Plot simulation results 
+sim1_plot <- model_1_sim %>%
+  SimDataToPlot() %>%
+  SimPlot(., I_reps_plot, color = "blue", 
+          alpha_data = 0.1, ci = model_1_ci, ribbon = TRUE,
+          rib_alpha = 0.4)
+# sim5_plot <- sim5_plot + ggtitle("model 5: one-step-ahead")
+
+
+```
+
+
+```{r model5-full}
+source("multi-neighbor/sim-model-5-data-prep-2.R")
+
+model_5_sim <- SimFromZero(loops=n_sim, 
+                   I_reps = I_reps, N_it = N_it,
+                   betas_95hpd = mcmc_out$betas_95hpd,
+                   phi_95hpd = mcmc_out$phi_95hpd,
+                   gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+
+model_5_ci <- SimCI(model_5_sim)
+# Plot simulation results 
+sim5_plot <- model_5_sim %>%
+  SimDataToPlot() %>%
+  SimPlot(., I_reps_plot, color = "blue",
+          alpha_data = 0.1, ci = model_5_ci, ribbon = TRUE,
+          rib_col = "darkgreen", rib_alpha = 0.4)
+# sim5_plot <- sim5_plot + ggtitle("model 5: one-step-ahead")
+```
+
+## Full simulation
+```{r full-plot, fig.width=4.5, fig.height=4.5}
+sim1_plot
+sim5_plot
+
+```
