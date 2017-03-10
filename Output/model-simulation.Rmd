@@ -12,6 +12,7 @@ knitr::opts_knit$set(root.dir = normalizePath('..'))
 
 ```{r load, include=FALSE}
 library(tidyverse)
+library(tibble)
 require(grid)
 library(plotly)
 library(ggthemes)
@@ -19,7 +20,7 @@ source("multi-neighbor/SimulationAndPlots.R")
 
 # source("Data-4-prepare-JAGS.R")
 # Nweeks <- Nsteps
-n_sim <- 2000
+n_sim <- 200
 
 ```
 
