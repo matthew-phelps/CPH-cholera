@@ -7,20 +7,37 @@ library(mcmcplots)
 library(runjags)
 library(coda)
 library(ggmcmc)
+source("Data-3-combine quarters.R")
+source("multi-neighbor/sim-data-prep-functions.R")
 # LOAD --------------------------------------------------------------------
 
-load("Data/Rdata/jags_m5_ls.Rdata") # Load the JAGS output to do diagnostics on
-
-load("sim-model-5-data-b.Rdata") # Not sure why this is loaded 
-rm(I_it_daily, N_it, weekly_avg, y)
-gc()
+load("Data/Rdata/jags_m5_ls-new.Rdata") # Load the JAGS output to do diagnostics on
+load("Data/Rdata/sim-model-1-data-1.Rdata")
+# load("sim-model-5-data-b.Rdata") # Not sure why this is loaded 
+# rm(I_it_daily, N_it, weekly_avg, y)
+# gc()
 
 # Collapse chains within each imputation. Plot this to see if imputations are
 # diff from each other
 m5_mcmc_10 <- lapply(jags_m5_ls, combine.mcmc, collapse.chains = T)
-rm(jags_m5_ls_b)
-mcmcplot(m5_mcmc_10)
+mcmcplot((jags_m5_ls[[1]]$mcmc), parms = c("phi", "gamma_b"),
+                filename = "phi-mcmc", extension = "html",
+         heading = "Model 5-1: phi & gamma mcmc plots")
+mcmcplot((jags_m5_ls[[3]]$mcmc), parms = c("phi", "gamma_b"),
+         filename = "phi-mcmc", extension = "html",
+         heading = "Model 5-3: phi & gamma mcmc plots")
 
+x <- combChains(jags_m5_ls, testing = FALSE)
+
+mcmcplot((x), parms = c("phi", "gamma_b"),
+         filename = "phi-mcmc", extension = "html",
+         heading = "Model 5-1: phi & gamma mcmc plots")
+head(x)
+plot((m5_mcmc_10[[1]][,1]))
+
+rm(jags_m5_ls_b)
+
+phi
 # Collapse everything into one huge mcmc object
 m5_mcmc <- combine.mcmc(m5_mcmc)
 

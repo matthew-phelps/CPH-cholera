@@ -34,8 +34,8 @@ for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
   print(Sys.time())
-  jags_m3_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS/JAGS-multi-quarter-3.stan',
-                                 method = 'rjparallel',
+  jags_m3_ls[[reps]] <- run.jags(model = 'JAGS/JAGS-multi-quarter-3.stan',
+                                 method = 'parallel',
                                  monitor = c("beta", 'phi', 'gamma_b'),
                                  modules = "glm",
                                  data = dataList[[reps]],

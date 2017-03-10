@@ -49,7 +49,7 @@ model {
       I_incidence[t+1, i] ~ dpois(lambdaI[t, i] * phi)
       # This log-density function is not documented in the JAGS manual. Found via
       # the 6th response on this forum: https://goo.gl/UisKKW
-      llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], lambdaI[t, i])
+      llsim [t + 1, i] <- logdensity.pois(I_incidence[t + 1, i], (lambdaI[t, i]*phi))
       lik[t + 1, i] <- exp(llsim[t + 1, i])
     }
   }
