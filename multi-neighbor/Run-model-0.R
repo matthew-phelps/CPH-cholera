@@ -43,8 +43,8 @@ for (reps in 1:num_reps){
                                  data = dataList[[reps]],
                                  n.chains = 4,
                                  adapt = 1e3,
-                                 burnin = 4e2,
-                                 sample = 4e2,
+                                 burnin = 4e4,
+                                 sample = 3e4,
                                  thin = 1,
                                  plots = T)
 }

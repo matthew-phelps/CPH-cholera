@@ -9,7 +9,7 @@ library(parallel)
 library(runjags)
 library(rjags)
 library(mcmcplots)
-options(mc.cores = 4)
+options(mc.cores = 5)
 
 # LOAD -------------------------------------------------------
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
@@ -19,7 +19,7 @@ load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 jags_m2_ls <- list()
 dataList <- list()
 num_reps <- length(I_reps)
-for (reps in 1:1){
+for (reps in 1:num_reps){
   dataList[[reps]] <- list(N_i_daily = N_pop[, 2],
                            I_incidence=I_reps[[reps]],
                            Nsteps=Nsteps,
@@ -40,9 +40,9 @@ for (reps in 1:num_reps){
                                  data = dataList[[reps]],
                                  n.chains = 4,
                                  adapt = 1e3,
-                                 burnin = 4e2,
-                                 sample = 4e2,
-                                 thin = 1,
+                                 burnin = 4e4,
+                                 sample = 3e4,
+                                 thin = 2,
                                  plots = T)
 }
 

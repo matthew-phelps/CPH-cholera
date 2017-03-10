@@ -10,7 +10,7 @@ library(rjags)
 library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
-options(mc.cores = 5)
+options(mc.cores = 4)
 
 # LOAD -------------------------------------------------------
 
@@ -83,7 +83,7 @@ for (reps in 1:num_reps){
                                  n.chains = 4,
                                  adapt = 1e3,
                                  burnin = 4e4,
-                                 sample = 4e4,
+                                 sample = 3e4,
                                  thin = 1,
                                  plots = T)
 }
