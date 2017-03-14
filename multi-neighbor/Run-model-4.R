@@ -12,7 +12,7 @@ library(rjags)
 library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
-options(mc.cores = 5)
+options(mc.cores = 4)
 
 # LOAD -------------------------------------------------------
 
@@ -37,7 +37,7 @@ for (reps in 1:num_reps){
   print(reps)
   print(Sys.time())
   set.seed(13) # Not sure if this does anything in current set-up
-  jags_m4_ls[[reps]] <- run.jags(model = 'multi-neighbor/JAGS/JAGS-multi-quarter-2.stan',
+  jags_m4_ls[[reps]] <- run.jags(model = 'JAGS/JAGS-multi-quarter-2.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi', 'gamma_b'),
                                  modules = "glm",
