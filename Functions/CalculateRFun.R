@@ -2,13 +2,14 @@
 RCalc <- function(betas, lo_hpd, hi_hpd, gamma, q_names, 
                  order=TRUE){
   # Find R for each mcmc chain (each combination of beta & gamma)
+  # Order = T specifies that quarters are arranged alphabetically
   
-  # Gamma into list for easy mapply
+  # Make gamma into list for easy mapply
   gam_list <- as.list(gamma[,1]) 
   Rest <- function(x,y) x / y 
   x <- mapply(Rest, betas, gam_list, SIMPLIFY = FALSE)
   ## TEST that function is calculating correctly. Evaluates to TRUE
-   all(x[[2]]== betas[[2]] / gamma[2, ])
+   stopifnot(all(x[[2]]== betas[[2]] / gamma[2, ]))
  
   # Convert earch mcmc iteraction set to one numeric vector
   z1 <- lapply(x, function(x)  as.vector(as.matrix(x)))
