@@ -76,7 +76,7 @@ for (reps in 1:num_reps){
   print(Sys.time())
   jags_m6_ls[[reps]] <- run.jags(model = 'JAGS/JAGS-multi-quarter-6.stan',
                                  method = 'parallel',
-                                 monitor = c("beta", 'phi', 'eta'),
+                                 monitor = c("beta", 'phi', 'gamma_b', 'eta'),
                                  modules = "glm",
                                  data = dataList[[reps]],
                                  inits = inits_list,
@@ -84,7 +84,7 @@ for (reps in 1:num_reps){
                                  adapt = 1e3,
                                  burnin = 4e4,
                                  sample = 3e4,
-                                 thin = 1,
+                                 thin = 2,
                                  plots = T)
 }
 save(jags_m6_ls, file = "Data/Rdata/jags_m6_ls-new.Rdata")

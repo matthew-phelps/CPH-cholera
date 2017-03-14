@@ -26,11 +26,17 @@ DIC and WAIC values for each model. Table ranked from lowest to highest by value
 getPenDic <- function(x) sum(x$deviance) + sum(x$penalty)
 modelDic <- function(z) (sapply(z, getPenDic))
 summaryDic <- function(y) sapply(y, modelDic)
-
+findMinModel <- function(x) which.min(x)
+bestModel <- function(x){
+  x$best_model <- apply(x, FUN= findMinModel, MARGIN = 1 )
+  return(x)
+}
 dic1 <- DIC_list %>%
   summaryDic() %>%
   data.frame() %>%
   `colnames<-` (mod_names)
+
+dic_select <- bestModel(dic1)
 
 dic_mean <- dic1 %>%
   colMeans() %>%
@@ -64,6 +70,8 @@ waic1 <- waic_list %>%
   data.frame() %>%
   `colnames<-`(mod_names)
 
+waic_select <- bestModel(waic1)
+
 waic_mean <- waic1 %>%
   colMeans() %>%
   data.frame() %>%
@@ -86,9 +94,9 @@ pander(waic_mean)
 ```
 DIC values for each epidemic realization
 ```{r dic+print, echo = FALSE}
-pander(dic1)
+pander(dic_select)
 ```
 WAIC values for each epidemic realization
 ```{r waic_print, echo = FALSE}
-pander(waic1)
+pander(waic_select)
 ```
