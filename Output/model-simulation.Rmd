@@ -20,8 +20,7 @@ source("multi-neighbor/SimulationAndPlots.R")
 
 # source("Data-4-prepare-JAGS.R")
 # Nweeks <- Nsteps
-n_sim <- 200
-
+n_sim <- 15
 ```
 
 ## One-step-ahead: Model 1 vs Model 5
@@ -112,8 +111,11 @@ sim5_plot <- model_5_sim %>%
 ```
 
 ## Full simulation
+
 ```{r full-plot, fig.width=4.5, fig.height=4.5}
 sim1_plot
 sim5_plot
 
 ```
+
+CI band does not include simulations that did not produce outbreaks
