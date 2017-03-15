@@ -207,7 +207,7 @@ SimDataToPlot <- function(simulation_data){
   return(I_simulated_plus1)
 }
 
-SimPlot <- function(simulation_data, observed_data,
+SimPlot <- function(simulation_data = NULL, observed_data,
                     alpha_sim = 0.01, alpha_data = 0.1,
                     color = "blue",
                     ci = NULL, ribbon = FALSE,
@@ -243,6 +243,11 @@ SimPlot <- function(simulation_data, observed_data,
                       ymin=`2.5%`, ymax =`97.5%`),
                   alpha = rib_alpha,
                   fill = rib_col) +
+      geom_line(data = ci,
+                aes(x = day,
+                    y = avg),
+                color = "red",
+                alpha = 0.9) +
       facet_wrap(~quarter)
   }
   
@@ -256,9 +261,11 @@ SimPlot <- function(simulation_data, observed_data,
     geom_vline( xintercept = 40, linetype = 2,
                 color = "black", alpha = 0.3, size = 0.6) +
     facet_wrap(~quarter) +
+    labs(y = "Daily new infections") +
     theme_minimal() +
-    theme(panel.grid = element_blank())
-    theme(legend.position = "none")
+    theme(panel.grid = element_blank()) +
+    theme(legend.position = "none",
+          panel.spacing.y = unit(2, "lines"))
  
 return(plot_obj)
 }
@@ -318,9 +325,23 @@ SimCI <- function(sim_output){
     t() %>%
     as_tibble()
   
+  median <- x %>%
+    dplyr::select(., -quarter, -day)%>%
+    t() %>% # need to apply fun to collums, not rows
+    as_tibble() %>%
+    sapply(., median)
+
+  avg <- x %>%
+    dplyr::select(., -quarter, -day)%>%
+    t() %>% # need to apply fun to collums, not rows
+    as_tibble() %>%
+    sapply(., mean)
+  
   # Add names back to Ci output
-  ci <- ci %>%
-    add_column(quarter = x$quarter,
+  summary_obj <- ci %>%
+    add_column(median = median,
+               avg = avg,
+               quarter = x$quarter,
                day = x$day)
-  return(ci)
+  return(summary_obj)
 }

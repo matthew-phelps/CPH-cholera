@@ -1,11 +1,10 @@
 # Author: Matthew Phelps
 # Desc: Simulations from t = 0 and for t + 1 for multi-neighborhood model
 
-
 rm(list = ls())
 library(tidyverse)
 require(grid)
-
+library(plotly)
 
 # LOAD data ---------------------------------------------------------------
 source("Data-4-prepare-JAGS.R")
@@ -14,28 +13,22 @@ source("multi-neighbor/sim-model-1-data-prep.R")
 source("multi-neighbor/SimulationAndPlots.R")
 
 
+# GLOBAL VARIABLES ----------------------------------------------------------------
+n_loops <- 500
+
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
-sim1 <- SimPlusOne(loops=200, 
-                   I_reps = I_reps, N_it = N_it,
-                   betas_95hpd = mcmc_out$betas_95hpd,
-                   phi_95hpd = mcmc_out$phi_95hpd,
-                   gamma_95hpd = mcmc_out$gamma_95hpd)
+sim1_step <- SimPlusOne(loops=n_loops, 
+                        I_reps = I_reps, N_it = N_it,
+                        betas_95hpd = mcmc_out$betas_95hpd,
+                        phi_95hpd = mcmc_out$phi_95hpd,
+                        gamma_95hpd = mcmc_out$gamma_95hpd)
 
-# Data reshape for plotting
-sim_data <- SimDataToPlot(sim1)
-sim1_plot <- SimPlot(sim_data, I_reps_plot)
-sim1_plot + ggtitle("model 1: 1-step-ahead")
+sim1_step_summary <- SimCI(sim1_step)
+sim1_step_data <- SimDataToPlot(sim1_step)
 
-# SSAVe -------------------------------------------------------------------
-ggsave(filename = 'Plot-output/Sim-m1-tplus1.jpg',
-       plot = sim1_plot,
-       width = 26,
-       height = 20,
-       units = 'cm',
-       dpi = 150)
-
-
+save(sim1_step_summary, file = "data/Rdata/sim1_step_summary.Rdata")
+save(sim1_step_data, file = "data/Rdata/sim1_step_data.Rdata")
 
 
 
@@ -60,38 +53,17 @@ save(I_proportion, file = "Proportion-attributable-t0.Rdata")
 
 # FULL SIMULATION ---------------------------------------------------------
 
-
-sim2 <- SimFromZero(loops=200, 
-                    I_reps = I_reps, N_it = N_it,
-                    betas_95hpd = mcmc_out$betas_95hpd,
-                    phi_95hpd = mcmc_out$phi_95hpd,
-                    gamma_95hpd = mcmc_out$gamma_95hpd)
+sim1_full <- SimFromZero(loops=n_loops, 
+                         I_reps = I_reps, N_it = N_it,
+                         betas_95hpd = mcmc_out$betas_95hpd,
+                         phi_95hpd = mcmc_out$phi_95hpd,
+                         gamma_95hpd = mcmc_out$gamma_95hpd)
 
 # Generate 95% CI around simulation
-ci <- SimCI(sim2)
+sim1_full_summary <- SimCI(sim1_full)
+sim1_full_data <- SimDataToPlot(sim1_full)
 
-# Plot simulation results 
-sim2_plot <- sim2 %>%
-  SimDataToPlot() %>%
-  SimPlot(., I_reps_plot, color = "blue", alpha_sim = 0.05, ci = ci)
-sim2_plot <- sim2_plot + ggtitle("model 1: Full Sim")
-sim2_plot
-
-ggsave(filename = 'Plot-output/Sim-m1-full.jpg',
-       plot = sim2_plot,
-       width = 26,
-       height = 20,
-       units = 'cm',
-       dpi = 150)
+save(sim1_full_summary, file = "data/Rdata/sim1_full_summary.Rdata")
+save(sim1_full_data, file =  "data/Rdata/sim1_full_data.Rdata")
 
 
-# Check how the timing of the epidemic between different simulations relates to noen another
-sim2_timing <- SimAndData(10) %>%
-  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 1: Full Sim")
-
-ggsave(filename = 'Plot-output/Sim-m1-full-timing.jpg',
-       plot = sim2_timing,
-       width = 26,
-       height = 20,
-       units = 'cm',
-       dpi = 150)
