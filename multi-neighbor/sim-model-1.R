@@ -14,7 +14,7 @@ source("functions/SimulationAndPlots.R")
 
 
 # GLOBAL VARIABLES ----------------------------------------------------------------
-n_loops <- 500
+n_loops <- 5
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
@@ -24,8 +24,8 @@ sim1_step <- SimPlusOne(loops=n_loops,
                         phi_95hpd = mcmc_out$phi_95hpd,
                         gamma_95hpd = mcmc_out$gamma_95hpd)
 
-sim1_step_summary <- SimCI(sim1_step)
 sim1_step_data <- SimDataToPlot(sim1_step)
+sim1_step_summary <- SimCI(sim1_step_data)
 
 save(sim1_step_summary, file = "data/Rdata/sim1_step_summary.Rdata")
 save(sim1_step_data, file = "data/Rdata/sim1_step_data.Rdata")
@@ -60,8 +60,8 @@ sim1_full <- SimFromZero(loops=n_loops,
                          gamma_95hpd = mcmc_out$gamma_95hpd)
 
 # Generate 95% CI around simulation
-sim1_full_summary <- SimCI(sim1_full)
 sim1_full_data <- SimDataToPlot(sim1_full)
+sim1_full_summary <- SimCI(sim1_full_data)
 
 save(sim1_full_summary, file = "data/Rdata/sim1_full_summary.Rdata")
 save(sim1_full_data, file =  "data/Rdata/sim1_full_data.Rdata")
