@@ -216,14 +216,14 @@ SimPlot <- function(simulation_data = NULL, observed_data,
   
   if(!ribbon){
     plot_obj <- ggplot() + 
-    geom_line(data = simulation_data, 
-              alpha = alpha_sim,
-              color = color,
-              aes(x = day, y = I_simulated,
-                  group = interaction(quarter, sim_num))) +
-    facet_wrap(~quarter)
+      geom_line(data = simulation_data, 
+                alpha = alpha_sim,
+                color = color,
+                aes(x = day, y = I_simulated,
+                    group = interaction(quarter, sim_num))) +
+      facet_wrap(~quarter)
   }
- 
+  
   # Add 95% CI if provided
   if(!is.null(ci) & !ribbon){
     plot_obj <- plot_obj + 
@@ -266,8 +266,8 @@ SimPlot <- function(simulation_data = NULL, observed_data,
     theme(panel.grid = element_blank()) +
     theme(legend.position = "none",
           panel.spacing.y = unit(2, "lines"))
- 
-return(plot_obj)
+  
+  return(plot_obj)
 }
 
 
@@ -309,13 +309,13 @@ SimCI <- function(sim_output){
   ## Calculate 95% CI on simulation output data, then get data into form for
   ## ggplot
   
-  # If not outbreaks generated:
-  stopifnot(length(sim_output$I_new_plus1) > 0)
-  # Shape data for 95%CI calculation
-  x <-sim_output %>%
-    SimDataToPlot() %>%
-    spread(key = sim_num, value = I_simulated)
   
+  if(ncol(sim_output)==4 | ncol(sim_output)==5){
+    x <- sim_output %>%
+      spread(key = sim_num, value = I_simulated)
+  }else{
+    stop("simulation data not correct type")
+  }
   # Calculate 95%CI
   ci <- x %>%
     dplyr::select(., -quarter, -day)%>%
@@ -330,7 +330,7 @@ SimCI <- function(sim_output){
     t() %>% # need to apply fun to collums, not rows
     as_tibble() %>%
     sapply(., median)
-
+  
   avg <- x %>%
     dplyr::select(., -quarter, -day)%>%
     t() %>% # need to apply fun to collums, not rows
