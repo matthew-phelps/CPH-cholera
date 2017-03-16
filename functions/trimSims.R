@@ -1,12 +1,17 @@
 
-trimSims <- function(sim_data, cutoff){
+trimSims <- function(sim_data, cutoff, 
+                     quarter_val = "St. Annae Vester",
+                     day_val = 21){
   # Returns only simulations that acheived the cutoff number of cumulative
   # infections in the St. Annae Vester quarter by day 21
-  indexSimsByCutoff <- function(x, cutoff){
-    # Test simulations if they have taken off by day 21
-    cutoff < x %>%
-      dplyr::filter(quarter == "St. Annae Vester" &
-                      day <21) %>%
+  
+  stopifnot(!length(sim_data$sim_num) < 112) # need at least 1 full sim
+  
+  indexSimsByCutoff <- function(spread_sim_data, cutoff){
+    # Index simulations that have taken off by day 21
+    cutoff <= spread_sim_data %>%
+      dplyr::filter(quarter == quarter_val &
+                      day < day_val) %>%
       dplyr::select(-quarter, -day) %>%
       colSums()
   }
@@ -32,7 +37,10 @@ trimSims <- function(sim_data, cutoff){
     indexSimsByCutoff(cutoff) %>%
     colIndexToDataFrame()
   
-  sim5_filtered <- filterSimsByIndex(sim_data, sim_inx)
+  sim_filtered <- filterSimsByIndex(sim_data, sim_inx)
   
-  return(sim5_filtered)
+  pct_of_original <- sum(sim_inx$include) / nrow(sim_inx)
+  
+  
+  return(list(pct_of_original = pct_of_original, sim_filtered = sim_filtered))
 }
