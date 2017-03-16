@@ -345,3 +345,6 @@ SimCI <- function(sim_output){
                day = x$day)
   return(summary_obj)
 }
+
+
+

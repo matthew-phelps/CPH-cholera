@@ -10,7 +10,7 @@ library(plotly)
 source("Data-4-prepare-JAGS.R")
 Nweeks <- Nsteps
 source("multi-neighbor/sim-model-5-data-prep.R")
-source("multi-neighbor/SimulationAndPlots.R")
+source("functions/SimulationAndPlots.R")
 
 
 # GLOBAL VARIABLES ----------------------------------------------------------------
