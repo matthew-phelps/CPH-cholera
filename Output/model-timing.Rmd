@@ -1,0 +1,75 @@
+---
+title: "Model timing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+
+```
+
+```{r load, include=FALSE}
+rm(list = ls())
+library(cowplot)
+source("functions/trimSims.R")
+source("functions/SimulationAndPlots.R")
+source("multi-neighbor/sim-model-5-data-prep.R")
+load(file =  "data/Rdata/sim3_full_data.Rdata")
+load(file =  "data/Rdata/sim5_full_data.Rdata")
+
+```
+## Full simulation
+
+* Simulating from t = 0 shows model 3 (**blue**) might be a better choice. It 
+gets the timing slightly better than model 5 (**red**). 
+* Model 5 has a tendency to have outbreaks that are delayed
+
+```{r full, include=FALSE}
+sim3_trim <- trimSims(sim3_full_data, 0, quarter_val = "St. Annae Oester",
+                      day_val = 21)
+sim5_trim <- trimSims(sim5_full_data, 0)
+sim3_summary <- SimCI(sim3_trim$sim_filtered)
+sim5_summary <- SimCI(sim5_trim$sim_filtered)
+sim3_plot <- SimPlot(observed_data = I_reps_plot,
+        rib_col = "blue", alpha_sim = 0.05,
+        ci = sim3_summary,
+        ribbon = TRUE)
+sim5_plot <- SimPlot(observed_data = I_reps_plot,
+                     rib_col = "red", alpha_sim = 0.05,
+                     ci = sim5_summary,
+                     ribbon = TRUE)
+```
+
+```{r plot1, echo=FALSE, out.width="1200px"}
+plot_grid(sim3_plot, sim5_plot,
+          labels = c("3", "5"), ncol = 2, nrow = 1)
+
+```
+
+## Constrained simulation
+
+* Model 5 performs better when constraining to only simulations achieving a certain threshold of infection in one of the "seeding" quarters. 
+* Below shows only models acheiving a cumulative incidence of at least 10 infections in St. Annae Vester by day 21 (corresponding to the 3rd actual weekly data point):
+```{r trim, include=FALSE}
+sim3_trim <- trimSims(sim3_full_data, 10,
+                      quarter_val = "St. Annae Vester", day_val = 21)
+sim5_trim <- trimSims(sim5_full_data, 10,
+                      quarter_val = "St. Annae Vester", day_val = 21)
+sim3_summary <- SimCI(sim3_trim$sim_filtered)
+sim5_summary <- SimCI(sim5_trim$sim_filtered)
+sim3_plot <- SimPlot(observed_data = I_reps_plot,
+        rib_col = "blue", alpha_sim = 0.05,
+        ci = sim3_summary,
+        ribbon = TRUE)
+sim5_plot <- SimPlot(observed_data = I_reps_plot,
+                     rib_col = "red", alpha_sim = 0.05,
+                     ci = sim5_summary,
+                     ribbon = TRUE)
+```
+
+```{r plot2, echo=FALSE, out.width="1200px"}
+plot_grid(sim3_plot, sim5_plot,
+          labels = c("3", "5"), ncol = 2, nrow = 1)
+
+```
