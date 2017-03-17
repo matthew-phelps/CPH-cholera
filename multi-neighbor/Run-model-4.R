@@ -37,7 +37,7 @@ for (reps in 1:num_reps){
   print(reps)
   print(Sys.time())
   set.seed(13) # Not sure if this does anything in current set-up
-  jags_m4_ls[[reps]] <- run.jags(model = 'JAGS/JAGS-multi-quarter-2.stan',
+  jags_m4_ls[[reps]] <- run.jags(model = 'JAGS/JAGS-multi-quarter-4.stan',
                                  method = 'rjparallel',
                                  monitor = c("beta", 'phi', 'gamma_b'),
                                  modules = "glm",
@@ -50,3 +50,4 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 save(jags_m4_ls, file = "Data/Rdata/jags_m4_ls-new.Rdata")
+save(jags_m4_ls, file = "C:\Users\wrz741\Google Drive\Copenhagen\DK Cholera\CPH\Data\Rdata")

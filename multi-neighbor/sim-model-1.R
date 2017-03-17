@@ -14,7 +14,7 @@ source("functions/SimulationAndPlots.R")
 
 
 # GLOBAL VARIABLES ----------------------------------------------------------------
-n_loops <- 5
+n_loops <- 6000
 
 # T + 1: SIMULATION -----------------------------------------------------
 # "I_reps" is the daily "observed" incidence.
@@ -23,12 +23,33 @@ sim1_step <- SimPlusOne(loops=n_loops,
                         betas_95hpd = mcmc_out$betas_95hpd,
                         phi_95hpd = mcmc_out$phi_95hpd,
                         gamma_95hpd = mcmc_out$gamma_95hpd)
-
 sim1_step_data <- SimDataToPlot(sim1_step)
 sim1_step_summary <- SimCI(sim1_step_data)
 
 save(sim1_step_summary, file = "data/Rdata/sim1_step_summary.Rdata")
 save(sim1_step_data, file = "data/Rdata/sim1_step_data.Rdata")
+
+
+
+# FULL SIMULATION ---------------------------------------------------------
+
+sim1_full <- SimFromZero(loops=n_loops, 
+                         I_reps = I_reps, N_it = N_it,
+                         betas_95hpd = mcmc_out$betas_95hpd,
+                         phi_95hpd = mcmc_out$phi_95hpd,
+                         gamma_95hpd = mcmc_out$gamma_95hpd)
+
+# Generate 95% CI around simulation
+sim1_full_data <- SimDataToPlot(sim1_full)
+sim1_full_summary <- SimCI(sim1_full_data)
+
+
+save(sim1_full_summary, file = "data/Rdata/sim1_full_summary.Rdata")
+save(sim1_full_data, file =  "data/Rdata/sim1_full_data.Rdata")
+
+
+
+
 
 
 
@@ -49,21 +70,4 @@ for (i in 1:Nquarter){
 
 save(I_att_mean, file = "Attributable-cases-t0.Rdata")
 save(I_proportion, file = "Proportion-attributable-t0.Rdata")
-
-
-# FULL SIMULATION ---------------------------------------------------------
-
-sim1_full <- SimFromZero(loops=n_loops, 
-                         I_reps = I_reps, N_it = N_it,
-                         betas_95hpd = mcmc_out$betas_95hpd,
-                         phi_95hpd = mcmc_out$phi_95hpd,
-                         gamma_95hpd = mcmc_out$gamma_95hpd)
-
-# Generate 95% CI around simulation
-sim1_full_data <- SimDataToPlot(sim1_full)
-sim1_full_summary <- SimCI(sim1_full_data)
-
-save(sim1_full_summary, file = "data/Rdata/sim1_full_summary.Rdata")
-save(sim1_full_data, file =  "data/Rdata/sim1_full_data.Rdata")
-
 

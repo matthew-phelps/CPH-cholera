@@ -15,8 +15,7 @@ load(file = "Data/Rdata/DIC_ls.Rdata")
 load(file = "Data/Rdata/waic_ls.Rdata")
 mod_names <- c("model 1", "model 2", "model 3",
                "model 4", "model 5", "model 6")
-mod_names2 <- c("model 1", "model 2", "model 3",
-               "model 4", "model 5")
+
 # Until model 6 is fully run:
 
 ```
@@ -68,14 +67,14 @@ p_waic <- waic_list %>%
 waic1 <- waic_list %>%
   waic_summary %>%
   data.frame() %>%
-  `colnames<-`(mod_names2)
+  `colnames<-`(mod_names)
 
 waic_select <- bestModel(waic1)
 
 waic_mean <- waic1 %>%
   colMeans() %>%
   data.frame() %>%
-  dplyr::mutate(model = mod_names2) %>%
+  dplyr::mutate(model = mod_names) %>%
   `colnames<-` (c("WAIC", "model")) %>%
   dplyr::select(model, WAIC)
 waic_mean$std <- sapply(waic1, sd)

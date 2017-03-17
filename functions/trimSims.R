@@ -32,7 +32,7 @@ trimSims <- function(sim_data, cutoff,
       filter(include==TRUE)
   }
   
-  sim_inx <- sim5_full_data %>%
+  sim_inx <- sim_data %>%
     spread(., sim_num, I_simulated) %>%
     indexSimsByCutoff(cutoff) %>%
     colIndexToDataFrame()

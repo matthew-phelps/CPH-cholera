@@ -1,5 +1,5 @@
 ---
-title: "Model timing"
+title: "Model review"
 output: html_document
 ---
 
@@ -15,61 +15,140 @@ library(cowplot)
 source("functions/trimSims.R")
 source("functions/SimulationAndPlots.R")
 source("multi-neighbor/sim-model-5-data-prep.R")
+load(file =  "data/Rdata/sim1_full_data.Rdata")
+load(file =  "data/Rdata/sim2_full_data.Rdata")
 load(file =  "data/Rdata/sim3_full_data.Rdata")
 load(file =  "data/Rdata/sim5_full_data.Rdata")
 
 ```
-## Full simulation
+## Full simulation -- all models
 
-* Simulating from t = 0 shows model 3 (**blue**) might be a better choice. It 
-gets the timing slightly better than model 5 (**red**). 
-* Model 5 has a tendency to have outbreaks that are delayed
+* Simulating from t = 0 shows model 2 (**green**) performing well 
 
 ```{r full, include=FALSE}
-sim3_trim <- trimSims(sim3_full_data, 0, quarter_val = "St. Annae Oester",
-                      day_val = 21)
+sim1_trim <- trimSims(sim1_full_data, 0)
+sim2_trim <- trimSims(sim2_full_data, 0)
+sim3_trim <- trimSims(sim3_full_data, 0)
 sim5_trim <- trimSims(sim5_full_data, 0)
+
+sim1_summary <- SimCI(sim1_trim$sim_filtered)
+sim2_summary <- SimCI(sim2_trim$sim_filtered)
 sim3_summary <- SimCI(sim3_trim$sim_filtered)
 sim5_summary <- SimCI(sim5_trim$sim_filtered)
+
+
+sim1_plot <- SimPlot(observed_data = I_reps_plot,
+                     rib_col = "black", alpha_sim = 0.05,
+                     ci = sim1_summary,
+                     ribbon = TRUE)
+sim2_plot <- SimPlot(observed_data = I_reps_plot,
+                     rib_col = "darkgreen", alpha_sim = 0.05,
+                     ci = sim2_summary,
+                     ribbon = TRUE)
 sim3_plot <- SimPlot(observed_data = I_reps_plot,
-        rib_col = "blue", alpha_sim = 0.05,
-        ci = sim3_summary,
-        ribbon = TRUE)
+                     rib_col = "blue", alpha_sim = 0.05,
+                     ci = sim3_summary,
+                     ribbon = TRUE)
 sim5_plot <- SimPlot(observed_data = I_reps_plot,
                      rib_col = "red", alpha_sim = 0.05,
                      ci = sim5_summary,
                      ribbon = TRUE)
-```
 
-```{r plot1, echo=FALSE, out.width="1200px"}
-plot_grid(sim3_plot, sim5_plot,
-          labels = c("3", "5"), ncol = 2, nrow = 1)
 
 ```
 
-## Constrained simulation
+```{r plot1, echo=FALSE, out.width="1200px", fig.height=10}
+plot_grid(sim1_plot, sim2_plot, sim3_plot, sim5_plot,
+          labels = c("1", "2", "3", "5"), ncol = 2, nrow = 2)
+```
+  
+  
+## Constrained models
 
-* Model 5 performs better when constraining to only simulations achieving a certain threshold of infection in one of the "seeding" quarters. 
-* Below shows only models acheiving a cumulative incidence of at least 10 infections in St. Annae Vester by day 21 (corresponding to the 3rd actual weekly data point):
-```{r trim, include=FALSE}
+* Constraining output to only those simulations that achieve at least 10 cummulative infections by day 21 in the St. Annae Vester quarter shows  Model 5 (**red**) and model 2 (**green**) to perform well.  
+```{r trimmed, include=FALSE}
+sim1_trim <- trimSims(sim1_full_data, 10,
+                      quarter_val = "St. Annae Vester", day_val = 21)
+sim2_trim <- trimSims(sim2_full_data, 10,
+                      quarter_val = "St. Annae Vester", day_val = 21)
 sim3_trim <- trimSims(sim3_full_data, 10,
                       quarter_val = "St. Annae Vester", day_val = 21)
 sim5_trim <- trimSims(sim5_full_data, 10,
                       quarter_val = "St. Annae Vester", day_val = 21)
+
+sim1_summary <- SimCI(sim1_trim$sim_filtered)
+sim2_summary <- SimCI(sim2_trim$sim_filtered)
 sim3_summary <- SimCI(sim3_trim$sim_filtered)
 sim5_summary <- SimCI(sim5_trim$sim_filtered)
+
+
+sim1_plot <- SimPlot(observed_data = I_reps_plot,
+                     rib_col = "black", alpha_sim = 0.05,
+                     ci = sim1_summary,
+                     ribbon = TRUE)
+sim2_plot <- SimPlot(observed_data = I_reps_plot,
+                     rib_col = "darkgreen", alpha_sim = 0.05,
+                     ci = sim2_summary,
+                     ribbon = TRUE)
 sim3_plot <- SimPlot(observed_data = I_reps_plot,
-        rib_col = "blue", alpha_sim = 0.05,
-        ci = sim3_summary,
-        ribbon = TRUE)
+                     rib_col = "blue", alpha_sim = 0.05,
+                     ci = sim3_summary,
+                     ribbon = TRUE)
 sim5_plot <- SimPlot(observed_data = I_reps_plot,
                      rib_col = "red", alpha_sim = 0.05,
                      ci = sim5_summary,
                      ribbon = TRUE)
-```
-
-```{r plot2, echo=FALSE, out.width="1200px"}
-plot_grid(sim3_plot, sim5_plot,
-          labels = c("3", "5"), ncol = 2, nrow = 1)
 
 ```
+
+```{r plot2, echo=FALSE, out.width="1200px", fig.height=10}
+plot_grid(sim1_plot, sim2_plot, sim3_plot, sim5_plot,
+          labels = c("1", "2", "3", "5"), ncol = 2, nrow = 2)
+
+
+```
+  
+***
+
+# Model 5 examination
+
+* Simulate a few from the join posterior
+```{r mod5}
+sim5_param <- SimFromZero(10,
+                           I_reps = I_reps, N_it = N_it,
+                           betas_95hpd = mcmc_out$betas_95hpd,
+                           phi_95hpd = mcmc_out$phi_95hpd,
+                           gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+
+sim_plot <- sim5_param %>%
+  SimDataToPlot() %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1)
+
+```
+```{r plo3}
+sim_plot
+```
+
+## Single parameter combination
+
+* Simulate using the single parameter combination that provided the best result above
+* Timing of the outbreak is variable
+```{r simparams, fig.width=}
+# SIMULATE FROM PARAM POINT VALUES -------------------------------------------------------
+param <- sim5_param$store_param
+best_param <- lapply(param, function(x) x[[6]])
+
+sim5_timing <- SimFromZeroPointValue(25,
+                           I_reps = I_reps, N_it = N_it,
+                           betas_95hpd = best_param$beta,
+                           phi_95hpd = best_param$phi,
+                           gamma_95hpd = best_param$gamma,
+                           seed = 14)
+sim_plot <- sim5_timing %>%
+  SimDataToPlot() %>%
+  SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Param point values")
+```
+```{r plo4}
+sim_plot
+```
+
