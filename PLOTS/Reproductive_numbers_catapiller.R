@@ -1,5 +1,6 @@
 require(grid)
 library(coda)
+
 source("PLOTS/plot-functions.R")
 load("Data/Rdata/r-values-model-1.Rdata")
 load("Data/Rdata/r-values-model-2.Rdata")
@@ -18,6 +19,15 @@ ggsave(plot = r_plot, filename = "Plot-output/R-log-m1.jpg",
 
 # MODEL 2 -----------------------------------------------------------------
 r_plot <- R_log_scale(R_model2)
+r_plot
+
+ggsave(plot = r_plot, filename = "Plot-output/R-log-m2.jpg",
+       height = 7,
+       width = 10)
+
+
+# MODEL 4 -----------------------------------------------------------------
+r_plot <- R_log_scale(R_model4)
 r_plot
 
 ggsave(plot = r_plot, filename = "Plot-output/R-log-m2.jpg",

@@ -103,17 +103,63 @@ R_non_log <- function(R, pd = position_dodge(0.4)) {
                                      vjust = 1.0))
 }
 
+
+rTable <- function(R_median, log = TRUE){
+  par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
+  if(log){
+    color2D.matplot(log(R_median), 
+                    show.values = TRUE,
+                    axes = FALSE,
+                    xlab = "",
+                    ylab = "",
+                    vcex = 2,
+                    vcol = "black",
+                    extremes = c("white", "blue"))
+  } else {
+    color2D.matplot((R_median), 
+                    show.values = TRUE,
+                    axes = FALSE,
+                    xlab = "",
+                    ylab = "",
+                    vcex = 2,
+                    vcol = "black",
+                    extremes = c("white", "blue"))
+  }
+  xpos <- seq_len(ncol(R_median)) +0.2
+  ypos <- seq_len(ncol(R_median)) - 0.4
+  axis(3, # specifies top border x position
+       at = xpos,
+       labels = F, tick = FALSE, cex.axis = 0.7)
+  text(x = xpos,
+       labels = names(R_median),
+       srt = 45, # angle to rotate
+       pos = 3, # specifies to put txt at top
+       par("usr")[4] +0.7, # 0.7 lines above the top. [4] places ref to top border
+       adj = 0,
+       xpd = T) # not sure but allows txt to overflow table
+  axis(2, 
+       at = ypos,
+       labels = F, tick = FALSE, cex.axis = 0.7)
+  text(y = ypos,
+       labels = rev(names(R_median)),
+       srt = 45, # angle to rotate
+       pos = 2, # specifies to put txt at top
+       par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+       adj = 0,
+       xpd = T) # not sure but allows txt to overflow table
+}
+
 # sim plus 1
 sim1_plus1 <- function(I_simulated_plus1){
   ggplot() + 
-  geom_line(data = I_simulated_plus1, 
-            alpha = 0.1,
-            aes(x = day, y = I_simulated,
-                group = interaction(quarter, sim_num),
-                color = quarter)) +
-  geom_line(data = combined, aes(x = (week.id+1) * 7,
-                                 y = sick.total.week/7, group = quarter)) +
-  facet_wrap(~quarter) +
-  theme_minimal() +
-  theme(legend.position = "none")
+    geom_line(data = I_simulated_plus1, 
+              alpha = 0.1,
+              aes(x = day, y = I_simulated,
+                  group = interaction(quarter, sim_num),
+                  color = quarter)) +
+    geom_line(data = combined, aes(x = (week.id+1) * 7,
+                                   y = sick.total.week/7, group = quarter)) +
+    facet_wrap(~quarter) +
+    theme_minimal() +
+    theme(legend.position = "none")
 }
