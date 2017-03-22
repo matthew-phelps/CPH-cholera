@@ -50,4 +50,4 @@ for (reps in 1:num_reps){
                                  plots = T)
 }
 save(jags_m4_ls, file = "Data/Rdata/jags_m4_ls-new.Rdata")
-save(jags_m4_ls, file = "C:\Users\wrz741\Google Drive\Copenhagen\DK Cholera\CPH\Data\Rdata")
+

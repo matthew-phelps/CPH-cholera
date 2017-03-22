@@ -20,8 +20,8 @@ mod_names <- c("model 1", "model 2", "model 3",
 
 ```
 
-DIC and WAIC values for each model. Table ranked from lowest to highest by value. Model 1 is least complex, model 6 is most complex
-```{r dic}
+
+```{r dic, include=FALSE}
 # Produce DIC summary - output is penalized deviance
 getPenDic <- function(x) sum(x$deviance) + sum(x$penalty)
 modelDic <- function(z) (sapply(z, getPenDic))
@@ -49,7 +49,7 @@ dic_mean <- dplyr::arrange(dic_mean, DIC)
 
 ```
 
-```{r waic}
+```{r waic, include=FALSE}
 mean_waic_model <- function(x) (sapply(x, function(x) x$waic))
 waic_summary <- function(x) sapply(x, mean_waic_model)
 # waic_list$waic_m1_ls[[2]]$p_waic <- get this number!
@@ -82,14 +82,7 @@ waic_mean$p_waic <- p_waic
 waic_mean <- dplyr::arrange(waic_mean, WAIC)
 ```
 
-```{r table}
 
-panderOptions('table.alignment.default',
-              function(df)
-                ifelse(sapply(df, is.character), 'left', 'right'))
-pander(dic_mean)
-pander(waic_mean)  
-```
 DIC values for each epidemic realization
 ```{r dic+print, echo = FALSE}
 pander(dic_select)
@@ -97,4 +90,13 @@ pander(dic_select)
 WAIC values for each epidemic realization
 ```{r waic_print, echo = FALSE}
 pander(waic_select)
+```
+Summary of each model over all epidemic realizations
+```{r table2}
+
+panderOptions('table.alignment.default',
+              function(df)
+                ifelse(sapply(df, is.character), 'left', 'right'))
+pander(dic_mean)
+pander(waic_mean)  
 ```

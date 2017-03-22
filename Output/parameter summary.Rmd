@@ -1,0 +1,25 @@
+---
+title: "Parameter summary"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(root.dir = normalizePath('..'))
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+```
+```{r load, echo=FALSE, include=FALSE}
+library(pander)
+library(dplyr)
+load("Data/Rdata/sim-model-5-data-1.Rdata")
+
+
+
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
