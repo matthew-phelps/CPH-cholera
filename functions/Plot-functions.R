@@ -79,11 +79,36 @@ R_log_scale <- function(R,  pd = position_dodge(0.4)) {
                              "1",
                              "10")) +
     theme_classic() +
-    ggtitle("R intern & R extern values") + 
+    ylab("Median R value") +
     theme(axis.text.x = element_text(angle = 45,
                                      hjust = 1,
                                      vjust = 1.0))
 }
+
+
+R <- function(base_plot){
+  base_plot + 
+    scale_color_manual(name = "R type",
+                       values = c("dodgerblue4", "orange3"),
+                       labels = c("Outflow", "Inflow")) +
+    scale_shape_manual(name = "R type",
+                       values = c(19, 17),
+                       labels = c("Outflow", "Inflow"))
+}
+
+
+
+
+RInOutStyle <- function(base_plot){
+  base_plot + 
+    scale_color_manual(name = "R type",
+                       values = c("dodgerblue4", "orange3"),
+                       labels = c("Outflow", "Inflow")) +
+    scale_shape_manual(name = "R type",
+                       values = c(19, 17),
+                       labels = c("Outflow", "Inflow"))
+}
+
 
 
 R_non_log <- function(R, pd = position_dodge(0.4)) {
