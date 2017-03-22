@@ -110,13 +110,15 @@ x <- mcmcPrep(jags_m5_ls, q_names, testing = TRUE)
 rm(jags_m5_ls)
 
 mcmc_out <- smMcmc(x)
+mcmc_out$
 rm(x)
 R_list <- RCalc(betas = mcmc_out$betas_95hpd,
                 lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,
                 q_names = q_names, order = TRUE)
 
 R_model5 <- list(R_median = R_list$R_median,
-                 R_vals = rbind(R_list$R_int, R_list$R_ext, R_list$R_tot))
+                 R_vals = rbind(R_list$R_int, R_list$R_ext, R_list$R_tot,
+                                R_list$R_in))
                  
 
 save(mcmc_out, file = 'Data/Rdata/sim-model-5-data-1.Rdata' )

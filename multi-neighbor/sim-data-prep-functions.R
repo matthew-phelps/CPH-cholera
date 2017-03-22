@@ -22,6 +22,13 @@ getMedian <- function(x){
   return(list(mcmc_median = mcmc_median, mcmc_names = mcmc_names))
 }
 
+getMean <- function(x){
+  # Get median values for each parameter
+  mcmc_mean <- apply(x, MARGIN = 2, FUN = mean)
+  mcmc_names <- names(x[1, ]) # name the rows
+  return(list(mcmc_mean = mcmc_mean, mcmc_names = mcmc_names))
+}
+
 getIntervals <- function(mcmc){
   int_hpd <- data.frame(HPDinterval(mcmc, 0.95))
   hi_hpd <- int_hpd$upper
@@ -69,16 +76,26 @@ mcmcPrep <- function(x, q_names, testing = FALSE){
   mcmc_df <- mkDfMcmc(mcmc_object = mcmc_obj)
   median_val <- mcmc_df %>%
     getMedian()
+  mean_val <- mcmc_df %>%
+    getMean()
+  
   betas_median <- median_val$mcmc_median %>%
     mkBetas() %>%
     checkOrder(q_names = q_names)
+  
   phi_median <- median_val$mcmc_median['phi']
-  gamma_median <- median_val$mcmc_median['gamma']
+  gamma_median <- median_val$mcmc_median['gamma_b']
+  
+  phi_mean <- mean_val$mcmc_mean['phi']
+  gamma_mean <- mean_val$mcmc_mean['gamma_b']
+  
   return(list(mcmc_df = mcmc_df,
               betas_median=betas_median,
               int_hpd=int_hpd,
               phi_median=phi_median,
-              gamma_median=gamma_median))
+              gamma_median=gamma_median,
+              phi_mean = phi_mean,
+              gamma_mean = gamma_mean))
 }
 
 
@@ -102,33 +119,32 @@ smMcmc <- function(x){
     mapply(testHi, ., hi_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
-  gc()
+  
   
   inx_hi_2 <- x$mcmc_df %>%
     slice(((xrow/2)+1):xrow) %>%
     mapply(testHi, .,  hi_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
-  gc()
+  
   inx_hi <- c(inx_hi_1, inx_hi_2)
   
   x_small <- x$mcmc_df[inx_hi, ]
-  rm(x)
-  gc()
+  
   
   # Remove any MCMC that produce results below 95%hpd for any parameter
   inx_lo <- x_small %>%
     mapply(testLo, ., lo_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
-  gc()
+  
   mcmc_95hpd <- x_small[inx_lo, ]
   rm(x_small)
   
   # If mcmc is not reduced enough, take only the first 50k 
   mcmc_95hpd <- mcmc_95hpd %>%
     slice(1:50000)
-  gc()
+  
   # For betas, turn each mcmc row into a matrix
   # browser()
   betas_95hpd <- mcmc_95hpd %>%
@@ -141,8 +157,18 @@ smMcmc <- function(x){
   
   gamma_95hpd <- mcmc_95hpd %>%
     dplyr::select(83)
+  phi_median <- x$phi_median
+  gamma_median <- x$gamma_median
+  betas_median <- x$betas_median
+  phi_mean <- x$phi_median
+  gamma_mean <- x$gamma_mean
   
-  return(list(phi_95hpd = phi_95hpd,
+  return(list(phi_mean = phi_mean,
+              gamma_mean = gamma_mean,
+              phi_median = phi_median,
+              gamma_median = gamma_median,
+              betas_median = betas_median,
+              phi_95hpd = phi_95hpd,
               gamma_95hpd = gamma_95hpd,
               betas_95hpd = betas_95hpd))
 }
