@@ -106,7 +106,7 @@ save(R_model4, file = 'Data/Rdata/r-values-model-4.Rdata')
 
 # MODEL 5 ---------------------------------------------------------------
 load(file = "Data/Rdata/jags_m5_ls-new.Rdata")
-x <- mcmcPrep(jags_m5_ls, q_names, testing = TRUE)
+x <- mcmcPrep(jags_m5_ls, q_names, testing = FALSE)
 rm(jags_m5_ls)
 
 mcmc_out <- smMcmc(x)

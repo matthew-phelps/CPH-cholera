@@ -6,7 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_knit$set(root.dir = normalizePath('..'))
-
+knitr::opts_chunk$set(root.dir = normalizePath('..'))
 ```
 
 ```{r load, include=FALSE}
@@ -15,6 +15,24 @@ library(cowplot)
 source("functions/trimSims.R")
 source("functions/SimulationAndPlots.R")
 source("multi-neighbor/sim-model-5-data-prep.R")
+rm(N_it, N_pop, quarter, case_summary_combined, combined, S_reps, week_date)
+files <- dir("data/Rdata/", pattern = "sim._full_data.Rdata", full.names = TRUE)
+loadModels <- function(){
+  files <- dir("data/Rdata/", pattern = "sim._full_data.Rdata", full.names = TRUE)
+  for (i in seq_along(files)){
+    
+    load(file = files[i])
+  }
+  rm(files, i)
+  browser()
+  out <- list(sim)
+  return(out)
+}
+
+loadModels()
+
+load(file = files)
+
 load(file =  "data/Rdata/sim1_full_data.Rdata")
 load(file =  "data/Rdata/sim2_full_data.Rdata")
 load(file =  "data/Rdata/sim3_full_data.Rdata")
@@ -23,7 +41,7 @@ load(file =  "data/Rdata/sim5_full_data.Rdata")
 ```
 ## Full simulation -- all models
 
-* Simulating from t = 0 shows model 2 (**green**) performing well 
+* Simulating models 1 to 5 from t = 0.
 
 ```{r full, include=FALSE}
 sim1_trim <- trimSims(sim1_full_data, 0)
@@ -61,8 +79,8 @@ sim5_plot <- SimPlot(observed_data = I_reps_plot,
 plot_grid(sim1_plot, sim2_plot, sim3_plot, sim5_plot,
           labels = c("1", "2", "3", "5"), ncol = 2, nrow = 2)
 ```
-  
-  
+
+
 ## Constrained models
 
 * Constraining output to only those simulations that achieve at least 10 cummulative infections by day 21 in the St. Annae Vester quarter shows  Model 5 (**red**) and model 2 (**green**) to perform well.  
@@ -107,7 +125,7 @@ plot_grid(sim1_plot, sim2_plot, sim3_plot, sim5_plot,
 
 
 ```
-  
+
 ***
 
 # Model 5 examination
@@ -115,10 +133,10 @@ plot_grid(sim1_plot, sim2_plot, sim3_plot, sim5_plot,
 * Simulate a few from the join posterior
 ```{r mod5}
 sim5_param <- SimFromZero(10,
-                           I_reps = I_reps, N_it = N_it,
-                           betas_95hpd = mcmc_out$betas_95hpd,
-                           phi_95hpd = mcmc_out$phi_95hpd,
-                           gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
+                          I_reps = I_reps, N_it = N_it,
+                          betas_95hpd = mcmc_out$betas_95hpd,
+                          phi_95hpd = mcmc_out$phi_95hpd,
+                          gamma_95hpd = mcmc_out$gamma_95hpd, seed = 14)
 
 sim_plot <- sim5_param %>%
   SimDataToPlot() %>%
@@ -139,11 +157,11 @@ param <- sim5_param$store_param
 best_param <- lapply(param, function(x) x[[6]])
 
 sim5_timing <- SimFromZeroPointValue(25,
-                           I_reps = I_reps, N_it = N_it,
-                           betas_95hpd = best_param$beta,
-                           phi_95hpd = best_param$phi,
-                           gamma_95hpd = best_param$gamma,
-                           seed = 14)
+                                     I_reps = I_reps, N_it = N_it,
+                                     betas_95hpd = best_param$beta,
+                                     phi_95hpd = best_param$phi,
+                                     gamma_95hpd = best_param$gamma,
+                                     seed = 14)
 sim_plot <- sim5_timing %>%
   SimDataToPlot() %>%
   SimPlotReps(., I_reps_plot, alpha_sim = 1) + ggtitle ("model 5: Param point values")
