@@ -1,3 +1,4 @@
+library(tidyverse)
 require(grid)
 library(coda)
 library(cowplot)
@@ -9,6 +10,7 @@ load("Data/Rdata/r-values-model-3.Rdata")
 load("Data/Rdata/r-values-model-4.Rdata")
 load("Data/Rdata/r-values-model-5.Rdata")
 # MODEL 1 -----------------------------------------------------------------
+
 r_plot <- R_log_scale(R_model1)
 r_plot
 
@@ -50,14 +52,15 @@ ggsave(plot = r_plot, filename = "Plot-output/R-log-m2.jpg",
 
 r_int_ext <- R_model5$R_vals %>%
   filter(R_type == "int" | R_type == "ext" | R_type == "tot")%>%
-  R_log_scale()
+  R_log_scale() %>%
+  RExtIntStyle()
 
 r_int_ext <- r_int_ext + ggtitle("R internal and R external")
 
 r_in_out <-  R_model5$R_vals %>%
   filter(R_type == "in" | R_type == "ext")%>%
   R_log_scale() %>%
-  R_log_style()
+  RInOutStyle()
 
 r_in_out <- r_in_out + ggtitle("R Out and R In")
 

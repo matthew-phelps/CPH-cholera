@@ -97,7 +97,15 @@ R <- function(base_plot){
 }
 
 
-
+RExtIntStyle <- function(base_plot){
+  base_plot + 
+    scale_color_manual(name = "R type",
+                       values = c("dodgerblue4", "green4", "red3"),
+                       labels = c("External", "Internal", "Total")) +
+    scale_shape_manual(name = "R type",
+                       values = c(19, 17, 15),
+                       labels = c("External", "Internal", "Total"))
+}
 
 RInOutStyle <- function(base_plot){
   base_plot + 
