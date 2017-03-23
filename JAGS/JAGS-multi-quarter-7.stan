@@ -16,6 +16,11 @@ model {
   log_eta ~ dnorm(0, 0.001)
   eta <- exp(log_eta)
   
+  # Effect of a shared border
+  log_kappa ~ dnorm(0, 0.001)
+  kappa <- exp(log_kappa)
+  
+  
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
   phi <- 1 / (1 + exp(-logit_phi))
@@ -41,8 +46,16 @@ model {
       #always draw a beta_1 and beta_2, even though only 1 will be used
       beta[i, j] <- ifelse(i==j, beta_1[i, j], beta_2[i, j])
       
-      # If there is a water-pipe connection b/w neighborhoods, foi = foi + eta
-      foi[i, j] <- ifelse(water[i, j]==1, eta + beta[i, j], beta[i, j]);
+      # If there is a water-pipe and NO border b/w neighborhoods, foi = beta + eta
+      # If there is water-pipe AND border foi = beta + eta + kappa
+      # If there is NO water-pipe AND border, foi = beta + kappa
+      
+      # Because JAGS can't redefine a node, we can't use control flow like we 
+      # would in R. Thus we have to create intermediary matrices to allow
+      # us to mimic the control-flow
+      foi_1[i, j] <- ifelse(water[i, j]==1 && border[i, j]==0, eta + beta[i, j], beta[i, j])
+      foi_2[i, j] <- ifelse(water[i, j]==1 && border[i, j]==1, foi_1[i, j] + kappa, foi_1[i, j])
+      foi[i, j] <- ifelse(water[i, j]==0 && border[i, j]==1, foi_2[i, j] + kappa, foi_2[i, j])
     } 
   }
   
@@ -73,6 +86,7 @@ model {
   #data# I_incidence
   #data# Nquarter
   #data# water
+  #data# border
   
   #inits# inits1
   #inits# inits2
