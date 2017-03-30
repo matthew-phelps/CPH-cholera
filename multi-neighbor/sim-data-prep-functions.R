@@ -163,11 +163,16 @@ smMcmc <- function(x){
   phi_mean <- x$phi_median
   gamma_mean <- x$gamma_mean
   
+  phi_range <- c(lo = lo_hpd[82], hi = hi_hpd[82])
+  gamma_range <- c(lo = lo_hpd[83], hi = hi_hpd[83])
+  
   return(list(phi_mean = phi_mean,
               gamma_mean = gamma_mean,
               phi_median = phi_median,
               gamma_median = gamma_median,
               betas_median = betas_median,
+              phi_range = phi_range,
+              gamma_range = gamma_range,
               phi_95hpd = phi_95hpd,
               gamma_95hpd = gamma_95hpd,
               betas_95hpd = betas_95hpd))

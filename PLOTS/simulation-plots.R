@@ -14,14 +14,17 @@ rm(mcmc_out)
 
 sim5_step <- SimPlot(observed_data = I_reps_plot,
                      color = "blue", alpha_sim = 0.05,
-                     ci = sim5_step_summary,
+                     ci = sim5_step_summary$sim_summary,
         ribbon = TRUE)
 sim5_full <- SimPlot(observed_data = I_reps_plot,
                      color = "blue", alpha_sim = 0.05,
-                     ci = sim5_full_summary,
+                     ci = sim5_full_summary$sim_summary,
         ribbon = TRUE)
 
-
+sim5_n_ahead <- SimPlot(observed_data = I_reps_plot,
+                     color = "blue", alpha_sim = 0.05,
+                     ci = sim5_n_ahead_summary$sim_summary,
+                     ribbon = TRUE)
 
 sim3_step <- SimPlot(observed_data = I_reps_plot,
                      rib_col = "blue", alpha_sim = 0.05,

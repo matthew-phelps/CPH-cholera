@@ -110,7 +110,7 @@ x <- mcmcPrep(jags_m5_ls, q_names, testing = FALSE)
 rm(jags_m5_ls)
 
 mcmc_out <- smMcmc(x)
-mcmc_out$
+
 rm(x)
 R_list <- RCalc(betas = mcmc_out$betas_95hpd,
                 lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,
