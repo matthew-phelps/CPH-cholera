@@ -17,7 +17,7 @@ trimSims <- function(sim_data, cutoff,
   }
   
   
-  colIndexToDataFrame <- function(col_inx){
+  simIndexToDataFrame <- function(col_inx){
     col_inx %>%
       names() %>%
       as.numeric() %>%
@@ -35,7 +35,7 @@ trimSims <- function(sim_data, cutoff,
   sim_inx <- sim_data %>%
     spread(., sim_num, I_simulated) %>%
     indexSimsByCutoff(cutoff) %>%
-    colIndexToDataFrame()
+    simIndexToDataFrame()
   
   sim_filtered <- filterSimsByIndex(sim_data, sim_inx)
   
