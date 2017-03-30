@@ -1,10 +1,19 @@
 # Author: Matthew Phelps
 # DESC: Prepare spatial data for plotting
-rm(list = ls())
+
 library(rgdal)
+library(tidyverse)
+library(broom)
+library(ggsn) # for scale bar
+library(mapproj) # for map projections
 library(sp)
 source("Data-3-combine quarters.R")
-source("multi-neighbor/R calculations.R")
+# source("functions/CalculateRFun.R")
+
+## To Instal rgdal on my mac - -note: check pathnames to GDAL.framework
+#install.packages("http://cran.r-project.org/src/contrib/rgdal_1.1-3.tar.gz", repos = NULL, type="source", configure.args = "--with-gdal-config=/Library/Frameworks/GDAL.framework/Versions/1.11/unix/bin/gdal-config --with-proj-include=/Library/Frameworks/PROJ.framework/unix/include --with-proj-lib=/Library/Frameworks/PROJ.framework/unix/lib")
+
+
 
 # QUARTER SUMMARY DATA FRAME ---------------------------------------------------------
 # Date of first infected case in each quarter
@@ -64,18 +73,18 @@ quarter_shp@data <- quarter_shp@data %>%
   mutate(pop_density = pop / area,
          infect_density = area/cases)
 
-# Join reproductive number data
-R_ext <- R_ext %>%
-  dplyr::select(quarter, R_value) %>%
-  dplyr::mutate(quarter = as.character(quarter)) %>%
-  dplyr::rename(R_ext = R_value)
-R_int <- R_int %>%
-  dplyr::select(quarter, R_value) %>%
-  dplyr::mutate(quarter = as.character(quarter)) %>%
-  dplyr::rename(R_int = R_value)
-quarter_shp@data <- quarter_shp@data %>%
-  inner_join(R_ext, by = "quarter") %>%
-  inner_join(R_int, by = "quarter")
+# # Join reproductive number data
+# R_ext <- R_ext %>%
+#   dplyr::select(quarter, R_value) %>%
+#   dplyr::mutate(quarter = as.character(quarter)) %>%
+#   dplyr::rename(R_ext = R_value)
+# R_int <- R_int %>%
+#   dplyr::select(quarter, R_value) %>%
+#   dplyr::mutate(quarter = as.character(quarter)) %>%
+#   dplyr::rename(R_int = R_value)
+# quarter_shp@data <- quarter_shp@data %>%
+#   inner_join(R_ext, by = "quarter") %>%
+#   inner_join(R_int, by = "quarter")
 
 # SHP OUTPUT ---------------------------------------------------------
 # Transform to EPSG:3857
@@ -120,5 +129,5 @@ pipes_tidy <- tidy(pipes, region = id)
 
 
 #  CLEAN ------------------------------------------------------------------
-rm(oldw, start, list = rm_list)
+rm(oldw, start)
 

@@ -5,28 +5,14 @@
 ## intro
 
 library(cowplot) # multiplots: https://goo.gl/RK49b0
+library(tidyverse)
+library(RColorBrewer)
+source("functions/MapBaseAndLayers.R")
+source("Spatial-data-1.R")
+plot <- multiPlotWrapper(mapdf, wall_fort, water_fort, l_size = 0.1,
+                 wall_l_size = 0.3, p_size = 1.2, txt_size = 10,
+                 leg_height = 2.5)
 
-source("PLOTS/map-base.R")
-source("PLOTS/map-layers.R")
-
-case <- inc_rate_map(mapdf) %>%
-  add_hosp(hosp_tidy)
-
-cfr <- cfr_map(mapdf) %>%
-  add_hosp(hosp_tidy)
-  
-case_first <- first_case_map(mapdf) %>%
-  add_hosp(hosp_tidy)
-  
-water_infra <- pipe_map(pipes_tidy) %>%
-  add_hosp(hosp_tidy)
-
-R_ext <- R_ext_map(mapdf = mapdf)
-R_int <- R_int_map(mapdf = mapdf)
-
-# MULTIPLOT ---------------------------------------------------------------
-map_multi <- plot_grid(water_infra, case_first, case, cfr, labels = c("A", "B", "C", "D"), ncol = 2, nrow = 2)
-
-save_plot(map_multi, file = "Plot-output/map_multi.jpg",
+save_plot(plot, file = "Plot-output/map_multi.pdf",
           base_height = 10)
 
