@@ -7,7 +7,7 @@ library (ggplot2)
 
 
 
-citywide_plot <- function(x) {
+citywide_plot <- function(x, txt_size) {
   ggplot(x, aes(x = week_date))+
     geom_line(aes(y = sick, color = "cases"), size = 1) +
     geom_line(aes( y = dead, color = "deaths"), size = 1) +
@@ -17,21 +17,20 @@ citywide_plot <- function(x) {
     theme_classic() +
     theme(legend.title = element_blank(),
           legend.position = c(0.8, 0.5),
-          axis.text.x = element_text(size = 12),
-          axis.text.y = element_text(size = 12),
-          axis.title.x = element_text(size = 12),
-          axis.title.y = element_text(size = 12))
+          axis.text.x = element_text(size = txt_size),
+          axis.text.y = element_text(size = txt_size),
+          axis.title.x = element_text(size = txt_size),
+          axis.title.y = element_text(size = txt_size))
 }
 
 
 
 
-quarter_panel_incidence <- function(combined) {
+quarter_panel_incidence <- function(combined, txt_size) {
   ggplot (combined,
           aes( x = week.id,
-               y = sick.total.week / est.pop.1853,
-               group = quarter,
-               color = quarter))+
+               y = sick.total.week / est.pop.1853 * 100,
+               group = quarter))+
     geom_line(size = 1) +
     geom_vline( xintercept = 5, linetype = 2, color = "black") +
     facet_wrap(~quarter) +
@@ -39,10 +38,10 @@ quarter_panel_incidence <- function(combined) {
     ylab("Incidence per 100") +
     theme_classic() +
     theme(legend.position = 'none',
-          axis.text.x = element_text(size = 12),
-          axis.text.y = element_text(size = 12),
-          axis.title.x = element_text(size = 12, vjust = -0.1),
-          axis.title.y = element_text(size = 12, vjust = 0.5),
+          axis.text.x = element_text(size = txt_size-2),
+          axis.text.y = element_text(size = txt_size-2),
+          axis.title.x = element_text(size = txt_size, vjust = -0.1),
+          axis.title.y = element_text(size = txt_size, vjust = 0.5),
           strip.background = element_rect(color = '#F0F0F0', fill = '#F0F0F0')) 
 }
 
@@ -50,15 +49,16 @@ quarter_panel_incidence <- function(combined) {
 
 
 
-R_log_scale <- function(R,  pd = position_dodge(0.4)) {
+R_log_scale <- function(R,  pd = position_dodge(0.4),
+                        line_size, point_size) {
   ggplot(data = R) +
     geom_hline(yintercept = 1, linetype = 3, color = "black") +
     geom_point(aes(x = quarter, y = R_median, shape = R_type, color = R_type),
                position = pd,
-               size = 1.9) +
+               size = point_size) +
     geom_errorbar(aes(x = quarter, ymin = lower, ymax = upper, color = R_type),
                   width = 0.4,
-                  size = 0.8,
+                  size = line_size,
                   position = pd) +
     scale_y_log10(breaks = c(0.0000001,
                              0.000001,
