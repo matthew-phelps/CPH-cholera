@@ -52,7 +52,7 @@ ggsave(plot = r_plot, filename = "Plot-output/R-log-m2.jpg",
 
 r_int_ext <- R_model5$R_vals %>%
   filter(R_type == "int" | R_type == "ext" | R_type == "tot")%>%
-  R_log_scale() %>%
+  R_log_scale(line_size = 1, point_size = 1) %>%
   RExtIntStyle()
 
 r_int_ext <- r_int_ext + ggtitle("R internal and R external")

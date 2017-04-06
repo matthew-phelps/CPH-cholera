@@ -64,8 +64,7 @@ SimFromZero <- function(loops, I_reps=I_reps, N_it=N_it,
                         betas_95hpd, phi_95hpd,
                         gamma_95hpd, seed=NULL){
   # Simulate from t = 0
-  # Does not store simulations where epidemic did not catch, but stores record
-  # of number of simulations that did not catch
+
   if(!is.null(seed)) set.seed(seed)
   # browser()
   Lambda_est_pe <-  matrix(nrow = Nsteps, ncol = Nquarter)
@@ -364,10 +363,11 @@ rmNonOutbreaks <- function(sim_data, min_cases) {
     stop("simulation data not correct type")
   }
   
-  indexOutbreaks <- function(x) ifelse(x>50, TRUE, FALSE)
+  indexOutbreaks <- function(x) ifelse(x>min_cases, TRUE, FALSE)
   
   column_holder <- dplyr::select(x, quarter, day)
   sim_data_tmp <- dplyr::select(x, -quarter, -day)
+  
   index_outbreaks <- sim_data_tmp %>%
     colSums() %>%
     indexOutbreaks()

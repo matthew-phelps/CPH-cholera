@@ -59,7 +59,7 @@ source("functions/plot-functions.R")
 outbreak_city <- quarter %>%
   group_by(week.id) %>%
   dplyr::summarise( sick = sum(sick.total.week),
-             dead = sum(dead.total.week)) %>%
+                    dead = sum(dead.total.week)) %>%
   arrange(week.id) %>%
   mutate(week_date = week_date)
 
@@ -80,18 +80,18 @@ Time-series plot of epidemic at the city level (A) and in each quarter (B).
 ```{r quarter_summary}
 case_summary <- case_summary_combined %>%
   dplyr::rename(Quarter = quarter,
-         Population = pop,
-         Cases = cases,
-         Deaths = deaths,
-         `Attack Rate (per 100)` = AR,
-         `CFR (%)` = CFR)
+                Population = pop,
+                Cases = cases,
+                Deaths = deaths,
+                `Attack Rate (per 100)` = AR,
+                `CFR (%)` = CFR)
 
 case_summary$Quarter[case_summary$Quarter=="Combined_lower"] <- "Combined lower"
 case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
 
 panderOptions('table.alignment.default',
-  function(df)
-     ifelse(sapply(df, is.character), 'left', 'right'))
+              function(df)
+                ifelse(sapply(df, is.character), 'left', 'right'))
 pander(case_summary, big.mark=",", split.cells = 10)
 ```
 
@@ -200,26 +200,24 @@ SimPlot(sim5_step_data, observed_data = I_reps_plot,
 The mean number of new infectious cases predicted one-step-ahead with 95% confidence bands. The black lines represent the 10 realizations of the epidemic used as data for parameter fitting. The vertical dotted line represents day 40 for reference between graphs.
 
 
-```{r rPlots, fig.width=6.5, fig.height=6.5}
+```{r rPlots, fig.width=7.0, fig.height=4}
 source("functions/plot-functions.R")
 load("Data/Rdata/r-values-model-5.Rdata")
 
-r_int_ext <- R_model5$R_vals %>%
-  filter(R_type == "int" | R_type == "ext" | R_type == "tot")%>%
-  R_log_scale(line_size = 0.5, point_size = 1.5) %>%
-  RExtIntStyle()
+# r_int_ext <- R_model5$R_vals %>%
+#   filter(R_type == "int" | R_type == "ext" | R_type == "tot")%>%
+#   R_log_scale(line_size = 0.5, point_size = 1.5) %>%
+#   RExtIntStyle()
 
 
 
 r_in_out <-  R_model5$R_vals %>%
-  filter(R_type == "in" | R_type == "ext")%>%
-  R_log_scale(line_size = 0.5, point_size = 1.5) %>%
-  RInOutStyle()
+  filter(R_type == "in" | R_type == "ext" | R_type == "int" |
+         R_type == "tot")%>%
+  R_log_scale(pd = 0.6, line_size = 0.4, point_size = 1.5) %>%
+  RStyle()
 
-
-out <- cowplot::plot_grid(r_int_ext, r_in_out,
-                          labels = c("A", "B"), nrow = 2)
-out
+r_in_out
 
 ```
 
