@@ -49,8 +49,9 @@ quarter_panel_incidence <- function(combined, txt_size) {
 
 
 
-R_log_scale <- function(R,  pd = position_dodge(0.4),
+R_log_scale <- function(R,  pd = 0.4,
                         line_size, point_size) {
+  pd <-  position_dodge(pd)
   ggplot(data = R) +
     geom_hline(yintercept = 1, linetype = 3, color = "black") +
     geom_point(aes(x = quarter, y = R_median, shape = R_type, color = R_type),
@@ -117,7 +118,15 @@ RInOutStyle <- function(base_plot){
                        labels = c("Outflow", "Inflow"))
 }
 
-
+RStyle <- function(base_plot){
+  base_plot + 
+    scale_color_manual(name = "R type",
+                       values = c("dodgerblue4", "green4", "orange3", "red3"),
+                       labels = c("Outflow" , "Inflow", "Internal", "Total")) +
+    scale_shape_manual(name = "R type",
+                       values = c(19, 17, 15, 18),
+                       labels = c("Outflow" , "Inflow", "Internal", "Total"))
+}
 
 R_non_log <- function(R, pd = position_dodge(0.4)) {
   ggplot(data = R) +
