@@ -17,33 +17,12 @@ source("functions/listBetasToZero.R")
 # GLOBAL VARIABLES ----------------------------------------------------------------
 n_loops <- 250
 
-# T + 1: SIMULATION -----------------------------------------------------
-# "I_reps" is the daily "observed" incidence.
-sim5_step <- SimPlusOne(loops=n_loops, 
-                        I_reps = I_reps, N_it = N_it,
-                        betas_95hpd = mcmc_out$betas_95hpd,
-                        phi_95hpd = mcmc_out$phi_95hpd,
-                        gamma_95hpd = mcmc_out$gamma_95hpd)
-
-
-sim5_step_data <- SimDataToPlot(sim5_step)
-
-sim5_step_summary <- sim5_step_data%>%
-  rmNonOutbreaks(min_cases = 0) %>%
-  SimCI()
-
-
-save(sim5_step_summary, file = "data/Rdata/sim5_step_summary.Rdata")
-save(sim5_step_data, file = "data/Rdata/sim5_step_data.Rdata")
-
-
-
 # FULL SIMULATION ---------------------------------------------------------
 
 
 
 
-zeros_8_9 <- listBetasToZero(mcmc_out$betas_95hpd, c(1, 5, 8, 9))
+zeros_8_9 <- listBetasToZero(mcmc_out$betas_95hpd, c(1, 8, 9))
 
 
 sim5_full <- SimFromZero(loops=n_loops, 
