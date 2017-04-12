@@ -15,14 +15,14 @@ source("functions/simNStepsAhead.R")
 source("functions/listBetasToZero.R")
 
 # GLOBAL VARIABLES ----------------------------------------------------------------
-n_loops <- 250
+n_loops <- 1000
 
 # FULL SIMULATION ---------------------------------------------------------
 
 
 
 
-zeros_8_9 <- listBetasToZero(mcmc_out$betas_95hpd, c(1, 8, 9))
+zeros_8_9 <- listBetasToZero(mcmc_out$betas_95hpd, c(9))
 
 
 sim5_full <- SimFromZero(loops=n_loops, 
@@ -42,11 +42,20 @@ sim5_full_summary <- sim5_full_data %>%
 SimPlot(observed_data = I_reps_plot,
         ci = sim5_full_summary$sim_summary, ribbon = TRUE)
 
-save(sim5_full_data, file =  "data/Rdata/sim5_full_data.Rdata")
-save(sim5_full_summary, file = "data/Rdata/sim5_full_summary.Rdata")
+# save(sim5_full_data, file =  "data/Rdata/sim5_full_data.Rdata")
+# save(sim5_full_summary, file = "data/Rdata/sim5_full_summary.Rdata")
 
 
 
+
+prob_vec <- wrapQuaterBetaToZero(mcmc_out, c(1, 5), n_loops = n_loops,
+                     min_cases = 500)
+
+
+
+
+x <- wrapQuaterBetaToZero(mcmc_out, c(5, 8, 9), n_loops = n_loops,
+                                 min_cases = 500, group = TRUE)
 
 # NStepsAhead -------------------------------------------------------------
 

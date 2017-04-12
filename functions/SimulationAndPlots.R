@@ -64,7 +64,6 @@ SimFromZero <- function(loops, I_reps=I_reps, N_it=N_it,
                         betas_95hpd, phi_95hpd,
                         gamma_95hpd, seed=NULL){
   # Simulate from t = 0
-
   if(!is.null(seed)) set.seed(seed)
   # browser()
   Lambda_est_pe <-  matrix(nrow = Nsteps, ncol = Nquarter)
