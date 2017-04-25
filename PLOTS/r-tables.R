@@ -1,7 +1,7 @@
 require(grid)
 library(coda)
 library(plotrix)
-source("PLOTS/plot-functions.R")
+source("functions/plot-functions.R")
 load("Data/Rdata/r-values-model-1.Rdata")
 load("Data/Rdata/r-values-model-5.Rdata")
 

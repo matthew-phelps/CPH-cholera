@@ -222,12 +222,8 @@ r_in_out
 ```
 
 ## Figure 5
-The median external, internal, and total reproductive numbers for each quarter (A), and the median out-flowing and in-flowing reproductive numbers (B). 
+The median outflowing, inflowing, internal, and total reproductive numbers
+($R_{0}$) for each quarter.
 
 
-```{r}
-load(file = 'Data/Rdata/sim-model-5-data-1.Rdata')
-
-
-```
 
