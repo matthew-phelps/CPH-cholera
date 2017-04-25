@@ -52,21 +52,24 @@ mkBetas <- function(mcmc_median){
   mkDf(betas_temp)
 }
 
+matOrderFun <- function(x) {
+  x[order(rownames(x)), order(colnames(x))]
+}
+
 checkOrder <- function(betas, q_names){
-  # Re-order based on alphabetical. Should already by alphabetical, but just in
-  # case
+  # Re-order matrix rowNAMES and columnNAMES alphabetically
   matNames <- function(x, q_names) {
     rownames(x) <- q_names
     colnames(x) <- q_names
     x
   }
-  matOrderFun <- function(x) {
-    x[order(rownames(x)), order(colnames(x))]
-  }
   betas %>%
     matNames(q_names) %>%
     matOrderFun()
 }
+
+
+
 mcmcPrep <- function(x, q_names, testing = FALSE){
   # Produce mcmc data frame and hpd for each parameter
   mcmc_obj <- combChains(x, testing = testing)
