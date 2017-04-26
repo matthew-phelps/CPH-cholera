@@ -105,5 +105,3 @@ add.summary(fit_model[[1]])
 path_name <- paste("Data/Rdata/model_", model_num, "_jags.Rdata", sep="")
 save(fit_model, file = paste("Data/Rdata/model_", model_num, "_jags.Rdata", sep=""))
 
-
-# Model 2 -----------------------------------------------------------------

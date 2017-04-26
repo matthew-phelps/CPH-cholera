@@ -57,6 +57,7 @@ RCalc <- function(betas, lo_hpd, hi_hpd, gamma, q_names,
   }
   R_tot <- rTotal(R_lo, R_hi, R_median)
   
+  
   rIn <- function(R_lo, R_hi, R_median) {
     
     out <- R_median %>%
