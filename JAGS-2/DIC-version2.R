@@ -13,6 +13,13 @@ SampleDIC_rep <- function(x, cl_num){
   dic_samp
 }
 
+SampleDIC_non_parallel <- function(x){
+  # Sample DIC from all epidemic relizations using multiple cores
+  browser()
+  dic_samp <- lapply(x, extract.runjags, "dic")
+  dic_samp
+}
+
 # RUN FUNCTION --------------------------------------------------------------------
 model_num <- c(1:2)
 
@@ -21,7 +28,7 @@ file_name <- paste("Data/Rdata/model_", model_num[1], "_jags.Rdata", sep="")
 x <- lapply(model_num, function(x){
   file_name <- paste("Data/Rdata/model_", x, "_jags.Rdata", sep="")
   load(file_name)
-  DIC <- SampleDIC_rep(fit_model, 5)
+  DIC <- SampleDIC_non_parallel(fit_model)
   return(DIC)
 })
 
