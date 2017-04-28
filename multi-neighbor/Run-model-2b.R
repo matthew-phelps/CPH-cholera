@@ -11,7 +11,7 @@ library(mcmcplots)
 # library(ggmcmc)
 # library(ggplot2)
 options(mc.cores = 4)
-
+model_num <- "2b"
 # LOAD -------------------------------------------------------
 
 water_temp <- read.csv("Data/water-matrix.csv")
@@ -75,12 +75,13 @@ inits_list <- list(inits1, inits2, inits3, inits4)
 # Model 1 -----------------------------------------------------------------
 
 # JAGS
-jags_m7_ls <- list()
+model_path <- paste("JAGS/JAGS-multi-quarter-", model_num, ".stan", sep="")
+fit_model <- list()
 for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
   print(Sys.time())
-  jags_m7_ls[[reps]] <- run.jags(model = 'JAGS/JAGS-multi-quarter-2b.stan',
+  fit_model[[reps]] <- autorun.jags(model = 'JAGS/JAGS-multi-quarter-2b.stan',
                                  method = 'parallel',
                                  monitor = c("beta", 'phi', 'gamma_b', 'eta', 'kappa'),
                                  modules = "glm",
@@ -88,12 +89,13 @@ for (reps in 1:num_reps){
                                  inits = inits_list,
                                  n.chains = 4,
                                  adapt = 1e3,
-                                 burnin = 4e2,
-                                 sample = 3e2,
+                                 startburnin =  2e4,
+                                 startsample =  1e4,
                                  thin = 1,
                                  plots = T)
 }
-add.summary(jags_m7_ls[[1]])
+add.summary(fit_model[[1]])
 
-save(jags_m7_ls, file = "Data/Rdata/jags_m7_ls-new.Rdata")
-add.summary(jags_m7_ls[[1]])
+data_path <- paste("data/Rdata/jags_m", model_num, ".Rdata", sep="")
+save(fit_model, file = data_path)
+
