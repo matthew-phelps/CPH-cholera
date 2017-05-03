@@ -41,7 +41,7 @@ getIntervals <- function(mcmc){
 mkDfMcmc <- function(mcmc_object) data.frame(as.matrix(mcmc_object, iters = FALSE))
 
 mkDf <- function(x){
-  # browser()
+   # browser()
   dimx <- sqrt(length(x))
   data.frame(matrix(x, nrow = dimx, ncol = dimx))
 }
@@ -115,31 +115,66 @@ smMcmc <- function(x){
     nrow()
   hi_hpd <- x$int_hpd$hi_hpd
   lo_hpd <- x$int_hpd$lo_hpd
-  # browser()
+  #browser()
   # Split mcmc df into two parts because memory constraints
   inx_hi_1 <- x$mcmc_df %>%
-    slice(1:(xrow/2)) %>%
+    slice(1:(xrow/4)) %>%
     mapply(testHi, ., hi_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
   
   
   inx_hi_2 <- x$mcmc_df %>%
-    slice(((xrow/2)+1):xrow) %>%
+    slice(((xrow/4)+1):(xrow/2)) %>%
     mapply(testHi, .,  hi_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
   
-  inx_hi <- c(inx_hi_1, inx_hi_2)
+  inx_hi_3 <- x$mcmc_df %>%
+    slice(((xrow/2)+1):(xrow*3/4)) %>%
+    mapply(testHi, .,  hi_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  
+  
+  inx_hi_4 <- x$mcmc_df %>%
+    slice(((xrow*3/4)+1):xrow) %>%
+    mapply(testHi, .,  hi_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  
+  inx_hi <- c(inx_hi_1, inx_hi_2, inx_hi_3, inx_hi_4)
   
   x_small <- x$mcmc_df[inx_hi, ]
-  
-  
+  rm(x)
+  xrow <- nrow(x_small)
+  # browser()
   # Remove any MCMC that produce results below 95%hpd for any parameter
-  inx_lo <- x_small %>%
+  inx_lo_1 <- x_small %>%
+    slice(1:(xrow/4)) %>%
     mapply(testLo, ., lo_hpd) %>%
     rowSums() %>%
     {ifelse(.>0, FALSE, TRUE)}
+  
+  inx_lo_2 <- x_small %>%
+    slice(((xrow/4)+1):(xrow/2)) %>%
+    mapply(testLo, ., lo_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  
+  inx_lo_3 <- x_small %>%
+    slice(((xrow/2)+1):(xrow*3/4)) %>%
+    mapply(testLo, ., lo_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  
+  inx_lo_4 <- x_small %>%
+    slice(((xrow*3/4)+1):xrow) %>%
+    mapply(testLo, ., lo_hpd) %>%
+    rowSums() %>%
+    {ifelse(.>0, FALSE, TRUE)}
+  
+  inx_lo <- c(inx_lo_1, inx_lo_2, inx_lo_3, inx_lo_4)
   
   mcmc_95hpd <- x_small[inx_lo, ]
   rm(x_small)
@@ -149,17 +184,17 @@ smMcmc <- function(x){
     slice(1:50000)
   
   # For betas, turn each mcmc row into a matrix
-  # browser()
+   browser()
   betas_95hpd <- mcmc_95hpd %>%
-    dplyr::select(-phi, -gamma_b) %>%
+    dplyr::select(1:81) %>%
     apply(1, mkDf)
   
   
   phi_95hpd <- mcmc_95hpd %>%
-    dplyr::select(82)
+    dplyr::select(phi)
   
   gamma_95hpd <- mcmc_95hpd %>%
-    dplyr::select(83)
+    dplyr::select(gamma_b)
   phi_median <- x$phi_median
   gamma_median <- x$gamma_median
   betas_median <- x$betas_median

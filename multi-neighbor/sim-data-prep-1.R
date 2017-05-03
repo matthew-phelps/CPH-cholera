@@ -7,7 +7,7 @@ library(runjags)
 
 # LOAD & PREP DATA ---------------------------------------------------------------
 source("Data-3-combine quarters.R")
-source("multi-neighbor/sim-data-prep-functions.R")
+source("functions/sim-data-prep-functions.R")
 source("functions/CalculateRFun.R")
 
 # MODEL 1 ---------------------------------------------------------------
@@ -48,8 +48,39 @@ save(mcmc_out, file = 'Data/Rdata/sim-model-2-data-1.Rdata' )
 save(R_model2, file = 'Data/Rdata/r-values-model-2.Rdata')
 
 
+# MODEL 2b ---------------------------------------------------------------
+load(file = "data/Rdata/jags_m2a.Rdata")
+x <- mcmcPrep(jags_m2_ls, q_names, testing = FALSE)
+rm(jags_m2_ls)
+
+mcmc_out <- smMcmc(x)
+rm(x)
+R_list <- RCalc(betas = mcmc_out$betas_95hpd,
+                lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,
+                q_names = q_names, order = TRUE)
+
+R_model2b <- list(R_median = R_list$R_median,
+                 R_vals = rbind(R_list$R_int, R_list$R_ext, R_list$R_tot))
+save(mcmc_out, file = 'Data/Rdata/sim-model-2b-data-1.Rdata' )
+save(R_model2b, file = 'Data/Rdata/r-values-model-2b.Rdata')
 
 
+
+# MODEL 2c ---------------------------------------------------------------
+load(file = "Data/Rdata/jags_m2c.Rdata")
+x <- mcmcPrep(jags_m2_ls, q_names, testing = FALSE)
+rm(jags_m2_ls)
+
+mcmc_out <- smMcmc(x)
+rm(x)
+R_list <- RCalc(betas = mcmc_out$betas_95hpd,
+                lo_hpd = lo_hpd, hi_hpd = hi_hpd, gamma = mcmc_out$gamma_95hpd,
+                q_names = q_names, order = TRUE)
+
+R_model2c <- list(R_median = R_list$R_median,
+                 R_vals = rbind(R_list$R_int, R_list$R_ext, R_list$R_tot))
+save(mcmc_out, file = 'Data/Rdata/sim-model-2c-data-1.Rdata' )
+save(R_model2c, file = 'Data/Rdata/r-values-model-2c.Rdata')
 
 
 

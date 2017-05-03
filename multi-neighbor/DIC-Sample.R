@@ -15,6 +15,10 @@ SampleDIC_rep <- function(x, cl_num){
 
 # RUN FUNCTION --------------------------------------------------------------------
 
+
+
+
+
 load(file = "Data/Rdata/jags_m1_ls-new-inits.Rdata")
 DIC_m1_ls <- SampleDIC_rep(jags_m1_ls, 6)
 rm(jags_m1_ls)
@@ -22,6 +26,15 @@ rm(jags_m1_ls)
 load(file = "Data/Rdata/jags_m2_ls-new.Rdata")
 DIC_m2_ls <- SampleDIC_rep(jags_m2_ls, 5)
 rm(jags_m2_ls)
+
+load("data/Rdata/jags_m2a.Rdata")
+DIC_m2a_ls <- SampleDIC_rep(jags_m2_ls, 4)
+rm(jags_m2_ls)
+
+load("data/Rdata/jags_m2b.Rdata")
+DIC_m2b_ls <- SampleDIC_rep(jags_m2_ls, 4)
+rm(jags_m2_ls)
+
 
 load(file = "Data/Rdata/jags_m3_ls-new.Rdata")
 DIC_m3_ls <- SampleDIC_rep(jags_m3_ls, 6)
@@ -35,13 +48,6 @@ load(file = "Data/Rdata/jags_m5_ls-new.Rdata")
 DIC_m5_ls <- SampleDIC_rep(jags_m5_ls, 6)
 rm(jags_m5_ls)
 
-load(file = "Data/Rdata/jags_m6_ls-new.Rdata")
-DIC_m6_ls <- SampleDIC_rep(jags_m6_ls, 6)
-rm(jags_m6_ls)
-
-load(file = "Data/Rdata/jags_m7_ls-new.Rdata")
-DIC_m7_ls <- SampleDIC_rep(jags_m7_ls, 4)
-rm(jags_m7_ls)
 
 
 DIC_list <- list(DIC_m1_ls, DIC_m2_ls, DIC_m3_ls,
@@ -50,3 +56,4 @@ DIC_list <- list(DIC_m1_ls, DIC_m2_ls, DIC_m3_ls,
 
 # SAVE --------------------------------------------------------------------
 save(DIC_list, file = "Data/Rdata/DIC_ls.Rdata")
+save(DIC_m2a_ls, file="Data/Rdata/DIC_m2a_tmp.Rdata")
