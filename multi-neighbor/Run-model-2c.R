@@ -80,7 +80,7 @@ for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
   print(Sys.time())
-  fit_model[[reps]] <- autorun.jags(model = 'JAGS/JAGS-multi-quarter-2b.stan',
+  fit_model[[reps]] <- autorun.jags(model = 'JAGS/JAGS-multi-quarter-2c.stan',
                                  method = 'parallel',
                                  monitor = c("beta", 'phi', 'gamma_b', 'eta', 'kappa'),
                                  modules = "glm",

@@ -1,5 +1,4 @@
-# Multible Betas (1 for each quarter) + 1 alpha for city + 1 citywide water
-
+# Multible Betas (1 for each quarter) + 1 alpha for city + one parameter for when either water or neighbor connection 
 
 model {
   # Infectious period is exponential dist
@@ -11,8 +10,6 @@ model {
   mu2 ~ dnorm(0, 0.001)
   tau2 ~ dgamma(0.001, 0.001)
   
-  
-  # One city-wide external transmission
   log_beta_2 ~ dnorm(mu2, tau2)
   beta_2 <- exp(log_beta_2)
   
@@ -20,6 +17,9 @@ model {
   log_eta ~ dnorm(0, 0.001)
   eta <- exp(log_eta)
   
+  # Effect of a shared border
+  log_kappa ~ dnorm(0, 0.001)
+  kappa <- exp(log_kappa)
   
   # Phi - under reporting fraction
   logit_phi ~dnorm(0, 0.001)
@@ -39,7 +39,9 @@ model {
     for (j in 1:Nquarter){
       # All external transmission coefficients are the same
       beta[i, j] <- ifelse(i==j, beta_1[i], beta_2)
-      foi[i, j] <- ifelse(water[i, j]==1, eta + beta[i, j], beta[i, j])
+      foi_1[i, j] <- ifelse(water[i, j]==1 && border[i, j]==0, eta + beta[i, j], beta[i, j])
+      foi_2[i, j] <- ifelse(water[i, j]==1 && border[i, j]==1, foi_1[i, j] + kappa, foi_1[i, j])
+      foi[i, j] <- ifelse(water[i, j]==0 && border[i, j]==1, foi_2[i, j] + kappa, foi_2[i, j])
     } 
   }
   
@@ -70,4 +72,5 @@ model {
   #data# I_incidence
   #data# Nquarter
   #data# water
+  #data# border
 }

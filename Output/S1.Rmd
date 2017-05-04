@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 #1 Model
 ## 1.1 Model structure  
-We constructed a series of nested models with differing assumptions about the internal force of infection within a quarter ($\beta$) and the external force of infection between quarters ($\alpha$).  
+We constructed a series of nested models where the force of infection, $foi$, acting upon a quarter was composed of an external force of infection, $\alpha$, and an internal force of infection, $\beta$.   
 
 From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for all quarters, (2) an individual $\beta_{i}$ for each quarter and a single $\alpha$ for all quarters, (3) an individual $\beta_{i}$ for each quarter and a single $\alpha_{i}$ for each quarter, (4) an individual $\beta_{i}$ for each quarter and single symmetric $\alpha_{j,i}$ for each quarter pair ($\alpha_{j,i} = \alpha_{i,j}$), (5) an individual $\beta_{i}$ for each quarter and a single asymmetric $\alpha_{i,j}$ for each quarter pair.  
 
@@ -40,6 +40,20 @@ where:
 $\gamma$ = the average duration of infectiousness (fixed at 5 days).  
 
 The number of suceptibles $S_{i,t}$ was updated via:
-$$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$
+$$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$  
 
+## 1.2 Hydraulic connectivity and geographic proximity  
+To assess the effect of hyraulic connectivity (model 2b) we allowed the $foi$ between
+two quarters to vary depending on if the quarters are connected via water pipes such that $$foi_{i,j} \begin{cases}
+  \alpha & \text{ if no water connection } i \rightarrow j \\
+  \alpha + \eta & \text{ if water connection } i \rightarrow j 
+\end{cases}$$  
 
+To incorporate geographic proximity (model 2c) we added an additional term $\kappa$ 
+if the quarters shared a border. The resulting $foi_{i,j}$ can be described as
+$$foi_{i,j} \begin{cases}
+  \alpha & \text{ if no shared border or water connection } i \rightarrow j \\
+  \alpha + \eta & \text{ if no shared border but water connection } i \rightarrow j \text{ exists}\\
+  \alpha + \eta +\kappa & \text{ if shared border and water connection } i \rightarrow j  \text{ exists}
+\end{cases}$$  
+The effect of water, $\eta$, and the effect of the shared border, $\kappa$, are not fitted to each quarter, but are shared citywide.

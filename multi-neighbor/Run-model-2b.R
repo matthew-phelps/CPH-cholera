@@ -39,7 +39,7 @@ for (reps in 1:num_reps){
   set.seed(13) # Not sure if this does anything in current set-up
   print(reps)
   print(Sys.time())
-  jags_m2_ls[[reps]] <- autorun.jags(model = 'JAGS/JAGS-multi-quarter-2a.stan',
+  jags_m2_ls[[reps]] <- autorun.jags(model = 'JAGS/JAGS-multi-quarter-2b.stan',
                                  method = 'parallel',
                                  monitor = c("beta", 'phi', 'gamma_b', "eta"),
                                  modules = "glm",
