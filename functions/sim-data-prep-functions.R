@@ -75,6 +75,7 @@ mcmcPrep <- function(x, q_names, testing = FALSE){
   mcmc_obj <- combChains(x, testing = testing)
   
   int_hpd <- getIntervals(mcmc_obj)
+  int_hpd <- int_hpd$int_hpd
   # browser()
   mcmc_df <- mkDfMcmc(mcmc_object = mcmc_obj)
   median_val <- mcmc_df %>%
@@ -85,16 +86,17 @@ mcmcPrep <- function(x, q_names, testing = FALSE){
   betas_median <- median_val$mcmc_median %>%
     mkBetas() %>%
     checkOrder(q_names = q_names)
-  
+  # browser()
   phi_median <- median_val$mcmc_median['phi']
   gamma_median <- median_val$mcmc_median['gamma_b']
   
   phi_mean <- mean_val$mcmc_mean['phi']
   gamma_mean <- mean_val$mcmc_mean['gamma_b']
-  
+  gc()
   return(list(mcmc_df = mcmc_df,
-              betas_median=betas_median,
               int_hpd=int_hpd,
+              median_vals = median_val,
+              betas_median=betas_median,
               phi_median=phi_median,
               gamma_median=gamma_median,
               phi_mean = phi_mean,
@@ -108,13 +110,17 @@ smMcmc <- function(x){
   # Make vector of which MCMC draws result in parameter combinations that fall
   # within the 95% hpd for all parameters
   
+  # save values to return at end of function
+  int_hpd <- x$int_hpd
+  median_vals <- x$median_vals
+  
   # Delete TRUE rows
   testHi <- function(x, hi_hpd) ifelse(x > hi_hpd, T, F)
   testLo <- function(x, lo_hpd) ifelse(x < lo_hpd, T, F)
   xrow <- x$mcmc_df %>%
     nrow()
-  hi_hpd <- x$int_hpd$hi_hpd
-  lo_hpd <- x$int_hpd$lo_hpd
+  hi_hpd <- int_hpd$upper
+  lo_hpd <- int_hpd$lower
   #browser()
   # Split mcmc df into two parts because memory constraints
   inx_hi_1 <- x$mcmc_df %>%
@@ -147,6 +153,7 @@ smMcmc <- function(x){
   
   x_small <- x$mcmc_df[inx_hi, ]
   rm(x)
+  gc() # return memory to OS
   xrow <- nrow(x_small)
   # browser()
   # Remove any MCMC that produce results below 95%hpd for any parameter
@@ -184,7 +191,7 @@ smMcmc <- function(x){
     slice(1:50000)
   
   # For betas, turn each mcmc row into a matrix
-   browser()
+  # browser()
   betas_95hpd <- mcmc_95hpd %>%
     dplyr::select(1:81) %>%
     apply(1, mkDf)
@@ -206,11 +213,13 @@ smMcmc <- function(x){
   
   return(list(phi_mean = phi_mean,
               gamma_mean = gamma_mean,
+              median_vals = median_vals,
               phi_median = phi_median,
               gamma_median = gamma_median,
               betas_median = betas_median,
               phi_range = phi_range,
               gamma_range = gamma_range,
+              int_hpd = int_hpd,
               phi_95hpd = phi_95hpd,
               gamma_95hpd = gamma_95hpd,
               betas_95hpd = betas_95hpd))

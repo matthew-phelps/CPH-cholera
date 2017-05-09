@@ -154,3 +154,16 @@ R_model5 <- list(R_median = R_list$R_median,
 
 save(mcmc_out, file = 'Data/Rdata/sim-model-5-data-1.Rdata' )
 save(R_model5, file = 'Data/Rdata/r-values-model-5.Rdata')
+
+
+
+# MODEL 5 RECAPTURE ---------------------------------------------------------------
+load(file = "Data/Rdata/jags_recapture_m5.Rdata")
+x <- mcmcPrep(re_capture_m5, q_names, testing = FALSE)
+rm(re_capture_m5)
+
+mcmc_out <- smMcmc(x)
+rm(x)
+
+save(mcmc_out, file = 'Data/Rdata/sim-model-5recapture-data.Rdata' )
+
