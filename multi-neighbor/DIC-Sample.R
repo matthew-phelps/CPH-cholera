@@ -32,7 +32,7 @@ DIC_m2b_ls <- SampleDIC_rep(jags_m2_ls, 4)
 rm(jags_m2_ls)
 
 load("data/Rdata/jags_m2c.Rdata")
-DIC_m2c_ls <- SampleDIC_rep(jags_m2_ls, 4)
+DIC_m2c_ls <- SampleDIC_rep(fit_model, 4)
 rm(jags_m2_ls)
 
 
@@ -50,10 +50,12 @@ rm(jags_m5_ls)
 
 
 
-DIC_list <- list(DIC_m1_ls, DIC_m2_ls, DIC_m3_ls,
-                  DIC_m4_ls, DIC_m5_ls, DIC_m6_ls)
-
+DIC_list <- list(m1 = DIC_m1_ls, m2 = DIC_m2_ls,
+                 m2b =DIC_m2b_ls, m2c = DIC_m2c_ls,
+                 m3 = DIC_m3_ls, m4 = DIC_m4_ls,
+                 m5 = DIC_m5_ls, m6 = DIC_m6_ls,
+                 m7 = DIC_m7_ls)
 
 # SAVE --------------------------------------------------------------------
 save(DIC_list, file = "Data/Rdata/DIC_ls.Rdata")
-save(DIC_m2b_ls, file="Data/Rdata/DIC_m2a_tmp.Rdata")
+

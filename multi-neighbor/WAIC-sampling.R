@@ -36,6 +36,14 @@ load(file = "Data/Rdata/jags_m2_ls-new.Rdata")
 waic_m2_ls <- waicRep(jags_m2_ls)
 rm(jags_m2_ls)
 
+load(file = "data/Rdata/jags_m2b.Rdata")
+waic_m2b_ls <- waicRep(jags_m2_ls)
+rm(jags_m2_ls)
+
+load(file = "data/Rdata/jags_m2c.Rdata")
+waic_m2c_ls <- waicRep(fit_model)
+rm(fit_model)
+
 load(file = "Data/Rdata/jags_m3_ls-new.Rdata")
 waic_m3_ls <- waicRep(jags_m3_ls)
 rm(jags_m3_ls)
@@ -53,6 +61,7 @@ waic_m6_ls <- waicRep(jags_m6_ls)
 rm(jags_m6_ls)
 
 waic_list <- list(waic_m1_ls = waic_m1_ls, waic_m2_ls = waic_m2_ls,
+                  waic_m2b_ls = waic_m2b_ls, waic_m2c_ls = waic_m2c_ls,
                   waic_m3_ls = waic_m3_ls, waic_m4_ls = waic_m4_ls,
                   waic_m5_ls = waic_m5_ls, waic_m6_ls = waic_m6_ls)
 
