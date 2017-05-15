@@ -1,8 +1,5 @@
 # Author: Matthew Phelps
 # Desc: Visualize parameters
-
-
-
 # Intro -------------------------------------------------------------------
 graphics.off()
 rm(list = ls())
@@ -15,9 +12,15 @@ library(plotrix)
 
 # LOAD data ---------------------------------------------------------------
 
+# Load model 2b and 2c to see effect that water and border has
+load(file = 'Data/Rdata/sim-model-2b-data-1.Rdata')
+load(file = 'Data/Rdata/sim-model-2c-data-1.Rdata')
+load(file = 'Data/Rdata/sim-model-5-data-1.Rdata' )
+
+
 load(file = "Data/Rdata/Attributable-cases-tplus1.Rdata")
 load(file = "Data/Rdata/Proportion-attributable-tplus1.Rdata")
-load("Data/Rdata/sim-model-5-data.Rdata")
+
 
 # SUM EXTERNAL CASES ------------------------------------------------------
 zx <- I_att_mean_plus1
@@ -123,6 +126,12 @@ dev.off()
 
 
 # BETA TABLE --------------------------------------------------------------
+
+betas <- mcmc_out$betas_median
+
+
+
+
 par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
 color2D.matplot(log(betas), 
                 show.values = TRUE,

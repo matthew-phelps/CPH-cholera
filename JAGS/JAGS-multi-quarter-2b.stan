@@ -37,7 +37,8 @@ model {
     log_beta_1[i] ~ dnorm(mu1, tau1)
     beta_1[i] <- exp(log_beta_1[i])
     for (j in 1:Nquarter){
-      # All external transmission coefficients are the same
+      # All external transmission coefficients are the same. Water effect, eta,
+      # added when there is a water connection
       beta[i, j] <- ifelse(i==j, beta_1[i], beta_2)
       foi[i, j] <- ifelse(water[i, j]==1, eta + beta[i, j], beta[i, j])
     } 

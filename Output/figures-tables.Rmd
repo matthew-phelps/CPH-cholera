@@ -186,6 +186,67 @@ pander(lm_full)
 Linear regression
 \newpage
 
+
+```{r, echo = FALSE, fig.width=6.5, fig.height=6.5}
+load(file = 'Data/Rdata/sim-model-5-data-1.Rdata' )
+library(grid)
+library(coda)
+library(plotrix)
+
+betas <- mcmc_out$betas_median
+names_top <- names(betas)
+
+# Aligning the top-axis labels seemingly has to be done manually.
+names_top[1] <- "Christianshavn   "
+names_top[4] <- "Kjoebmager      "
+names_top[5] <- "Nyboder            "
+names_top[6] <- "Oester                "
+names_top[7] <- "Rosenborg        "
+
+
+par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
+color2D.matplot(log(betas), 
+                show.values = TRUE,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 1,
+                vcol = "black",
+                extremes = c("white", "blue"))
+xpos <- seq_len(ncol(betas)) +0.2
+ypos <- seq_len(ncol(betas)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names_top,
+     srt = 45, # angle to rotate
+     pos = 3, # specifies to put txt at top
+     par("usr")[4] +0.7, # 0.7 lines above the top. [4] places ref to top border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(betas)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+
+
+
+```
+
+## Figure 4  
+Median of the log of the transmission coefficiants from model 5 (fully saturated model)
+
+\newpage
+
+
+
 ```{r simulationOneStep, fig.width=6.5, fig.height=6.5}
 source("functions/SimulationAndPlots.R")
 source("multi-neighbor/sim-model-5-data-prep.R")
@@ -197,7 +258,7 @@ SimPlot(sim5_step_data, observed_data = I_reps_plot,
         ci = sim5_step_summary, ribbon = TRUE)
 ```
 
-## Figure 4
+## Figure 5
 The mean number of new infectious cases predicted one-step-ahead with 95% confidence bands. The black lines represent the 10 realizations of the epidemic used as data for parameter fitting. The vertical dotted line represents day 40 for reference between graphs.
 
 
@@ -222,7 +283,7 @@ r_in_out
 
 ```
 
-## Figure 5
+## Figure 6
 The median outflowing, inflowing, internal, and total reproductive numbers
 ($R_{0}$) for each quarter.
 

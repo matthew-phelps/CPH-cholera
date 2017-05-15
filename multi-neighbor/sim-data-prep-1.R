@@ -49,7 +49,7 @@ save(R_model2, file = 'Data/Rdata/r-values-model-2.Rdata')
 
 
 # MODEL 2b ---------------------------------------------------------------
-load(file = "data/Rdata/jags_m2a.Rdata")
+load(file = "data/Rdata/jags_m2b.Rdata")
 x <- mcmcPrep(jags_m2_ls, q_names, testing = FALSE)
 rm(jags_m2_ls)
 
@@ -68,8 +68,8 @@ save(R_model2b, file = 'Data/Rdata/r-values-model-2b.Rdata')
 
 # MODEL 2c ---------------------------------------------------------------
 load(file = "Data/Rdata/jags_m2c.Rdata")
-x <- mcmcPrep(jags_m2_ls, q_names, testing = FALSE)
-rm(jags_m2_ls)
+x <- mcmcPrep(fit_model, q_names, testing = FALSE)
+rm(fit_model)
 
 mcmc_out <- smMcmc(x)
 rm(x)
