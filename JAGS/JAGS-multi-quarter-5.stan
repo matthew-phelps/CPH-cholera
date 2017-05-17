@@ -37,8 +37,8 @@ model {
       beta[i, j] <- ifelse(i==j, beta_1[i, j], beta_2[i, j])
     } 
   }
-   
-   
+    
+  
   # Lambda, I, S, & R
   for (t in 1:(Nsteps-1)){
     for (i in 1:Nquarter){
