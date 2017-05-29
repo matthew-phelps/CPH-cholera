@@ -3,10 +3,7 @@
 # Output datasets: quarter.csv
 
 ## intro
-library(plyr)
-library (MASS) # used for fiting distributions
-library (stats)
-library (reshape) # for renaming variables
+
 library(tidyverse)
 
 source("Data-1_cholera_by_street.R")
@@ -50,7 +47,7 @@ daily_cases <- quarter %>%
 sum(daily_cases$total)
 
 # Evaluates to TRUE if all streetlevel summations correct
-all(daily_cases$men + daily_cases$women == daily_cases$total)
+stopifnot(all(daily_cases$men + daily_cases$women == daily_cases$total))
 
 daily_cases_secondary <- quarter_secondary %>%
   group_by(startday.index) %>%
@@ -58,10 +55,10 @@ daily_cases_secondary <- quarter_secondary %>%
                    women = sum(womensick.week),
                    total = sum(sick.total.week),
                    week = min(start.date))
-sum(daily_cases_secondary$total)
+# sum(daily_cases_secondary$total)
 
 # TRUE if correct
-all(daily_cases_secondary == daily_cases)
+stopifnot(all(daily_cases_secondary == daily_cases))
 
 # # Find week of peak in each secondary quarter:
 # peak.day <- ddply(quarter, .(quarter_secondary), summarize, peakday = startday.index[which.max(sick.total.week)] )

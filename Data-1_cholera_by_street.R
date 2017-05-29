@@ -3,10 +3,9 @@
 # Output datasets: Clean street-level data to be used to create quarter
 # level data in next step
 
-## intro
-library (reshape) # for renaming variables
+
 library(tidyverse)
-#library (gdata) # reading excel files
+
 
 
 # Read in data ------------------------------------------------------------
@@ -44,8 +43,8 @@ for (i in 1:nrow(street.data)){
 
 # Trouble shoot NA dead
 x <- which(is.na(street.data$female.dead))
-street.data[x, ]
-which(is.na(street.data$male.dead)) # no male NA dead
+# street.data[x, ]
+# which(is.na(street.data$male.dead)) # no male NA dead
 
 # Since there were no female sick recorded, change NA to 0
 street.data$female.dead[x] <- 0
