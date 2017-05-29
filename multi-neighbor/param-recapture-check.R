@@ -20,3 +20,6 @@ m5$median <- mcmc_out$median_vals$mcmc_median
 param_check <- data.frame(m5$upper < re_cap$lower | m5$lower > re_cap$upper)
 param_check$names <- m5$param
 param_check
+
+# Number of parameter values not captured:
+sum(param_check$m5.upper...re_cap.lower...m5.lower...re_cap.upper)

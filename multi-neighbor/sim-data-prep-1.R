@@ -28,9 +28,6 @@ save(mcmc_out, file = 'Data/Rdata/sim-model-1-data-1.Rdata' )
 save(R_model1, file = 'Data/Rdata/r-values-model-1.Rdata')
 
 
-
-
-
 # MODEL 2 ---------------------------------------------------------------
 load(file = "Data/Rdata/jags_m2_ls-new.Rdata")
 x <- mcmcPrep(jags_m2_ls, q_names, testing = FALSE)

@@ -17,13 +17,10 @@ source("functions/listBetasToZero.R")
 # GLOBAL VARIABLES ----------------------------------------------------------------
 n_loops <- 1000
 
+
+
 # FULL SIMULATION ---------------------------------------------------------
-
-
-
-
 zeros_8_9 <- listBetasToZero(mcmc_out$betas_95hpd, c(9))
-
 
 sim5_full <- SimFromZero(loops=n_loops, 
                          I_reps = I_reps, N_it = N_it,
@@ -47,11 +44,19 @@ SimPlot(observed_data = I_reps_plot,
 
 
 
-
-prob_vec <- wrapQuaterBetaToZero(mcmc_out, c(1, 5), n_loops = n_loops,
+# Remove all quarters with R_int >1
+prob_vec <- wrapQuaterBetaToZero(mcmc_out, c(1, 5, 8, 9), n_loops = n_loops,
                      min_cases = 500)
 
+# Normal conditions with all quarters
+prob_vec_normal <- wrapQuaterBetaToZero(mcmc_out, n_loops = n_loops,
+                                 min_cases = 500)
 
+# Remove quarters with low Betas
+prob_vec_counter <- wrapQuaterBetaToZero(mcmc_out, c(2, 3, 4, 6, 5), n_loops = n_loops,
+                                         min_cases = 500)
+
+# Keep all quarters
 
 
 x <- wrapQuaterBetaToZero(mcmc_out, c(5, 8, 9), n_loops = n_loops,
