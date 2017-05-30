@@ -167,17 +167,19 @@ water <- matOrderFun(water)
 border <- matOrderFun(border)
 
 # Convert to vector to lm()
-`water-connection` <-as.vector(t(water))
-`shared-border` <- as.vector(t(border))
+`water connection` <-as.vector(t(water))
+`shared border` <- as.vector(t(border))
 
 # Make diagnols of beta "NA" since we are not looking at internal transmission
 diag(betas) <- NA
-betas_vec <- as.vector(t(betas))
+betas2 <- betas
 
-lm_border <- lm(log(betas_vec) ~ `shared-border`)
-lm_pipes <- lm(log(betas_vec) ~ `water-connection`)
+betas <- as.vector(t(betas2))
 
-lm_full <- lm(log(betas_vec) ~ `water-connection` + `shared-border`)
+lm_border <- lm(log(betas) ~ `shared border`)
+lm_pipes <- lm(log(betas) ~ `water connection`)
+
+lm_full <- lm(log(betas) ~ `water connection` + `shared border`)
 
 pander(lm_full)
 ```

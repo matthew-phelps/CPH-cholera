@@ -3,6 +3,7 @@
 # Output datasets: combined quarters data
 
 ## intro
+library(plyr)
 library(tidyverse)
 
 source("Data-2_cholera_by_quarter.R")

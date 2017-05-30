@@ -130,6 +130,8 @@ dev.off()
 betas <- mcmc_out$betas_median
 
 
+x <- unlist(betas)
+hist(log(x))
 
 
 par(mar=c(3,6.5,6,2.9)) # Margins around plot ()
