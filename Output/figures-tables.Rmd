@@ -43,7 +43,7 @@ options(warn = -1)
 
 multiPlotWrapper(mapdf, wall_fort, water_fort, l_size = 0.1,
                  wall_l_size = 0.3, p_size = 1, txt_size = 10,
-                 leg_height = 2.5)
+                 leg_height = 2.5, transp = 0.7)
 
 
 ```
@@ -92,7 +92,7 @@ case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
 panderOptions('table.alignment.default',
               function(df)
                 ifelse(sapply(df, is.character), 'left', 'right'))
-pander(case_summary, big.mark=",", split.cells = 10)
+# pander(case_summary, big.mark=",", split.cells = 10)
 ```
 
 ## Table 1

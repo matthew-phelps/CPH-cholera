@@ -11,10 +11,14 @@ source("functions/MapBaseAndLayers.R")
 source("Spatial-data-1.R")
 plot <- multiPlotWrapper(mapdf, wall_fort, water_fort, l_size = 0.1,
                  wall_l_size = 0.3, p_size = 1.2, txt_size = 10,
-                 leg_height = 2.5)
+                 leg_height = 2.5, transp = 0.7)
 
-save_plot(plot, file = "Plot-output/map_multi.pdf",
+plot
+save_plot(plot, file = "Plot-output/map_multi.jpg",
           base_height = 10)
 
-centroids <- setNames(do.call("rbind.data.frame", by(sydneyMapData, sydneyMapData$group, function(x) {Polygon(x[c('long', 'lat')])@labpt})), c('long', 'lat')) 
-centroids$label <- sydneyMapData$LGA_NAME11[match(rownames(centroids), sydneyMapData$group)]
+# Get centroids of each polygon
+
+
+  
+

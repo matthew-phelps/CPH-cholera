@@ -25,6 +25,26 @@ baseMap <- function(mapdf, l_size = 1) {
   return(base_map)
 }
 
+addLabels <- function(base_map, mapdf, transp){
+  centroids <- setNames(do.call("rbind.data.frame", by(mapdf, mapdf$group, function(x) {Polygon(x[c('long', 'lat')])@labpt})), c('long', 'lat')) 
+  centroids$label <- mapdf$id[match(rownames(centroids), mapdf$group)]
+  
+  
+  # Replace "_" with " "
+  centroids$label <- gsub("_", " ", centroids$label)
+  
+  # Length of background whitespace
+  centroids$size <- nchar(centroids$label)
+  kx <- 39 
+  ky <- 55
+  base_map + 
+    with(centroids, annotate(geom="rect", xmin = long - kx*size, xmax = long + kx*size,
+                                      ymin = lat - ky-17, ymax = lat + ky,
+                                      fill = "white", alpha = transp)) +
+    with(centroids, annotate(geom="text", x = long, y = lat, label = label, size = 2.5))
+  
+  
+}
 addWall <- function(base_map, wall_fort, line_size) {
   # Get x/y range to set map to later after new layers added
   xrng <- ggplot_build(base_map)$layout$panel_ranges[[1]]$x.range
@@ -218,7 +238,7 @@ add_map_lab <- function(old_map, centroids){
 
 
 multiPlotWrapper <- function(mapdf, wall_fort, water_fort, l_size, wall_l_size,
-                             p_size, txt_size, leg_height) {
+                             p_size, txt_size, leg_height, transp = 0.5) {
   leg_height
   # Wrapper for all plots - so can change visuals on all plots quickly
   base_map <- baseMap(mapdf, l_size = l_size) %>%
@@ -227,15 +247,18 @@ multiPlotWrapper <- function(mapdf, wall_fort, water_fort, l_size, wall_l_size,
   
   attack_rate <- base_map %>% attackRateMap(mapdf, l_size = l_size, txt_size = txt_size,
                                     leg_height = leg_height) %>%
-    addHosp(hosp_tidy, p_size = p_size)
+    addHosp(hosp_tidy, p_size = p_size) %>%
+    addLabels(mapdf, transp = transp)
   
   cfr <- base_map %>% cfr_map(mapdf, l_size = l_size, txt_size = txt_size,
                               leg_height = leg_height) %>%
-    addHosp(hosp_tidy, p_size= p_size)
+    addHosp(hosp_tidy, p_size= p_size) %>%
+    addLabels(mapdf, transp = transp)
   
   case_first <- base_map %>% first_case_map(mapdf, l_size = l_size, txt_size = txt_size,
                                             leg_height = leg_height) %>%
-    addHosp(hosp_tidy, p_size = p_size)
+    addHosp(hosp_tidy, p_size = p_size) %>%
+    addLabels(mapdf, transp = transp)
   
   water_infra <- base_map %>% pipe_map(pipes_tidy, l_size = l_size) %>%
     addHosp(hosp_tidy, p_size = p_size)
