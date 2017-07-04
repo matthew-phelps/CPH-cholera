@@ -14,7 +14,7 @@ plot <- multiPlotWrapper(mapdf, wall_fort, water_fort, l_size = 0.1,
                  leg_height = 2.5, transp = 0.7)
 
 plot
-save_plot(plot, file = "Plot-output/map_multi.jpg",
+save_plot(plot, file = "Plot-output/map_multi.pdf",
           base_height = 10)
 
 # Get centroids of each polygon
