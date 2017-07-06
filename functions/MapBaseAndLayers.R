@@ -26,7 +26,9 @@ baseMap <- function(mapdf, l_size = 1) {
 }
 
 addLabels <- function(base_map, mapdf, transp){
+  # browser()
   centroids <- setNames(do.call("rbind.data.frame", by(mapdf, mapdf$group, function(x) {Polygon(x[c('long', 'lat')])@labpt})), c('long', 'lat')) 
+    rownames(centroids) <- unique(mapdf$group)
   centroids$label <- mapdf$id[match(rownames(centroids), mapdf$group)]
   
   

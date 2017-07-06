@@ -84,7 +84,8 @@ case_summary <- case_summary_combined %>%
                 Cases = cases,
                 Deaths = deaths,
                 `Attack Rate (per 100)` = AR,
-                `CFR (%)` = CFR)
+                `CFR (%)` = CFR) %>%
+  as.data.frame() # need to convert back to basic df for pander. Not sure why
 
 case_summary$Quarter[case_summary$Quarter=="Combined_lower"] <- "Combined lower"
 case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
@@ -92,7 +93,8 @@ case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
 panderOptions('table.alignment.default',
               function(df)
                 ifelse(sapply(df, is.character), 'left', 'right'))
-# pander(case_summary, big.mark=",", split.cells = 10)
+
+pander(x, big.mark=",", split.cells = 10)
 ```
 
 ## Table 1
