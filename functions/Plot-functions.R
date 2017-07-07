@@ -13,7 +13,7 @@ citywide_plot <- function(x, txt_size) {
     geom_line(aes( y = dead, color = "deaths"), size = 1) +
     geom_vline( xintercept = 40, linetype = 2, alpha = 0.6, color = "black") +
     xlab("Day index") +
-    ylab("People") +
+    ylab("Number of People") +
     theme_classic() +
     theme(legend.title = element_blank(),
           legend.position = c(0.8, 0.5),
@@ -32,11 +32,10 @@ quarter_panel_incidence <- function(combined, txt_size) {
                y = sick.total.week / est.pop.1853 * 100,
                group = quarter))+
     geom_line(size = 1) +
-    geom_vline( xintercept = 5, linetype = 2, color = "black") +
     facet_wrap(~quarter) +
     xlab("Week index") +
-    ylab("Incidence per 100") +
-    theme_classic() +
+    ylab("Incidence per 100 people") +
+    theme_minimal() +
     theme(legend.position = 'none',
           axis.text.x = element_text(size = txt_size-2),
           axis.text.y = element_text(size = txt_size-2),

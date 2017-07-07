@@ -1,22 +1,38 @@
 ---
-title: "Cholera transmission"
-author: "Matthew"
-date: "February 9, 2017"
+title: "The Importance of short-cycle cholera transmission in a major urban outbreak: a historical case-study"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(dev = 'pdf')
+pdf.options(encoding='ISOLatin2')
+knitr::opts_knit$set(root.dir = normalizePath('..'))
+knitr::opts_chunk$set(root.dir = normalizePath('..'))
+library(tidyverse)
+library(pander)
 ```
 
-#1 Model
+#1 Model 
 ## 1.1 Model structure  
-We constructed a series of nested models where the force of infection, $foi$, acting upon a neighborhood was composed of an external force of infection, $\alpha$, and an internal force of infection, $\beta$.   
+We constructed a series of nested models where
+the force of infection, $foi$, acting upon a neighborhood was composed of an
+external force of infection, $\alpha$, and an internal force of infection,
+$\beta$.
 
-From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for all neighborhoods, (2) an individual $\beta_{i}$ for each neighborhood and a single $\alpha$ for all neighborhoods, and (5) an individual $\beta_{i}$ for each neighborhood and a single asymmetric $\alpha_{i,j}$ for each neighborhood pair.  
+From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for
+all neighborhoods, (2) an individual $\beta_{i}$ for each neighborhood and a
+single $\alpha$ for all neighborhoods, and (5) an individual $\beta_{i}$ for
+each neighborhood and a single asymmetric $\alpha_{i,j}$ for each neighborhood
+pair.
 
 
-Two additional models were constructed where we relaxed the contraints on the external forces of infection, $\alpha$. In model 2.1 allowed an individual $\beta_{i}$ and $\alpha_{i}$ for each neighborhood and in model 2.2 we allowed an individual $\beta_{i}$ for each neighborhood and symmetric $\alpha_{j,i}$ for each neighborhood pair ($\alpha_{j,i} = \alpha_{i,j}$). These models were not supported by the model selection process and were not reported in the main text.  
+Two additional models were constructed where we relaxed the contraints on the
+external forces of infection, $\alpha$. In model 2.1 allowed an individual
+$\beta_{i}$ and $\alpha_{i}$ for each neighborhood and in model 2.2 we allowed
+an individual $\beta_{i}$ for each neighborhood and symmetric $\alpha_{j,i}$ for
+each neighborhood pair ($\alpha_{j,i} = \alpha_{i,j}$). These models were not
+supported by the model selection process and were not reported in the main text.
 
 Each model was based upon the following construction:
 $$^{new}\textrm{I}_{i,t+1}\sim Poisson(\lambda_{i,t})$$
@@ -45,19 +61,58 @@ $\gamma$ = the average duration of infectiousness (fixed at 5 days).
 The number of suceptibles $S_{i,t}$ was updated via:
 $$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$  
 
-## 1.2 Hydraulic connectivity and geographic proximity  
-To assess the effect of hyraulic connectivity (model 2b) we allowed the $foi$ between
-two neighborhoods to vary depending on if the neighborhoods are connected via water pipes such that $$foi_{i,j} \begin{cases}
-  \alpha & \text{ if no water connection } i \rightarrow j \\
-  \alpha + \eta & \text{ if water connection } i \rightarrow j 
-\end{cases}$$  
 
-To incorporate geographic proximity (model 2c) we added an additional term $\kappa$ 
-if the neighborhoods shared a border. The resulting $foi_{i,j}$ can be described as
-$$foi_{i,j} \begin{cases}
-  \alpha & \text{ if no shared border or water connection } i \rightarrow j \\
-  \alpha + \eta & \text{ if no shared border but water connection } i \rightarrow j \text{ exists}\\
-  \alpha + \eta +\kappa & \text{ if shared border and water connection } i \rightarrow j  \text{ exists}
-\end{cases}$$  
-The effect of water, $\eta$, and the effect of the shared border, $\kappa$, are not fitted to each neighborhood, but are shared citywide.
+
+
+
+## 1.2 Hydraulic connectivity and geographic proximity  
+To assess the effect of hyraulic connectivity (model 2b) we allowed the $foi$
+between two neighborhoods to vary depending on if the neighborhoods are
+connected via water pipes such that $$foi_{i,j} \begin{cases} \alpha & \text{ if
+no water connection } i \rightarrow j \\ \alpha + \eta & \text{ if water
+connection } i \rightarrow j \end{cases}$$
+
+To incorporate geographic proximity (model 2c) we added an additional term 
+$\kappa$ if the neighborhoods shared a border. The resulting $foi_{i,j}$ can be 
+described as $$foi_{i,j} \begin{cases} \alpha & \text{ if no shared border or 
+water connection } i \rightarrow j \\ \alpha + \eta & \text{ if no shared border
+but water connection } i \rightarrow j \text{ exists}\\ \alpha + \eta +\kappa & 
+\text{ if shared border and water connection } i \rightarrow j  \text{ exists} 
+\end{cases}$$ The effect of water, $\eta$, and the effect of the shared border, 
+$\kappa$, are not fitted to each neighborhood, but are shared citywide.
+
+
+## 1.3 Model fitting
+The model used in the paper (model 3) was fit using `JAGS 3.4` and the `runjags` and
+`rjags` libraries in R. The model priors were speicified as thus:
+$$\lambda_{i,t} = \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} )$$
+$$log(\alpha_{j,i}) \sim N(\mu_{1}, tau_{1})$$
+$$log(\beta_{i}) \sim N(\mu_{2}, tau_{2})$$
+$$\mu_{1} \sim N(0, \frac{1}{0.001})$$
+$$\mu_{2} \sim N(0, \frac{1}{0.001})$$
+$$\tau_{1} \sim \Gamma(0.001, 0.001)$$
+$$\tau_{2} \sim \Gamma(0.001, 0.001)$$
+$$logit(\phi) \sim N(0, \frac{1}{0.001})$$  
+
+## 1.4 Model selection  
+We used the Watanabe-Akaike information criterion (WAIC) for model selection 
+where a difference of at least 5 was considered significant. Note models 2.1 and
+2.2 are not reported in the main text.
+
+
+```{r WAIC}
+source("functions/waic_dic_summary.R")
+load(file = "Data/Rdata/waic_ls.Rdata")
+mod_names <- c("model 1", "model 2", "model 2b", "model 2c",
+               "model 2.1", "model 2.2", "model 5")
+
+
+waic1 <- waic_list %>%
+  waic_summary %>%
+  data.frame() %>%
+  `colnames<-`(mod_names)
+
+pander(waic1)
+
+```
 

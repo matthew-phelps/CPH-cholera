@@ -123,7 +123,7 @@ attackRateMap <- function(base_map, mapdf, l_size, txt_size,
                          colours = brewer.pal(9, "Reds"),
                          limits=c(0,10)) +
     theme(legend.title = element_text(size = txt_size),
-          legend.position = c(0.1,0.15),
+          legend.position = c(0.11,0.15),
           legend.text = element_text(size = (txt_size-2)),
           legend.key.height = unit(leg_height, units = "mm"))
 }

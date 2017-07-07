@@ -25,6 +25,7 @@ library(pander)
 library(tidyverse)
 library(cowplot)
 library(RColorBrewer)
+library(stargazer)
 source("functions/waic_dic_summary.R")
 source("functions/MapBaseAndLayers.R")
 
@@ -48,7 +49,8 @@ multiPlotWrapper(mapdf, wall_fort, water_fort, l_size = 0.1,
 
 ```
 
-## Figure 1
+## Figure 1  
+Map of Copenhagen, 1853 showing (A) the drinking-water pipe network, (B) the week number the first case was reported in each neighborhood, (C) the attack rate in each neighborhood, and (D) the case-fatality rate in each neighborhood. The blue points represent hospitals, sick- and poor-houses.
 \newpage
 
 
@@ -63,7 +65,9 @@ outbreak_city <- quarter %>%
   arrange(week.id) %>%
   mutate(week_date = week_date)
 
-citywide <- citywide_plot(outbreak_city, txt_size = 11)
+citywide <- citywide_plot(outbreak_city, txt_size = 11) +
+  scale_color_manual(values = c("dodgerblue4", "orange3"),
+                     labels = c("Cases", "Deaths"))
 
 quarter <- quarter_panel_incidence(combined = combined, txt_size = 11)
 
@@ -74,10 +78,10 @@ ts_multi
 ```
 
 ## Figure 2
-Time-series plot of epidemic at the city level (A) and in each quarter (B).
+Time-series plot of epidemic at the city level (A) and in each neighborhood (B).
 
 \newpage
-```{r quarter_summary}
+```{r quarter_summary, results="asis"}
 case_summary <- case_summary_combined %>%
   dplyr::rename(Quarter = quarter,
                 Population = pop,
@@ -93,70 +97,85 @@ case_summary$Quarter[case_summary$Quarter=="Combined_upper"] <- "Combined upper"
 panderOptions('table.alignment.default',
               function(df)
                 ifelse(sapply(df, is.character), 'left', 'right'))
+panderOptions("keep.trailing.zeros", TRUE)
 
-pander(x, big.mark=",", split.cells = 10)
+stargazer(case_summary, header = FALSE, title = "Epidemic overview",
+          summary = FALSE, digits = 1, digits.extra = 1,
+          rownames = FALSE)
 ```
 
 ## Table 1
-Overview of epidemic in each quarter
+Overview of the epidemic in each quarter
 \newpage
 
 
-```{r WAIC}
+```{r WAIC, results="asis"}
 source("functions/waic_dic_summary.R")
-load(file = "Data/Rdata/DIC_ls.Rdata")
+# load(file = "Data/Rdata/DIC_ls.Rdata")
 load(file = "Data/Rdata/waic_ls.Rdata")
 mod_names <- c("model 1", "model 2", "model 2b", "model 2c",
                "model 3", "model 4", "model 5")
 
-dic1 <- DIC_list %>%
-  summaryDic() %>%
-  data.frame() %>%
-  dplyr::select(-8, -9) %>% # We don't use model 6 and 7 anymore
-  `colnames<-` (mod_names)
+# For main paper, we do not report model 3 or model 4.
+mod_names_short <- c("model 1", "model 2", "model 2b", "model 2c",
+                     "model 3")
 
-dic_select <- bestModel(dic1)
+# dic
+# 
+# 
+# dic1 <- DIC_list %>%
+#   summaryDic() %>%
+#   data.frame() %>%
+#   dplyr::select(., -m3, -m4, -m6, -m7) %>% # We don't use models 3,4,6,7 anymore
+#   `colnames<-` (mod_names_short)
+# 
+# 
+# dic_select <- bestModel(dic1)
+# 
+# dic_mean <- dic1 %>%
+#   colMeans() %>%
+#   data.frame() %>%
+#   dplyr::mutate(model = mod_names_short) %>%
+#   `colnames<-` (c("DIC", "model")) %>%
+#   dplyr::select(model, DIC)
+# dic_mean$std <- sapply(dic1, sd)
+# dic_mean <- dplyr::arrange(dic_mean, DIC)
 
-dic_mean <- dic1 %>%
-  colMeans() %>%
-  data.frame() %>%
-  dplyr::mutate(model = mod_names) %>%
-  `colnames<-` (c("DIC", "model")) %>%
-  dplyr::select(model, DIC)
-dic_mean$std <- sapply(dic1, sd)
-dic_mean <- dplyr::arrange(dic_mean, DIC)
-
-
-p_waic <- waic_list %>%
-  getP_waic() %>%
-  colMeans()
+# 
+# p_waic <- waic_list %>%
+#   getP_waic() %>%
+#   colMeans()
 
 
 waic1 <- waic_list %>%
   waic_summary %>%
   data.frame() %>%
-  `colnames<-`(mod_names)
+  dplyr::select(., -waic_m3_ls, -waic_m4_ls) %>% # don't use m3,m4 in main paper
+  `colnames<-`(mod_names_short)
 
-waic_select <- bestModel(waic1)
 
-waic_mean <- waic1 %>%
-  colMeans() %>%
-  data.frame() %>%
-  dplyr::mutate(model = mod_names) %>%
-  `colnames<-` (c("WAIC", "model")) %>%
-  dplyr::select(model, WAIC)
-waic_mean$std <- sapply(waic1, sd)
-waic_mean$p_waic <- p_waic
-waic_mean <- dplyr::arrange(waic_mean, WAIC)
+# waic_select <- bestModel(waic1)
+# 
+# waic_mean <- waic1 %>%
+#   colMeans() %>%
+#   data.frame() %>%
+#   dplyr::mutate(model = mod_names_short) %>%
+#   `colnames<-` (c("WAIC", "model")) %>%
+#   dplyr::select(model, WAIC)
+# waic_mean$std <- sapply(waic1, sd)
+# waic_mean$p_waic <- p_waic
+# waic_mean <- dplyr::arrange(waic_mean, WAIC)
 
-pander(waic_select)
+stargazer::stargazer(waic1, header = FALSE,
+                     summary = FALSE, title = "WAIC values",
+                     digits = 0)
 ```
 
 ## Table 2
-WAIC values for each epidemic realization. A difference of 5 was considered significant.  
+WAIC values for each model (columns) for each of the 10 epidemic realization (rows). A difference of 5 was considered significant.  
 \newpage
 
-```{r regression}
+```{r results="asis"}
 
 betas <- read.csv("Data/betas-matrix.csv", row.names = 1)
 water <- read.csv("Data/water-matrix.csv")
@@ -183,11 +202,16 @@ lm_pipes <- lm(log(betas) ~ `water connection`)
 
 lm_full <- lm(log(betas) ~ `water connection` + `shared border`)
 
-pander(lm_full)
+stargazer::stargazer(lm_full, header = FALSE, no.space = TRUE,
+                     dep.var.labels = "Log of between-neighborhood transmission coefficient",
+                     title = "Regression results",
+                     covariate.labels = c("Water connection", "Shared border"),
+                     omit.stat = c("rsq", "adj.rsq", "ser"),
+                     omit = 3, ci = TRUE, notes.align = "l")
 ```
 
 ## Table 3
-Linear regression
+Linear regression on the log of the median of between-neighborhood tranmission coefficients from the fully saturated model (model 3) with indicator variables for water-connections and shared-borders as explainitory variables.
 \newpage
 
 
@@ -245,7 +269,7 @@ text(y = ypos,
 ```
 
 ## Figure 4  
-Median of the log of the transmission coefficiants from model 5 (fully saturated model)
+Median of the log of the transmission coefficiants from model 3 (fully saturated model)
 
 \newpage
 
@@ -263,7 +287,10 @@ SimPlot(sim5_step_data, observed_data = I_reps_plot,
 ```
 
 ## Figure 5
-The mean number of new infectious cases predicted one-step-ahead with 95% confidence bands. The black lines represent the 10 realizations of the epidemic used as data for parameter fitting. The vertical dotted line represents day 40 for reference between graphs.
+The mean number of new infectious cases predicted one-step-ahead with 95%
+confidence bands. The black lines represent the 10 realizations of the epidemic
+used as data for parameter fitting. The vertical dotted line represents day 40
+for reference between graphs.
 
 
 ```{r rPlots, fig.width=7.0, fig.height=4}
@@ -279,7 +306,7 @@ load("Data/Rdata/r-values-model-5.Rdata")
 
 r_in_out <-  R_model5$R_vals %>%
   filter(R_type == "in" | R_type == "ext" | R_type == "int" |
-         R_type == "tot")%>%
+           R_type == "tot")%>%
   R_log_scale(pd = 0.6, line_size = 0.4, point_size = 1.5) %>%
   RStyle()
 
