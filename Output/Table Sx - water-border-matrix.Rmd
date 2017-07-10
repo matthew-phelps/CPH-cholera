@@ -1,5 +1,7 @@
 ---
 output: pdf_document
+fontsize: 10pt
+geometry: margin=1.5cm
 ---
 
 ```{r setup, include=FALSE, cache=FALSE}
@@ -15,11 +17,21 @@ panderOptions("big.mark", ",")
 load("Data/Rdata/hydraulic-covariates.Rdata")
 ```
 
+Table S1: Water-connectivity matrix
+
 ```{r water table}
 panderOptions('table.alignment.default',
   function(df)
      ifelse(sapply(df, is.numeric), 'right', 'left'))
 
 pander(wat, split.table = Inf)
+
+```
+  
+Table S2: Shared-border matrix
+
+```{r}
 pander(bord, split.table = Inf, split.cells = (10))
 ```
+
+
