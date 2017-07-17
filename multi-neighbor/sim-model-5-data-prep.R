@@ -4,7 +4,7 @@ source("Data-3-combine quarters.R")
 
 
 # LOAD & PREP DATA ---------------------------------------------------------------
-load(file = 'Data/Rdata/sim-model-5-data-1.Rdata')
+
 load(file = "Data/Rdata/multi-model1-data-prep.Rdata")
 N_i_daily <- N_pop
 

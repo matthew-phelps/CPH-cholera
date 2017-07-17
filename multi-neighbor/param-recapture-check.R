@@ -3,7 +3,7 @@ rm(list=ls())
 library(tidyverse)
 library(ggmcmc)
 
-
+ 
 load(file = 'Data/Rdata/sim-model-5recapture-data.Rdata' )
 re_cap <- mcmc_out$int_hpd
 re_cap$param <- row.names(re_cap)

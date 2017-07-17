@@ -9,6 +9,7 @@ library(plotly)
 # LOAD data ---------------------------------------------------------------
 source("Data-4-prepare-JAGS.R")
 Nweeks <- Nsteps
+load(file = 'Data/Rdata/sim-model-5-data-1.Rdata')
 source("multi-neighbor/sim-model-5-data-prep.R")
 source("functions/SimulationAndPlots.R")
 source("functions/simNStepsAhead.R")
@@ -31,6 +32,9 @@ sim5_step_data <- SimDataToPlot(sim5_step)
 sim5_step_summary <- sim5_step_data%>%
   rmNonOutbreaks(min_cases = 0) %>%
   SimCI()
+
+
+
 
 save(sim5_step_summary, file = "data/Rdata/sim5_step_summary.Rdata")
 save(sim5_step_data, file = "data/Rdata/sim5_step_data.Rdata")

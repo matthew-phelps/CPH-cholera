@@ -152,7 +152,7 @@ smMcmc <- function(x){
   inx_hi <- c(inx_hi_1, inx_hi_2, inx_hi_3, inx_hi_4)
   
   x_small <- x$mcmc_df[inx_hi, ]
-  rm(x)
+  
   gc() # return memory to OS
   xrow <- nrow(x_small)
   # browser()

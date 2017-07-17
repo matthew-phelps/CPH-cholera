@@ -309,7 +309,7 @@ SimAndData <- function(num_sims, seed = NULL){
 
 
 SimCI <- function(sim_data_list){
-  ## Calculate 95% CI on simulation output data, then get data into form for
+  ## Calculate 95% Prediction on simulation output data, then get data into form for
   ## ggplot
   
   sim_data <- sim_data_list$sim_data %>%

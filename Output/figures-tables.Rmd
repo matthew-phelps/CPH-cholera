@@ -288,7 +288,7 @@ SimPlot(sim5_step_data, observed_data = I_reps_plot,
 
 ## Figure 5
 The mean number of new infectious cases predicted one-step-ahead with 95%
-confidence bands. The black lines represent the 10 realizations of the epidemic
+prediction intervals in red. The black lines represent the 10 realizations of the epidemic
 used as data for parameter fitting. The vertical dotted line represents day 40
 for reference between graphs.
 

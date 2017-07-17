@@ -22,12 +22,12 @@ $\beta$.
 
 From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for
 all neighborhoods, (2) an individual $\beta_{i}$ for each neighborhood and a
-single $\alpha$ for all neighborhoods, and (5) an individual $\beta_{i}$ for
+single $\alpha$ for all neighborhoods, and (3) an individual $\beta_{i}$ for
 each neighborhood and a single asymmetric $\alpha_{i,j}$ for each neighborhood
 pair.
 
 
-Two additional models were constructed where we relaxed the contraints on the
+Two additional models were constructed where we relaxed the constraints on the
 external forces of infection, $\alpha$. In model 2.1 allowed an individual
 $\beta_{i}$ and $\alpha_{i}$ for each neighborhood and in model 2.2 we allowed
 an individual $\beta_{i}$ for each neighborhood and symmetric $\alpha_{j,i}$ for
@@ -42,7 +42,7 @@ where:
 $^{new}\textrm{I}_{i,t}$ = the number of new infectious cases in each neighborhood $i$ at time $t$  
 $I_{i,t}$ = the total number of infectious cases in each neighborhood $i$ at time $t$  
 $S_{i,t}$ = the number of susceptible people in each neighborhood $i$ at time $t$  
-$N_{i}$ = the total poulation of neighborhood $i$  
+$N_{i}$ = the total population of neighborhood $i$  
 $\beta_{i}$ = the force of internal infection in neighborhood $i$  
 $\alpha_{j,i}$ = the force of infection from neighborhood $j$ to neighborhood $i$.  
 
@@ -58,7 +58,7 @@ $$R_{i,t} = \frac{1}{\gamma} I_{i,t}$$
 where:  
 $\gamma$ = the average duration of infectiousness (fixed at 5 days).  
 
-The number of suceptibles $S_{i,t}$ was updated via:
+The number of susceptible $S_{i,t}$ was updated via:
 $$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$  
 
 
@@ -66,25 +66,48 @@ $$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$
 
 
 ## 1.2 Hydraulic connectivity and geographic proximity  
-To assess the effect of hyraulic connectivity (model 2b) we allowed the $foi$
-between two neighborhoods to vary depending on if the neighborhoods are
-connected via water pipes such that $$foi_{i,j} \begin{cases} \alpha & \text{ if
-no water connection } i \rightarrow j \\ \alpha + \eta & \text{ if water
-connection } i \rightarrow j \end{cases}$$
+To assess the effect of hydraulic connectivity we used two methods:
+(A) a linear regression, and (B) incorporating  hydraulic and geographic
+connectivity into the meta-population model.  
 
-To incorporate geographic proximity (model 2c) we added an additional term 
-$\kappa$ if the neighborhoods shared a border. The resulting $foi_{i,j}$ can be 
-described as $$foi_{i,j} \begin{cases} \alpha & \text{ if no shared border or 
-water connection } i \rightarrow j \\ \alpha + \eta & \text{ if no shared border
-but water connection } i \rightarrow j \text{ exists}\\ \alpha + \eta +\kappa & 
-\text{ if shared border and water connection } i \rightarrow j  \text{ exists} 
+In method (A) we fit a linear model to the median of the log of the
+cross-neighborhood transmission coefficients ($\alpha_{i,j}$) from the fully
+saturated model (model 3) using the hydraulic transition matrix and geographic
+proximity matrix as covariates. The model can be written as follows:
+$$y=\beta_0 + \beta_1x_1 + \beta_2x_2$$
+where $y$ is a vector of the median of the log of the cross neighborhood
+transmission coefficients ($\alpha_{i,j}$) and $x_1$ is a vector of hydraulic connectivity (Table S1) defined as 
+$$x_1 \begin{cases} 0 & \text{ if no water connection exists } i \rightarrow j 
+\\ 1 & \text{ if water connection exists} i \rightarrow j \end{cases}$$
+
+and $x_2$ is a vector of geographic proximity (Table S2) defined as
+$$x_2 \begin{cases} 0 &
+\text{ if no shared border exists } i \rightarrow j \\ 1 & \text{ if shared
+border exists } i \rightarrow j \end{cases}$$
+
+
+In method (B) we expanded model 2 to allow the force of infection ($foi$) between two neighborhoods to vary depending
+on if the neighborhoods are connected via water pipes such that
+$$foi_{i,j}
+\begin{cases} \alpha & \text{ if no water connection } i \rightarrow j \\
+\alpha + \eta & \text{ if water connection } i \rightarrow j 
+\end{cases}$$
+creating model 2b. We then expanded model 2b to incorporate geographic proximity
+(model 2c) by adding an additional term $\kappa$ if the neighborhoods shared a
+border. The resulting $foi_{i,j}$ can be described as
+$$foi_{i,j} \begin{cases}
+\alpha & \text{ if no shared border or water connection } i \rightarrow j \\
+\alpha + \eta & \text{ if no shared border but water connection }
+i \rightarrow j \text{ exists}\\
+\alpha + \eta +\kappa & \text{ if shared border and water connection }
+i \rightarrow j \text{ exists} 
 \end{cases}$$ The effect of water, $\eta$, and the effect of the shared border, 
 $\kappa$, are not fitted to each neighborhood, but are shared citywide.
 
 
 ## 1.3 Model fitting
 The model used in the paper (model 3) was fit using `JAGS 3.4` and the `runjags` and
-`rjags` libraries in R. The model priors were speicified as thus:
+`rjags` libraries in R. The model priors were specified as thus:
 $$\lambda_{i,t} = \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} )$$
 $$log(\alpha_{j,i}) \sim N(\mu_{1}, tau_{1})$$
 $$log(\beta_{i}) \sim N(\mu_{2}, tau_{2})$$

@@ -40,7 +40,7 @@ I_sim <- sim5_step_data %>%
 
 
 checkDataMunging <- function(x) {
-  # Not sure if I spread data properly, so check:
+  # Check to make sure I spread the data properly
   if(all(colSums(x) - colSums(I_reps[[1]]) > 100)){
     return("warning: difference > 100")
   } else {
