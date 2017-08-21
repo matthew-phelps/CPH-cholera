@@ -3,7 +3,7 @@ SimPlusOne <- function(loops, I_reps=I_reps, N_it=N_it,
                        gamma_95hpd, seed = NULL){
   # Simulate 1 time-step ahead
   if(!is.null(seed)) set.seed(seed)
-  # browser()
+  browser()
   Lambda_est_pe <-  matrix(nrow = Nsteps, ncol = Nquarter)
   LambdaR <-        matrix(nrow = Nsteps, ncol = Nquarter)
   R_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
@@ -58,6 +58,68 @@ SimPlusOne <- function(loops, I_reps=I_reps, N_it=N_it,
   list(I_new_plus1 = I_new_plus1,
        store_prev = store_prev, store_S = store_S)
 }
+
+
+SimPlusOneRecapture <- function(loops, I_reps=I_reps, N_it=N_it,
+                       betas_95hpd, phi_95hpd,
+                       gamma_95hpd, seed = NULL,
+                       realization_number){
+  # Simulate 1 time-step ahead
+  if(!is.null(seed)) set.seed(seed)
+  # browser()
+  Lambda_est_pe <-  matrix(nrow = Nsteps, ncol = Nquarter)
+  LambdaR <-        matrix(nrow = Nsteps, ncol = Nquarter)
+  R_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
+  I_new <-          matrix(nrow = Nsteps, ncol = Nquarter)
+  I_prev_vect <-    matrix(nrow = Nsteps, ncol = Nquarter)
+  S_plus1_mat <-    matrix(nrow = Nsteps, ncol = Nquarter)
+  
+  I_new_plus1 <-  list(data.frame(matrix(data = NA, nrow = Nsteps, ncol = Nquarter)))
+  store_prev <-   list()
+  store_S <-      list() 
+  # store_param <- list(beta=list(), phi=0, gamma=0)
+  # Starting values
+  I_prev_vect[1, ] <- I_reps[[realization_number]][1,]
+  # I_prev_vect[1, c(5, 8, 9)] <- 1 # Init St.A.V & Ø + Nyb with cases
+  S_plus1_mat[1, ] <- N_it[, 1] # init all S
+  
+  
+  for (z in 1:loops){
+    for (t in 1:(Nsteps-1)){
+      # browser()
+      for(i in 1:Nquarter){
+        # browser()
+        Lambda_est_pe[t, i] <- S_plus1_mat[t, i] / N_it[i] * sum(betas_95hpd[[z]][, i] * I_prev_vect[t, ])
+        LambdaR[t, i] <- I_prev_vect[t, i] * gamma_95hpd[z, ]
+        R_new[t, i] <- min(LambdaR[t, i], I_prev_vect[t, i]) # no more recovereds than infected
+        
+        I_data <- I_reps[[realization_number]][t, i] # Observed new cases data
+        
+        I_new[t, i] <- rpois(1, (Lambda_est_pe[t, i] * phi_95hpd[z, ] ) ) #simulated new cases
+        
+        I_prev_vect[t + 1, i] <- max(0, (I_prev_vect[t, i] + I_data / phi_95hpd[z, ]  - R_new[t, i]))
+        
+        S_temp <- S_plus1_mat[t, i] -    I_data /  phi_95hpd[z, ]
+        S_plus1_mat[t + 1, i] <- max(0, S_temp)
+        
+      }
+    }
+    # For each quarter: store sum of infections attributed to each quarter over
+    # all time-steps. Also store parameters used in iteration so R values cane
+    # be reconstructed
+    # browser()
+    # store_param$beta[[z]] <- betas_95hpd[[z]]
+    # store_param$phi[z] <- phi_95hpd[z, ]
+    # store_param$gamma[z] <- gamma_95hpd[z, ]
+    store_prev[[z]] <- I_prev_vect
+    store_S[[z]] <- S_plus1_mat
+    I_new_plus1[[z]] <- data.frame(I_new)
+    I_new_plus1[[z]]$sim_sum <- z
+  }
+  list(I_new_plus1 = I_new_plus1,
+       store_prev = store_prev, store_S = store_S)
+}
+
 
 
 SimFromZero <- function(loops, I_reps=I_reps, N_it=N_it,

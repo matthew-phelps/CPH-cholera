@@ -31,9 +31,9 @@ getMean <- function(x){
 
 getIntervals <- function(mcmc){
   int_hpd <- data.frame(HPDinterval(mcmc, 0.95))
-  hi_hpd <- int_hpd$upper
-  lo_hpd <- int_hpd$lower
-  return(list(int_hpd = int_hpd, hi_hpd = hi_hpd, lo_hpd=lo_hpd))
+  # hi_hpd <- int_hpd$upper
+  # lo_hpd <- int_hpd$lower
+  return(int_hpd = int_hpd)
 }
 
 
@@ -73,9 +73,9 @@ checkOrder <- function(betas, q_names){
 mcmcPrep <- function(x, q_names, testing = FALSE){
   # Produce mcmc data frame and hpd for each parameter
   mcmc_obj <- combChains(x, testing = testing)
-  
+  # browser()
   int_hpd <- getIntervals(mcmc_obj)
-  int_hpd <- int_hpd$int_hpd
+  
   # browser()
   mcmc_df <- mkDfMcmc(mcmc_object = mcmc_obj)
   median_val <- mcmc_df %>%

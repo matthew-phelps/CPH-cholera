@@ -127,7 +127,7 @@ where a difference of at least 5 was considered significant. Note models 2.1 and
 source("functions/waic_dic_summary.R")
 load(file = "Data/Rdata/waic_ls.Rdata")
 mod_names <- c("model 1", "model 2", "model 2b", "model 2c",
-               "model 2.1", "model 2.2", "model 5")
+               "model 2.1", "model 2.2", "model 3")
 
 
 waic1 <- waic_list %>%
@@ -139,3 +139,4 @@ pander(waic1)
 
 ```
 
+For every realization of the epidemic, model 3 performed the best.

@@ -61,37 +61,3 @@ prob_vec_counter <- wrapQuaterBetaToZero(mcmc_out, c(2, 3, 4, 6, 5), n_loops = n
 
 x <- wrapQuaterBetaToZero(mcmc_out, c(5, 8, 9), n_loops = n_loops,
                                  min_cases = 500, group = TRUE)
-
-# NStepsAhead -------------------------------------------------------------
-
-n_ahead_5 <- nStepsAheahWrap(loops=n_loops, Nsteps = Nsteps,
-                             I_reps = I_reps, N_it = N_it,
-                             betas_95hpd = mcmc_out$betas_95hpd,
-                             phi_95hpd = mcmc_out$phi_95hpd,
-                             gamma_95hpd = mcmc_out$gamma_95hpd,
-                             seed = 14)
-
-sim5_n_ahead_data <- SimDataToPlot(n_ahead_5, nAhead = 7)
-
-sim5_n_ahead_summary <- sim5_n_ahead_data %>%
-  rmNonOutbreaks(min_cases = 10) %>%
-  SimCI()
-
-# T = 0: Attributable cases -----------------------------------------------
-# Element-wise mean of list of matrices. From : http://goo.gl/VA7S66
-I_att_mean <- data.frame(Reduce("+", I_attr) / length(I_attr), row.names = q_names)
-colnames(I_att_mean) <- q_names
-
-I_proportion <- data.frame(matrix(data = NA, nrow = Nquarter, ncol = Nquarter), row.names = q_names)
-colnames(I_proportion) <- q_names
-for (i in 1:Nquarter){
-  for (j in 1:Nquarter){
-    I_proportion[j, i] <- I_att_mean[j, i] / quarter_sums[i, 2]
-    
-  }
-}
-
-
-save(I_att_mean, file = "Attributable-cases-t0.Rdata")
-save(I_proportion, file = "Proportion-attributable-t0.Rdata")
-
