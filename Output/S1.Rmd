@@ -16,7 +16,7 @@ library(pander)
 #1 Model 
 ## 1.1 Model structure  
 We constructed a series of nested models where
-the force of infection, $foi$, acting upon a neighborhood was composed of an
+the force of infection, $\lambda$, acting upon a neighborhood was composed of an
 external force of infection, $\alpha$, and an internal force of infection,
 $\beta$.
 
@@ -35,11 +35,11 @@ each neighborhood pair ($\alpha_{j,i} = \alpha_{i,j}$). These models were not
 supported by the model selection process and were not reported in the main text.
 
 Each model was based upon the following construction:
-$$^{new}\textrm{I}_{i,t+1}\sim Poisson(\lambda_{i,t})$$
-$$\lambda_{i,t} = \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} )$$
+$$^{new}\textrm{I}_{i,t+1}\sim Poisson \left ( \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} ) \right )$$
+
 
 where:  
-$^{new}\textrm{I}_{i,t}$ = the number of new infectious cases in each neighborhood $i$ at time $t$  
+$^{new}\textrm{I}_{i,t}$ = the number of reported new infectious cases in each neighborhood $i$ at time $t$  
 $I_{i,t}$ = the total number of infectious cases in each neighborhood $i$ at time $t$  
 $S_{i,t}$ = the number of susceptible people in each neighborhood $i$ at time $t$  
 $N_{i}$ = the total population of neighborhood $i$  
@@ -86,16 +86,16 @@ $$x_2 \begin{cases} 0 &
 border exists } i \rightarrow j \end{cases}$$
 
 
-In method (B) we expanded model 2 to allow the force of infection ($foi$) between two neighborhoods to vary depending
+In method (B) we expanded model 2 to allow the force of infection ($\lambda$) between two neighborhoods to vary depending
 on if the neighborhoods are connected via water pipes such that
-$$foi_{i,j}
+$$\lambda_{i,j}
 \begin{cases} \alpha & \text{ if no water connection } i \rightarrow j \\
 \alpha + \eta & \text{ if water connection } i \rightarrow j 
 \end{cases}$$
 creating model 2b. We then expanded model 2b to incorporate geographic proximity
 (model 2c) by adding an additional term $\kappa$ if the neighborhoods shared a
-border. The resulting $foi_{i,j}$ can be described as
-$$foi_{i,j} \begin{cases}
+border. The resulting $\lambda_{i,j}$ can be described as
+$$\lambda_{i,j} \begin{cases}
 \alpha & \text{ if no shared border or water connection } i \rightarrow j \\
 \alpha + \eta & \text{ if no shared border but water connection }
 i \rightarrow j \text{ exists}\\
@@ -108,9 +108,9 @@ $\kappa$, are not fitted to each neighborhood, but are shared citywide.
 ## 1.3 Model fitting
 The model used in the paper (model 3) was fit using `JAGS 3.4` and the `runjags` and
 `rjags` libraries in R. The model priors were specified as thus:
-$$\lambda_{i,t} = \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} )$$
-$$log(\alpha_{j,i}) \sim N(\mu_{1}, tau_{1})$$
-$$log(\beta_{i}) \sim N(\mu_{2}, tau_{2})$$
+$$^{new}\textrm{I}_{i,t+1}\sim Poisson \left ( \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} ) \right )$$
+$$log(\alpha_{j,i}) \sim N(\mu_{1}, \tau_{1})$$
+$$log(\beta_{i}) \sim N(\mu_{2}, \tau_{2})$$
 $$\mu_{1} \sim N(0, \frac{1}{0.001})$$
 $$\mu_{2} \sim N(0, \frac{1}{0.001})$$
 $$\tau_{1} \sim \Gamma(0.001, 0.001)$$
