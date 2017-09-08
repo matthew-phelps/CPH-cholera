@@ -326,7 +326,7 @@ SimPlot <- function(simulation_data = NULL, observed_data,
     geom_vline( xintercept = 40, linetype = 2,
                 color = "black", alpha = 0.2, size = 0.6) +
     facet_wrap(~quarter) +
-    labs(y = "Daily new infections") +
+    labs(y = "Daily new infections", x = "Day index") +
     theme_minimal() +
     theme(panel.grid = element_blank()) +
     theme(legend.position = "none",

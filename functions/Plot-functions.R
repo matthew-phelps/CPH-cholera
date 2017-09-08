@@ -12,7 +12,7 @@ citywide_plot <- function(x, txt_size) {
     geom_line(aes(y = sick, color = "cases"), size = 1) +
     geom_line(aes( y = dead, color = "deaths"), size = 1) +
     geom_vline( xintercept = 40, linetype = 2, alpha = 0.6, color = "black") +
-    xlab("Day index") +
+    xlab("Date") +
     ylab("Number of People") +
     theme_classic() +
     theme(legend.title = element_blank(),
@@ -50,6 +50,8 @@ quarter_panel_incidence <- function(combined, txt_size) {
 
 R_log_scale <- function(R,  pd = 0.4,
                         line_size, point_size) {
+  
+  R
   pd <-  position_dodge(pd)
   ggplot(data = R) +
     geom_hline(yintercept = 1, linetype = 3, color = "black") +
@@ -80,6 +82,7 @@ R_log_scale <- function(R,  pd = 0.4,
                              "10")) +
     theme_classic() +
     ylab("Median R value") +
+    xlab("Neighborhood") +
     theme(axis.text.x = element_text(angle = 45,
                                      hjust = 1,
                                      vjust = 1.0))
