@@ -1,6 +1,7 @@
 ---
-title: "The Importance of short-cycle cholera transmission in a major urban outbreak: a historical case-study"
+title: "The importance of thinking beyond the water-supply in cholera epidemics: a historical urban case-study"
 output: pdf_document
+author: "Matthew Phelps, Andrew S. Azman, Joseph A. Lewnard, Marina Antillón, Lone Simonsen, Viggo Andreasen,  Peter K.M. Jensen, Virginia E. Pitzer."
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +14,7 @@ library(tidyverse)
 library(pander)
 ```
 
-#1 Model 
+#Supplemental Text S1 
 ## 1.1 Model structure  
 We constructed a series of nested models where
 the force of infection, $\lambda$, acting upon a neighborhood was composed of an

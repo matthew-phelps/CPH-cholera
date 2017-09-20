@@ -16,22 +16,11 @@ panderOptions("big.mark", ",")
 
 load("Data/Rdata/hydraulic-covariates.Rdata")
 ```
-
-Table S1: Water-connectivity matrix
-
 ```{r water table}
 panderOptions('table.alignment.default',
   function(df)
      ifelse(sapply(df, is.numeric), 'right', 'left'))
 
-pander(wat, split.table = Inf)
-
+pander(wat,  split.table = Inf, split.cells = (10))
 ```
-  
-Table S2: Shared-border matrix
-
-```{r}
-pander(bord, split.table = Inf, split.cells = (10))
-```
-
 

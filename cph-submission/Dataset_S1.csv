@@ -1,0 +1,145 @@
+quarter,week.id,sick.total.week,dead.total.week,est.pop.1853,cum.sick
+Christianshavn,0,0,0,15836,0
+Christianshavn,1,1,1,15836,1
+Christianshavn,2,4,1,15836,5
+Christianshavn,3,13,9,15836,18
+Christianshavn,4,102,77,15836,120
+Christianshavn,5,307,227,15836,427
+Christianshavn,6,449,306,15836,876
+Christianshavn,7,249,140,15836,1125
+Christianshavn,8,92,35,15836,1217
+Christianshavn,9,24,13,15836,1241
+Christianshavn,10,17,9,15836,1258
+Christianshavn,11,9,6,15836,1267
+Christianshavn,12,7,4,15836,1274
+Christianshavn,13,1,1,15836,1275
+Christianshavn,14,2,2,15836,1277
+Christianshavn,15,1,1,15836,1278
+Combined_lower,0,0,0,20663,0
+Combined_lower,1,1,1,20663,1
+Combined_lower,2,3,2,20663,4
+Combined_lower,3,6,5,20663,10
+Combined_lower,4,10,5,20663,20
+Combined_lower,5,38,21,20663,58
+Combined_lower,6,178,138,20663,236
+Combined_lower,7,91,62,20663,327
+Combined_lower,8,41,25,20663,368
+Combined_lower,9,20,12,20663,388
+Combined_lower,10,15,7,20663,403
+Combined_lower,11,9,4,20663,412
+Combined_lower,12,4,2,20663,416
+Combined_lower,13,12,3,20663,428
+Combined_lower,14,2,2,20663,430
+Combined_lower,15,1,1,20663,431
+Combined_upper,0,0,0,15991,0
+Combined_upper,1,1,1,15991,1
+Combined_upper,2,0,0,15991,1
+Combined_upper,3,8,4,15991,9
+Combined_upper,4,27,21,15991,36
+Combined_upper,5,63,41,15991,99
+Combined_upper,6,81,53,15991,180
+Combined_upper,7,63,42,15991,243
+Combined_upper,8,37,23,15991,280
+Combined_upper,9,34,21,15991,314
+Combined_upper,10,24,11,15991,338
+Combined_upper,11,7,5,15991,345
+Combined_upper,12,4,4,15991,349
+Combined_upper,13,4,2,15991,353
+Combined_upper,14,0,0,15991,353
+Combined_upper,15,1,1,15991,354
+Kjoebmager,0,0,0,11544,0
+Kjoebmager,1,1,1,11544,1
+Kjoebmager,2,2,1,11544,3
+Kjoebmager,3,4,3,11544,7
+Kjoebmager,4,25,15,11544,32
+Kjoebmager,5,48,23,11544,80
+Kjoebmager,6,85,55,11544,165
+Kjoebmager,7,90,46,11544,255
+Kjoebmager,8,38,25,11544,293
+Kjoebmager,9,18,7,11544,311
+Kjoebmager,10,13,6,11544,324
+Kjoebmager,11,11,2,11544,335
+Kjoebmager,12,3,0,11544,338
+Kjoebmager,13,1,0,11544,339
+Kjoebmager,14,1,1,11544,340
+Kjoebmager,15,0,0,11544,340
+Nyboder,0,3,2,7195,3
+Nyboder,1,11,5,7195,14
+Nyboder,2,8,6,7195,22
+Nyboder,3,13,12,7195,35
+Nyboder,4,111,84,7195,146
+Nyboder,5,175,131,7195,321
+Nyboder,6,116,89,7195,437
+Nyboder,7,91,52,7195,528
+Nyboder,8,28,17,7195,556
+Nyboder,9,14,3,7195,570
+Nyboder,10,8,5,7195,578
+Nyboder,11,3,2,7195,581
+Nyboder,12,1,1,7195,582
+Nyboder,13,1,1,7195,583
+Nyboder,14,0,0,7195,583
+Nyboder,15,0,0,7195,583
+Oester,0,0,0,8553,0
+Oester,1,0,0,8553,0
+Oester,2,3,2,8553,3
+Oester,3,12,7,8553,15
+Oester,4,31,20,8553,46
+Oester,5,85,53,8553,131
+Oester,6,66,38,8553,197
+Oester,7,15,9,8553,212
+Oester,8,26,16,8553,238
+Oester,9,11,7,8553,249
+Oester,10,9,3,8553,258
+Oester,11,6,4,8553,264
+Oester,12,2,1,8553,266
+Oester,13,1,0,8553,267
+Oester,14,0,0,8553,267
+Oester,15,1,0,8553,268
+Rosenborg,0,0,0,10214,0
+Rosenborg,1,3,1,10214,3
+Rosenborg,2,18,8,10214,21
+Rosenborg,3,11,6,10214,32
+Rosenborg,4,32,21,10214,64
+Rosenborg,5,53,33,10214,117
+Rosenborg,6,89,51,10214,206
+Rosenborg,7,74,50,10214,280
+Rosenborg,8,40,19,10214,320
+Rosenborg,9,31,14,10214,351
+Rosenborg,10,21,18,10214,372
+Rosenborg,11,5,4,10214,377
+Rosenborg,12,2,2,10214,379
+Rosenborg,13,4,2,10214,383
+Rosenborg,14,0,0,10214,383
+Rosenborg,15,0,0,10214,383
+St. Annae Oester,0,1,0,11917,1
+St. Annae Oester,1,2,1,11917,3
+St. Annae Oester,2,6,6,11917,9
+St. Annae Oester,3,65,54,11917,74
+St. Annae Oester,4,306,244,11917,380
+St. Annae Oester,5,504,377,11917,884
+St. Annae Oester,6,192,151,11917,1076
+St. Annae Oester,7,37,26,11917,1113
+St. Annae Oester,8,17,11,11917,1130
+St. Annae Oester,9,16,9,11917,1146
+St. Annae Oester,10,2,1,11917,1148
+St. Annae Oester,11,3,1,11917,1151
+St. Annae Oester,12,1,0,11917,1152
+St. Annae Oester,13,1,0,11917,1153
+St. Annae Oester,14,0,0,11917,1153
+St. Annae Oester,15,1,1,11917,1154
+St. Annae Vester,0,1,1,24655,1
+St. Annae Vester,1,7,6,24655,8
+St. Annae Vester,2,40,18,24655,48
+St. Annae Vester,3,141,106,24655,189
+St. Annae Vester,4,383,266,24655,572
+St. Annae Vester,5,492,301,24655,1064
+St. Annae Vester,6,374,227,24655,1438
+St. Annae Vester,7,167,91,24655,1605
+St. Annae Vester,8,76,42,24655,1681
+St. Annae Vester,9,40,16,24655,1721
+St. Annae Vester,10,19,7,24655,1740
+St. Annae Vester,11,12,5,24655,1752
+St. Annae Vester,12,3,0,24655,1755
+St. Annae Vester,13,2,1,24655,1757
+St. Annae Vester,14,4,3,24655,1761
+St. Annae Vester,15,0,1,24655,1761
