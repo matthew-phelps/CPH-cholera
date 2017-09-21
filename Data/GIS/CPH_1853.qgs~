@@ -26,7 +26,7 @@
     <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="CPH_Quarters_eng20150622142053469" name="CPH_Quarters_eng">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" checked="Qt::Checked" id="CPH_Quarters320160203114949993" name="CPH_Quarters3">
+    <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="CPH_Quarters320160203114949993" name="CPH_Quarters3">
       <customproperties>
         <property key="overview" value="1"/>
       </customproperties>
@@ -49,16 +49,16 @@
     <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="case_data20160401120906921" name="case_data">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="cph_hosp_poorhouses20161230095012877" name="cph_hosp_poorhouses">
+    <layer-tree-layer expanded="1" checked="Qt::Checked" id="cph_hosp_poorhouses20161230095012877" name="cph_hosp_poorhouses">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="cph_streets20150318132707017" name="cph_streets">
+    <layer-tree-layer expanded="1" checked="Qt::Checked" id="cph_streets_220170201152322684" name="cph_streets-2">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="cph_boundary20150423140344739" name="cph_boundary">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" checked="Qt::Checked" id="IA_1855_CROP_modified_compress_low20160203110923645" name="IA_1855_CROP_modified_compress_low">
+    <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="IA_1855_CROP_modified_compress_low20160203110923645" name="IA_1855_CROP_modified_compress_low">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="VA_1854_PS_modified20150414141056993" name="VA_1854_PS_modified">
@@ -72,10 +72,10 @@
   <mapcanvas>
     <units>meters</units>
     <extent>
-      <xmin>1396616.3748115471098572</xmin>
-      <ymin>7492265.24905332829803228</ymin>
-      <xmax>1405726.31569230766035616</xmax>
-      <ymax>7497464.63490065839141607</ymax>
+      <xmin>1397590.00485123018734157</xmin>
+      <ymin>7491020.52524933405220509</ymin>
+      <xmax>1406259.14214100758545101</xmax>
+      <ymax>7496219.91109666414558887</ymax>
     </extent>
     <rotation>0</rotation>
     <projections>1</projections>
@@ -93,11 +93,17 @@
     </destinationsrs>
     <layer_coordinate_transform_info>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="CPH_Quarters20150415150537694"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_streets_220170201152322684"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="ContFromRaster20150423143603734"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_water_area20170131102924915"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="Mads_Pipes20151019151042593"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="city_wall20170131102501486"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_boundary20150423140344739"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="CPH_Quarters320160203114949993"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_streets20150318132707017"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="CPH_Quarters_eng20150622142053469"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_hosp_poorhouses20161230095012877"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_streets_220170201152123599"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="IA_1855_CROP_modified_compress_low20160203110923645"/>
     </layer_coordinate_transform_info>
   </mapcanvas>
@@ -119,11 +125,11 @@
       <item>WaterPipes20150417140154528</item>
       <item>case_data20160401120906921</item>
       <item>cph_hosp_poorhouses20161230095012877</item>
-      <item>cph_streets20150318132707017</item>
       <item>cph_boundary20150423140344739</item>
       <item>IA_1855_CROP_modified_compress_low20160203110923645</item>
       <item>VA_1854_PS_modified20150414141056993</item>
       <item>OpenLayers_plugin_layer20160215144113788</item>
+      <item>cph_streets_220170201152322684</item>
     </custom-order>
   </layer-tree-canvas>
   <legend updateDrawingOrder="true">
@@ -162,9 +168,9 @@
         <legendlayerfile isInOverview="0" layerid="CPH_Quarters_eng20150622142053469" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="false" checked="Qt::Checked" name="CPH_Quarters3" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="CPH_Quarters3" showFeatureCount="0">
       <filegroup open="false" hidden="false">
-        <legendlayerfile isInOverview="1" layerid="CPH_Quarters320160203114949993" visible="1"/>
+        <legendlayerfile isInOverview="1" layerid="CPH_Quarters320160203114949993" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="CPH_Quarters" showFeatureCount="0">
@@ -197,14 +203,14 @@
         <legendlayerfile isInOverview="0" layerid="case_data20160401120906921" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="cph_hosp_poorhouses" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="cph_hosp_poorhouses" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="cph_hosp_poorhouses20161230095012877" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="cph_hosp_poorhouses20161230095012877" visible="1"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="cph_streets" showFeatureCount="0">
-      <filegroup open="false" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="cph_streets20150318132707017" visible="0"/>
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="cph_streets-2" showFeatureCount="0">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="cph_streets_220170201152322684" visible="1"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="cph_boundary" showFeatureCount="0">
@@ -212,9 +218,9 @@
         <legendlayerfile isInOverview="0" layerid="cph_boundary20150423140344739" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="IA_1855_CROP_modified_compress_low" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="IA_1855_CROP_modified_compress_low" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="IA_1855_CROP_modified_compress_low20160203110923645" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="IA_1855_CROP_modified_compress_low20160203110923645" visible="0"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="VA_1854_PS_modified" showFeatureCount="0">
@@ -4064,29 +4070,29 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
-      <id>cph_streets20150318132707017</id>
-      <datasource>./cph_streets.shp</datasource>
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <id>cph_streets_220170201152322684</id>
+      <datasource>./cph_streets-2.shp</datasource>
       <title></title>
       <abstract></abstract>
       <keywordList>
         <value></value>
       </keywordList>
-      <layername>cph_streets</layername>
+      <layername>cph_streets-2</layername>
       <srs>
         <spatialrefsys>
-          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-          <srsid>3452</srsid>
-          <srid>4326</srid>
-          <authid>EPSG:4326</authid>
-          <description>WGS 84</description>
-          <projectionacronym>longlat</projectionacronym>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs</proj4>
+          <srsid>3857</srsid>
+          <srid>3857</srid>
+          <authid>EPSG:3857</authid>
+          <description>WGS 84 / Pseudo Mercator</description>
+          <projectionacronym>merc</projectionacronym>
           <ellipsoidacronym>WGS84</ellipsoidacronym>
-          <geographicflag>true</geographicflag>
+          <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
-      <provider encoding="System">ogr</provider>
-      <previewExpression>COALESCE( "old_name", '&lt;NULL>' )</previewExpression>
+      <provider encoding="UTF-8">ogr</provider>
+      <previewExpression></previewExpression>
       <vectorjoins/>
       <expressionfields/>
       <map-layer-style-manager current="">
@@ -4110,7 +4116,7 @@
               <prop k="customdash_unit" v="MM"/>
               <prop k="draw_inside_polygon" v="0"/>
               <prop k="joinstyle" v="bevel"/>
-              <prop k="line_color" v="0,0,0,255"/>
+              <prop k="line_color" v="228,142,92,255"/>
               <prop k="line_style" v="solid"/>
               <prop k="line_width" v="0.26"/>
               <prop k="line_width_unit" v="MM"/>
@@ -4123,7 +4129,7 @@
           </symbol>
         </symbols>
         <rotation/>
-        <sizescale scalemethod="diameter"/>
+        <sizescale scalemethod="area"/>
       </renderer-v2>
       <customproperties>
         <property key="labeling" value="pal"/>
@@ -4151,10 +4157,8 @@
         <property key="labeling/distInMapUnits" value="false"/>
         <property key="labeling/distMapUnitMaxScale" value="0"/>
         <property key="labeling/distMapUnitMinScale" value="0"/>
-        <property key="labeling/drawLabels" value="true"/>
         <property key="labeling/enabled" value="true"/>
         <property key="labeling/fieldName" value="old_name"/>
-        <property key="labeling/fitInPolygonOnly" value="false"/>
         <property key="labeling/fontBold" value="false"/>
         <property key="labeling/fontCapitals" value="0"/>
         <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
@@ -4163,7 +4167,7 @@
         <property key="labeling/fontLimitPixelSize" value="false"/>
         <property key="labeling/fontMaxPixelSize" value="10000"/>
         <property key="labeling/fontMinPixelSize" value="3"/>
-        <property key="labeling/fontSize" value="9.8"/>
+        <property key="labeling/fontSize" value="7.5"/>
         <property key="labeling/fontSizeInMapUnits" value="false"/>
         <property key="labeling/fontSizeMapUnitMaxScale" value="0"/>
         <property key="labeling/fontSizeMapUnitMinScale" value="0"/>
@@ -4188,14 +4192,10 @@
         <property key="labeling/multilineHeight" value="1"/>
         <property key="labeling/namedStyle" value="Normal"/>
         <property key="labeling/obstacle" value="true"/>
-        <property key="labeling/obstacleFactor" value="1"/>
-        <property key="labeling/obstacleType" value="0"/>
-        <property key="labeling/offsetType" value="0"/>
         <property key="labeling/placeDirectionSymbol" value="0"/>
         <property key="labeling/placement" value="2"/>
         <property key="labeling/placementFlags" value="10"/>
         <property key="labeling/plussign" value="false"/>
-        <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
         <property key="labeling/preserveRotation" value="true"/>
         <property key="labeling/previewBkgrdColor" value="#ffffff"/>
         <property key="labeling/priority" value="5"/>
@@ -4230,14 +4230,14 @@
         <property key="labeling/shadowUnder" value="0"/>
         <property key="labeling/shapeBlendMode" value="0"/>
         <property key="labeling/shapeBorderColorA" value="255"/>
-        <property key="labeling/shapeBorderColorB" value="255"/>
-        <property key="labeling/shapeBorderColorG" value="255"/>
-        <property key="labeling/shapeBorderColorR" value="255"/>
+        <property key="labeling/shapeBorderColorB" value="128"/>
+        <property key="labeling/shapeBorderColorG" value="128"/>
+        <property key="labeling/shapeBorderColorR" value="128"/>
         <property key="labeling/shapeBorderWidth" value="0"/>
         <property key="labeling/shapeBorderWidthMapUnitMaxScale" value="0"/>
         <property key="labeling/shapeBorderWidthMapUnitMinScale" value="0"/>
         <property key="labeling/shapeBorderWidthUnits" value="1"/>
-        <property key="labeling/shapeDraw" value="true"/>
+        <property key="labeling/shapeDraw" value="false"/>
         <property key="labeling/shapeFillColorA" value="255"/>
         <property key="labeling/shapeFillColorB" value="255"/>
         <property key="labeling/shapeFillColorG" value="255"/>
@@ -4273,9 +4273,6 @@
         <property key="labeling/wrapChar" value=""/>
         <property key="labeling/xOffset" value="0"/>
         <property key="labeling/yOffset" value="0"/>
-        <property key="labeling/zIndex" value="0"/>
-        <property key="variableNames" value="_fields_"/>
-        <property key="variableValues" value=""/>
       </customproperties>
       <blendMode>0</blendMode>
       <featureBlendMode>0</featureBlendMode>
@@ -4302,16 +4299,10 @@
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <SingleCategoryDiagramRenderer diagramType="Pie">
-        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" font=",7.5,-1,5,50,0,0,0,0,0" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" height="15" sizeType="MM" minScaleDenominator="0">
-          <attribute field="" color="#000000"/>
-        </DiagramCategory>
-      </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="0" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0"/>
-      <editform>.</editform>
+      <editform></editform>
       <editforminit/>
       <featformsuppress>0</featformsuppress>
-      <annotationform>.</annotationform>
+      <annotationform></annotationform>
       <editorlayout>generatedlayout</editorlayout>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
@@ -5005,10 +4996,10 @@
         <value>contours20150414141007482</value>
         <value>cph_boundary20150423140344739</value>
         <value>cph_hosp_poorhouses20161230095012877</value>
-        <value>cph_streets20150318132707017</value>
         <value>cph_water_area20170131102924915</value>
         <value>point_elev_m20150626132143542</value>
         <value>pointelev20150414160819350</value>
+        <value>cph_streets_220170201152322684</value>
       </LayerSnappingList>
       <LayerSnappingEnabledList type="QStringList">
         <value>disabled</value>
@@ -5023,9 +5014,9 @@
         <value>disabled</value>
         <value>disabled</value>
         <value>disabled</value>
-        <value>enabled</value>
         <value>disabled</value>
         <value>enabled</value>
+        <value>disabled</value>
         <value>disabled</value>
       </LayerSnappingEnabledList>
       <SnappingMode type="QString">all_layers</SnappingMode>
@@ -5044,10 +5035,10 @@
         <value>-1</value>
         <value>-1</value>
         <value>2</value>
-        <value>-1</value>
         <value>2</value>
         <value>2</value>
         <value>-1</value>
+        <value>2</value>
       </LayerSnappingToleranceUnitList>
       <LayerSnapToList type="QStringList">
         <value>to_vertex_and_segment</value>
@@ -5062,9 +5053,9 @@
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
-        <value>to_vertex</value>
         <value>to_vertex_and_segment</value>
         <value>to_vertex</value>
+        <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
       </LayerSnapToList>
       <DefaultSnapType type="QString">to vertex</DefaultSnapType>

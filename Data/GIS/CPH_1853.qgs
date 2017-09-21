@@ -20,7 +20,7 @@
     <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="contFromRaster220150414164859651" name="contFromRaster2">
       <customproperties/>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" checked="Qt::Unchecked" id="Copenhagen_water_map_1852_modified20170104141015666" name="Copenhagen_water_map_1852_modified">
+    <layer-tree-layer expanded="1" checked="Qt::Checked" id="Copenhagen_water_map_1852_modified20170104141015666" name="Copenhagen_water_map_1852_modified">
       <customproperties/>
     </layer-tree-layer>
     <layer-tree-layer expanded="0" checked="Qt::Unchecked" id="CPH_Quarters_eng20150622142053469" name="CPH_Quarters_eng">
@@ -101,8 +101,10 @@
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_boundary20150423140344739"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="CPH_Quarters320160203114949993"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_streets20150318132707017"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="VA_1854_PS_modified20150414141056993"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="CPH_Quarters_eng20150622142053469"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:4326" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_hosp_poorhouses20161230095012877"/>
+      <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="Copenhagen_water_map_1852_modified20170104141015666"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="cph_streets_220170201152123599"/>
       <layer_coordinate_transform destAuthId="EPSG:3857" srcAuthId="EPSG:3857" srcDatumTransform="-1" destDatumTransform="-1" layerid="IA_1855_CROP_modified_compress_low20160203110923645"/>
     </layer_coordinate_transform_info>
@@ -158,9 +160,9 @@
         <legendlayerfile isInOverview="0" layerid="contFromRaster220150414164859651" visible="0"/>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" open="true" checked="Qt::Unchecked" name="Copenhagen_water_map_1852_modified" showFeatureCount="0">
+    <legendlayer drawingOrder="-1" open="true" checked="Qt::Checked" name="Copenhagen_water_map_1852_modified" showFeatureCount="0">
       <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="Copenhagen_water_map_1852_modified20170104141015666" visible="0"/>
+        <legendlayerfile isInOverview="0" layerid="Copenhagen_water_map_1852_modified20170104141015666" visible="1"/>
       </filegroup>
     </legendlayer>
     <legendlayer drawingOrder="-1" open="false" checked="Qt::Unchecked" name="CPH_Quarters_eng" showFeatureCount="0">
@@ -1606,7 +1608,7 @@
         </edittype>
       </edittypes>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
       <id>Copenhagen_water_map_1852_modified20170104141015666</id>
       <datasource>./georeferenced_raster/Copenhagen_water_map_1852_modified.tif</datasource>
       <title></title>
@@ -1640,7 +1642,7 @@
         <map-layer-style name=""/>
       </map-layer-style-manager>
       <pipe>
-        <rasterrenderer gradient="BlackToWhite" opacity="0.713725" alphaBand="-1" type="singlebandgray" grayBand="1">
+        <rasterrenderer gradient="BlackToWhite" opacity="0.713725" alphaBand="0" type="singlebandgray" grayBand="1">
           <rasterTransparency/>
           <contrastEnhancement>
             <minValue>0</minValue>
@@ -2430,7 +2432,7 @@
         <property key="ol_layer_type" value="OpenStreetMap"/>
       </customproperties>
     </maplayer>
-    <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
+    <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
       <id>VA_1854_PS_modified20150414141056993</id>
       <datasource>./georeferenced_raster/VA_1854_PS_modified.tif</datasource>
       <title></title>
@@ -2464,7 +2466,7 @@
         <map-layer-style name=""/>
       </map-layer-style-manager>
       <pipe>
-        <rasterrenderer opacity="0.32549" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
+        <rasterrenderer opacity="0.32549" alphaBand="0" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
           <rasterTransparency/>
         </rasterrenderer>
         <brightnesscontrast brightness="10" contrast="0"/>
@@ -4299,10 +4301,10 @@
         <multilineenabled fieldname="" on=""/>
         <selectedonly on=""/>
       </labelattributes>
-      <editform></editform>
+      <editform>.</editform>
       <editforminit/>
       <featformsuppress>0</featformsuppress>
-      <annotationform></annotationform>
+      <annotationform>.</annotationform>
       <editorlayout>generatedlayout</editorlayout>
       <excludeAttributesWMS/>
       <excludeAttributesWFS/>
@@ -4933,6 +4935,7 @@
     <WMSKeywordList type="QStringList">
       <value></value>
     </WMSKeywordList>
+    <WFSUrl type="QString"></WFSUrl>
     <Topol>
       <layer1_0 type="QString">cph_streets20150318132707017</layer1_0>
       <layer1_1 type="QString">cph_streets20150318132707017</layer1_1>
@@ -4944,23 +4947,22 @@
       <tolerance_0 type="QString">0</tolerance_0>
       <tolerance_1 type="QString">0</tolerance_1>
     </Topol>
-    <WFSUrl type="QString"></WFSUrl>
     <Paths>
       <Absolute type="bool">false</Absolute>
     </Paths>
     <WMSServiceTitle type="QString"></WMSServiceTitle>
     <WFSLayers type="QStringList"/>
+    <WMSRestrictedLayers type="QStringList"/>
     <WMSContactMail type="QString"></WMSContactMail>
     <WMSRestrictedComposers type="QStringList"/>
-    <WMSRestrictedLayers type="QStringList"/>
     <PositionPrecision>
       <DecimalPlaces type="int">2</DecimalPlaces>
       <Automatic type="bool">true</Automatic>
       <DegreeFormat type="QString">D</DegreeFormat>
     </PositionPrecision>
     <WCSUrl type="QString"></WCSUrl>
-    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
     <WMSContactPhone type="QString"></WMSContactPhone>
+    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
     <WMSServiceAbstract type="QString"></WMSServiceAbstract>
     <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
     <Measure>
@@ -4996,10 +4998,10 @@
         <value>contours20150414141007482</value>
         <value>cph_boundary20150423140344739</value>
         <value>cph_hosp_poorhouses20161230095012877</value>
+        <value>cph_streets_220170201152322684</value>
         <value>cph_water_area20170131102924915</value>
         <value>point_elev_m20150626132143542</value>
         <value>pointelev20150414160819350</value>
-        <value>cph_streets_220170201152322684</value>
       </LayerSnappingList>
       <LayerSnappingEnabledList type="QStringList">
         <value>disabled</value>
@@ -5015,8 +5017,8 @@
         <value>disabled</value>
         <value>disabled</value>
         <value>disabled</value>
-        <value>enabled</value>
         <value>disabled</value>
+        <value>enabled</value>
         <value>disabled</value>
       </LayerSnappingEnabledList>
       <SnappingMode type="QString">all_layers</SnappingMode>
@@ -5037,8 +5039,8 @@
         <value>2</value>
         <value>2</value>
         <value>2</value>
-        <value>-1</value>
         <value>2</value>
+        <value>-1</value>
       </LayerSnappingToleranceUnitList>
       <LayerSnapToList type="QStringList">
         <value>to_vertex_and_segment</value>
@@ -5054,8 +5056,8 @@
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
         <value>to_vertex_and_segment</value>
-        <value>to_vertex</value>
         <value>to_vertex_and_segment</value>
+        <value>to_vertex</value>
         <value>to_vertex_and_segment</value>
       </LayerSnapToList>
       <DefaultSnapType type="QString">to vertex</DefaultSnapType>
