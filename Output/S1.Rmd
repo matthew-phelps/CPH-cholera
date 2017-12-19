@@ -1,7 +1,7 @@
 ---
 title: "The importance of thinking beyond the water-supply in cholera epidemics: a historical urban case-study"
 output: pdf_document
-author: "Matthew Phelps, Andrew S. Azman, Joseph A. Lewnard, Marina Antillón, Lone Simonsen, Viggo Andreasen,  Peter K.M. Jensen, Virginia E. Pitzer."
+author: "Matthew D. Phelps, Andrew S. Azman, Joseph A. Lewnard, Marina Antillón, Lone Simonsen, Viggo Andreasen,  Peter K.M. Jensen, Virginia E. Pitzer."
 ---
 
 ```{r setup, include=FALSE}
@@ -14,26 +14,18 @@ library(tidyverse)
 library(pander)
 ```
 
-#Supplemental Text S1 
+#S1 Supplemental Text 
 ## 1.1 Model structure  
-We constructed a series of nested models where
-the force of infection, $\lambda$, acting upon a neighborhood was composed of an
-external force of infection, $\alpha$, and an internal force of infection,
-$\beta$.
+We constructed a series of nested models where the force of infection acting upon neighborhood $i$ was the sum of an internal force of infection, $\beta_i$ and external force of infection from neigborhood $j$ upon neighborhood $i$, $\alpha_{j,i}$. 
 
 From simple to complex we allowed (1) a single $\beta$ and single $\alpha$ for
-all neighborhoods, (2) an individual $\beta_{i}$ for each neighborhood and a
-single $\alpha$ for all neighborhoods, and (3) an individual $\beta_{i}$ for
-each neighborhood and a single asymmetric $\alpha_{i,j}$ for each neighborhood
-pair.
+all neighborhoods, such that $\beta_i=\beta$ and $\alpha_{j,i}=\alpha$. (2) An individual $\beta_{i}$ for each neighborhood and a single $\alpha$ for all neighborhoods, such that $\alpha_{j,i}=\alpha$. (3) An individual $\beta_{i}$ for each neighborhood and a single asymmetric $\alpha_{i,j}$ for each neighborhood
+pair, such that $\alpha_{j,i} \ne \alpha_{i,j}$.
 
 
-Two additional models were constructed where we relaxed the constraints on the
-external forces of infection, $\alpha$. In model 2.1 allowed an individual
-$\beta_{i}$ and $\alpha_{i}$ for each neighborhood and in model 2.2 we allowed
-an individual $\beta_{i}$ for each neighborhood and symmetric $\alpha_{j,i}$ for
-each neighborhood pair ($\alpha_{j,i} = \alpha_{i,j}$). These models were not
-supported by the model selection process and were not reported in the main text.
+Two additional models were constructed that were not reported in the main text. In model 2.1 allowed an individual $\beta_{i}$ and $\alpha_{i}$ for each neighborhood, such that $\alpha_{j,i} = \alpha_i$. In model 2.2 we allowed an individual $\beta_{i}$ for each neighborhood and symmetric $\alpha_{j,i}$ for
+each neighborhood pair, such that $\alpha_{j,i} = \alpha_{i,j}$. These models were not
+supported by the model selection process.
 
 Each model was based upon the following construction:
 $$^{new}\textrm{I}_{i,t+1}\sim Poisson \left ( \frac{S_{i,t}\phi}{N_{i}} (\beta_{i}I_{i,t} + \sum_{j\neq i}\alpha_{j,i}I_{j,t} ) \right )$$
@@ -46,24 +38,23 @@ $S_{i,t}$ = the number of susceptible people in each neighborhood $i$ at time $t
 $N_{i}$ = the total population of neighborhood $i$  
 $\beta_{i}$ = the force of internal infection in neighborhood $i$  
 $\alpha_{j,i}$ = the force of infection from neighborhood $j$ to neighborhood $i$.  
-
+$\phi$ = the fraction of cases that are reported  
 
 The total number of cases $I_{i,t}$ was updated via:
 $$I_{i,t+1} = I_{i,t} + \frac{^{new}\textrm{I}_{i,t}}{\phi} - R_{i,t}$$  
-where:  
-$\phi$ = the fraction of cases that are reported  
-$R_{i,t}$ = the number of people who recovered or died from infection.
+where $R_{i,t}$ = the number of people who recovered or died from infection.
 
 The number of recovered individuals $R_{i,t}$ was updated via:  
-$$R_{i,t} = \frac{1}{\gamma} I_{i,t}$$
-where:  
-$\gamma$ = the average duration of infectiousness (fixed at 5 days).  
+$$R_{i,t+1} = \gamma I_{i,t}$$
+where $\frac{1}{\gamma}$ = the duration of infectiousness.  
 
 The number of susceptible $S_{i,t}$ was updated via:
 $$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$  
 
-
-
+The full system of model equations is thus:
+$$S_{i,t+1} = S_{i,t} - \frac{^{new}\textrm{I}_{i,t}}{\phi}$$
+$$I_{i,t+1} = I_{i,t} + \frac{^{new}\textrm{I}_{i,t}}{\phi} - R_{i,t}$$
+$$R_{i,t+1} = \gamma I_{i,t}$$
 
 
 ## 1.2 Hydraulic connectivity and geographic proximity  
@@ -72,40 +63,40 @@ To assess the effect of hydraulic connectivity we used two methods:
 connectivity into the meta-population model.  
 
 In method (A) we fit a linear model to the median of the log of the
-cross-neighborhood transmission coefficients ($\alpha_{i,j}$) from the fully
+cross-neighborhood transmission coefficients ($\alpha_{j,i}$) from the fully
 saturated model (model 3) using the hydraulic transition matrix and geographic
 proximity matrix as covariates. The model can be written as follows:
 $$y=\beta_0 + \beta_1x_1 + \beta_2x_2$$
 where $y$ is a vector of the median of the log of the cross neighborhood
 transmission coefficients ($\alpha_{i,j}$) and $x_1$ is a vector of hydraulic connectivity (Table S1) defined as 
-$$x_1 \begin{cases} 0 & \text{ if no water connection exists } i \rightarrow j 
-\\ 1 & \text{ if water connection exists} i \rightarrow j \end{cases}$$
+$$x_1 \begin{cases} 0 & \text{ if no water connection exists } j \rightarrow i 
+\\ 1 & \text{ if water connection exists} j \rightarrow i \end{cases}$$
 
 and $x_2$ is a vector of geographic proximity (Table S2) defined as
 $$x_2 \begin{cases} 0 &
-\text{ if no shared border exists } i \rightarrow j \\ 1 & \text{ if shared
-border exists } i \rightarrow j \end{cases}$$
+\text{ if no shared border exists } j \rightarrow i \\ 1 & \text{ if shared
+border exists } j \rightarrow i \end{cases}$$
 
 
-In method (B) we expanded model 2 to allow the force of infection ($\lambda$) between two neighborhoods to vary depending
+In method (B) we expanded model 2 to allow the force of infection ($\alpha$) between two neighborhoods to vary depending
 on if the neighborhoods are connected via water pipes such that
-$$\lambda_{i,j}
-\begin{cases} \alpha & \text{ if no water connection } i \rightarrow j \\
-\alpha + \eta & \text{ if water connection } i \rightarrow j 
+$$\alpha_{j,i}
+\begin{cases} \alpha_{0} & \text{ if no water connection } j \rightarrow i \\
+\alpha_{0} + \alpha_{1} & \text{ if water connection } j \rightarrow i 
 \end{cases}$$
 creating model 2b. We then expanded model 2b to incorporate geographic proximity
-(model 2c) by adding an additional term $\kappa$ if the neighborhoods shared a
-border. The resulting $\lambda_{i,j}$ can be described as
-$$\lambda_{i,j} \begin{cases}
-\alpha & \text{ if no shared border or water connection } i \rightarrow j \\
-\alpha + \eta & \text{ if no shared border but water connection }
-i \rightarrow j \text{ exists}\\
-\alpha + \eta +\kappa & \text{ if shared border and water connection }
-i \rightarrow j \text{ exists} 
-\end{cases}$$ The effect of water, $\eta$, and the effect of the shared border, 
-$\kappa$, are not fitted to each neighborhood, but are shared citywide.
+(model 2c) by adding an additional term $\alpha_{2}$ if the neighborhoods shared a
+border. The resulting $\alpha_{i,j}$ can be described as
+$$\alpha_{j,i} \begin{cases}
+\alpha_{0} & \text{ if no shared border or water connection } j \rightarrow i \\
+\alpha_{0} + \alpha_{1} & \text{ if no shared border but water connection }
+j \rightarrow i \text{ exists}\\
+\alpha_{0} + \alpha_{1} +\alpha_{2} & \text{ if shared border and water connection }
+j \rightarrow i \text{ exists} 
+\end{cases}$$ The effect of water, $\alpha_{1}$, and the effect of the shared border, 
+$\alpha_{2}$, are not fitted to each neighborhood, but are shared citywide.
 
-
+\newpage
 ## 1.3 Model fitting
 The model used in the paper (model 3) was fit using `JAGS 3.4` and the `runjags` and
 `rjags` libraries in R. The model priors were specified as thus:
@@ -116,7 +107,9 @@ $$\mu_{1} \sim N(0, \frac{1}{0.001})$$
 $$\mu_{2} \sim N(0, \frac{1}{0.001})$$
 $$\tau_{1} \sim \Gamma(0.001, 0.001)$$
 $$\tau_{2} \sim \Gamma(0.001, 0.001)$$
-$$logit(\phi) \sim N(0, \frac{1}{0.001})$$  
+$$logit(\phi) \sim N(0, \frac{1}{0.001})$$ 
+$$\gamma \sim exp(5)$$
+The Gamma distribution for $\tau_1$ and $\tau_2$ was parameterized in terms of shape and rate. The exponential distribution for $\gamma$ was parameterized in terms of a rate.
 
 ## 1.4 Model selection  
 We used the Watanabe-Akaike information criterion (WAIC) for model selection 
@@ -141,3 +134,99 @@ pander(waic1)
 ```
 
 For every realization of the epidemic, model 3 performed the best.
+
+\newpage
+```{r load summary}
+load(file = "Data/Rdata/mcmc_summary_stats.Rdata")
+```
+
+## 1.5 Posterior summary statistics
+For the selected model, model 3 (fully saturated model), we calculated the median and standard deviation of the posterior distribution for all fitted parameters.
+The posterior median and standard deviation of $log(\beta_i)$ and $log(\alpha_{j,i})$ are in figure 1 and figure 2 respectively.  
+
+The posterior median (standard deviation) for $\phi$ was `r round(mcmc_summary$phi_median, digits = 4)` (`r round(mcmc_summary$phi_sd, digits = 4)`).  
+The posterior median (standard deviation) for $\gamma$ was `r round(mcmc_summary$gamma_median, digits = 4)` (`r round(mcmc_summary$gamma_sd, digits = 4)`)  
+
+
+
+```{r posterior, fig.align="left"}
+library(plotrix)
+
+med_val_log <- round(mcmc_summary$betas_median_log, digits = 4)
+sd_val_log <- round(mcmc_summary$betas_sd_log, digits = 4)
+
+# Table plot of median posterior values
+par(mar=c(5.5,6.5,1.5,2.9)) # Margins around plot ()
+color2D.matplot(med_val_log, 
+                show.values = 3,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 0.7,
+                vcol = "black",
+                extremes = c("white", "white"))
+xpos <- seq_len(ncol(med_val_log)) -0.3
+ypos <- seq_len(ncol(med_val_log)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names(med_val_log),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] -.15, # 0.7 lines above the top. [4] places ref to top border
+     adj = c(1,1),
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(med_val_log)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+title(main = expression(paste("Posterior median of log(", beta[i], ") and log(", alpha['j,i'], ")")))
+```
+
+Figure 1: The posterior medians for $log(\beta_i)$ (diagonal) and $log(\alpha_{j,i})$ (off-diagonal) for each neighborhood from model 3. For example, row 4 (Kjoebmager), column 1 (Christianshavn) can be read as the posterior median of the log transmission coefficient for cases arising in Kjoebmager from cases in Christianshavn
+
+```{r sd}
+# Plot table of SD posterior values
+par(mar=c(5.5,6.5,1.5,2.9)) # Margins around plot ()
+color2D.matplot(sd_val_log, 
+                show.values = 4,
+                axes = FALSE,
+                xlab = "",
+                ylab = "",
+                vcex = 0.7,
+                vcol = "black",
+                extremes = c("white", "white"))
+xpos <- seq_len(ncol(sd_val_log)) -0.3
+ypos <- seq_len(ncol(sd_val_log)) - 0.4
+axis(3, # specifies top border x position
+     at = xpos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(x = xpos,
+     labels = names(sd_val_log),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] -.15, # 0.7 lines above the top. [4] places ref to top border
+     adj = c(1,1),
+     xpd = T) # not sure but allows txt to overflow table
+axis(2, 
+     at = ypos,
+     labels = F, tick = FALSE, cex.axis = 0.7)
+text(y = ypos,
+     labels = rev(names(sd_val_log)),
+     srt = 45, # angle to rotate
+     pos = 2, # specifies to put txt at top
+     par("usr")[1] + -0.1,  # 0.1 lines left of left border. [1] places ref to left border
+     adj = 0,
+     xpd = T) # not sure but allows txt to overflow table
+title(main = expression(paste("Posterior standard deviation of log(", beta[i], ") and log(", alpha['j,i'], ")")))
+
+```
+
+Figure 2: The posterior standard deviations for $log(\beta_i)$ (diagonal) and $log(\alpha_{j,i})$ (off-diagonal) for each neighborhood from model 3.

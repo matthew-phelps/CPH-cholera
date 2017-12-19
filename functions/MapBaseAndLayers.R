@@ -37,13 +37,13 @@ addLabels <- function(base_map, mapdf, transp){
   
   # Length of background whitespace
   centroids$size <- nchar(centroids$label)
-  kx <- 39 
+  kx <- 30 
   ky <- 55
   base_map + 
     with(centroids, annotate(geom="rect", xmin = long - kx*size, xmax = long + kx*size,
                                       ymin = lat - ky-17, ymax = lat + ky,
                                       fill = "white", alpha = transp)) +
-    with(centroids, annotate(geom="text", x = long, y = lat, label = label, size = 2.0))
+    with(centroids, annotate(geom="text", x = long, y = lat, label = label, size = 3.0))
   
   
 }
