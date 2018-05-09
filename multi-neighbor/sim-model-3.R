@@ -74,3 +74,16 @@ for (i in 1:Nquarter){
 save(I_att_mean, file = "Attributable-cases-t0.Rdata")
 save(I_proportion, file = "Proportion-attributable-t0.Rdata")
 
+
+# Sim from T = 0 ----------------------------------------------------------
+# Request from defense committee
+sim3_full <- SimFromZero(loops=n_loops, 
+                        I_reps = I_reps, N_it = N_it,
+                        betas_95hpd = mcmc_out$betas_95hpd,
+                        phi_95hpd = mcmc_out$phi_95hpd,
+                        gamma_95hpd = mcmc_out$gamma_95hpd)
+
+
+sim3_step_data <- SimDataToPlot(sim3_step)
+sim3_step_summary <- SimCI(sim3_step_data)
+
